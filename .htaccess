@@ -1,0 +1,18 @@
+# Deny access to sensitive files and directories
+<FilesMatch "^(\.env|\.git|composer\.(json|lock)|package\.json|artisan|vite\.config\.js)$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+# Deny directory listing
+Options -Indexes
+
+# Redirect to public directory if accessed from root
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteCond %{REQUEST_URI} !^/public/
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
+
