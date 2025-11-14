@@ -6,6 +6,9 @@
 (function() {
     'use strict';
 
+    // Flag to prevent double WhatsApp opening
+    let whatsappOpened = false;
+
     // Generate WhatsApp URL from form data (fast - no server wait)
     function generateWhatsAppUrl(formData) {
         // Get WhatsApp phone from data attribute or use default
@@ -48,7 +51,13 @@
     }
 
     // Open WhatsApp after successful form submission (from server session)
+    // Only open if not already opened by frontend
     function initWhatsAppRedirect() {
+        // Skip if WhatsApp already opened by frontend
+        if (whatsappOpened) {
+            return;
+        }
+
         // Check from data attribute first (more reliable)
         const formCard = document.querySelector('.card--form[data-whatsapp-url]');
         if (formCard) {
@@ -56,6 +65,7 @@
             if (whatsappUrl) {
                 // Open WhatsApp immediately
                 window.open(whatsappUrl, '_blank');
+                whatsappOpened = true;
                 // Remove attribute to prevent reopening on refresh
                 formCard.removeAttribute('data-whatsapp-url');
                 return; // Exit early if found
@@ -67,6 +77,7 @@
             const whatsappUrlFromSession = window.whatsappUrlFromSession;
             if (whatsappUrlFromSession) {
                 window.open(whatsappUrlFromSession, '_blank');
+                whatsappOpened = true;
                 // Clear the variable to prevent reopening on refresh
                 window.whatsappUrlFromSession = null;
             }
@@ -87,6 +98,7 @@
                     // Small delay to ensure form submits properly
                     setTimeout(function() {
                         window.open(whatsappUrl, '_blank');
+                        whatsappOpened = true; // Mark as opened to prevent double opening
                     }, 100);
                 }
             });
