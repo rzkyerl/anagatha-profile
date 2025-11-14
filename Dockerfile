@@ -46,23 +46,50 @@ EXPOSE 8000
 # Create startup script
 RUN cat > /start.sh << 'EOF'
 #!/bin/bash
-set -e
+
+echo "Starting Laravel application..."
+echo "PORT: ${PORT:-8000}"
 
 # Wait for .env to be available
 if [ ! -f .env ]; then
     echo "Warning: .env file not found. Creating from .env.example..."
-    cp .env.example .env 2>/dev/null || true
+    if [ -f .env.example ]; then
+        cp .env.example .env
+        echo "Created .env from .env.example"
+    else
+        echo "Error: .env.example not found!"
+        exit 1
+    fi
 fi
 
-# Cache Laravel config (only if .env exists)
+# Generate APP_KEY if not set
+if ! grep -q "APP_KEY=base64:" .env 2>/dev/null; then
+    echo "Generating APP_KEY..."
+    php artisan key:generate --force 2>&1 || echo "Warning: key:generate failed, continuing..."
+fi
+
+# Clear any cached config first
+php artisan config:clear 2>&1 || true
+php artisan route:clear 2>&1 || true
+php artisan view:clear 2>&1 || true
+
+# Cache Laravel config (only if .env exists and valid)
 if [ -f .env ]; then
-    php artisan config:cache || true
-    php artisan route:cache || true
-    php artisan view:cache || true
+    echo "Caching Laravel configuration..."
+    php artisan config:cache 2>&1 || echo "Warning: config:cache failed, continuing..."
+    php artisan route:cache 2>&1 || echo "Warning: route:cache failed, continuing..."
+    php artisan view:cache 2>&1 || echo "Warning: view:cache failed, continuing..."
 fi
 
-# Start PHP built-in server
-exec php artisan serve --host=0.0.0.0 --port=${PORT:-8000}
+# Ensure storage is writable
+chmod -R 775 storage bootstrap/cache 2>&1 || true
+chown -R www-data:www-data storage bootstrap/cache 2>&1 || true
+
+echo "Starting PHP built-in server on port ${PORT:-8000}..."
+echo "Server will be available at http://0.0.0.0:${PORT:-8000}"
+
+# Start PHP built-in server (use exec to replace shell process)
+exec php artisan serve --host=0.0.0.0 --port=${PORT:-8000} 2>&1
 EOF
 RUN chmod +x /start.sh
 
