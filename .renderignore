@@ -1,0 +1,45 @@
+# Node.js files and directories
+node_modules/
+package-lock.json
+yarn.lock
+.pnpm-lock.yaml
+.npm/
+
+# Development files
+.env.local
+.env.development
+.env.test
+*.log
+.DS_Store
+
+# IDE files
+.idea/
+.vscode/
+.fleet/
+
+# Build artifacts (will be generated during build)
+public/build/
+public/hot/
+
+# PHP development files
+.phpunit.cache/
+.phpunit.result.cache
+Homestead.json
+Homestead.yaml
+
+# Sensitive PHP files (outside public/)
+app/
+bootstrap/
+config/
+database/
+resources/
+routes/
+storage/
+tests/
+vendor/
+artisan
+composer.json
+composer.lock
+vite.config.js
+.phpunit.xml
+

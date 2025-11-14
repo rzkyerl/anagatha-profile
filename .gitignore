@@ -17,3 +17,12 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
+
+# Node.js files
+package-lock.json
+yarn.lock
+.pnpm-lock.yaml
+.npm
+.node_repl_history
+*.log
+.DS_Store

@@ -16,7 +16,7 @@
             </div>
         </div>
         <div class="hero-visual">
-            <img class="hero-visual__image" src="{{ asset('assets/hero-section.jpeg') }}" alt="Ilustrasi tim Anagata Executive yang berkolaborasi">
+            <img class="hero-visual__image" src="/assets/hero-section.jpeg" alt="Ilustrasi tim Anagata Executive yang berkolaborasi">
         </div>
     </div>
 </section>

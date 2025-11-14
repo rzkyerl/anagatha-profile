@@ -19,3 +19,9 @@
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
 </IfModule>
+
+# Explicitly deny access to sensitive files
+<FilesMatch "^(\.env|\.git|composer\.(json|lock)|package\.json)$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
