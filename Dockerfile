@@ -33,16 +33,18 @@ RUN chown -R www-data:www-data /var/www \
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 
 # Install Node dependencies dan build assets
-RUN npm ci && npm run build && rm -rf node_modules
+RUN if [ -f "package-lock.json" ]; then npm ci; else npm install; fi && \
+    npm run build && \
+    rm -rf node_modules
 
 # Cache Laravel config
 RUN php artisan config:cache && \
     php artisan route:cache && \
     php artisan view:cache
 
-# Expose port
+# Expose port (Railway will set PORT env variable at runtime)
 EXPOSE 8000
 
-# Start PHP built-in server
-CMD php artisan serve --host=0.0.0.0 --port=8000
+# Start PHP built-in server (Railway sets PORT automatically)
+CMD php artisan serve --host=0.0.0.0 --port=${PORT:-8000}
 
