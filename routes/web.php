@@ -4,6 +4,11 @@ use App\Http\Controllers\ContactController;
 use App\Http\Controllers\PageController;
 use Illuminate\Support\Facades\Route;
 
+// Health check endpoint for Railway
+Route::get('/health', function () {
+    return response()->json(['status' => 'ok', 'timestamp' => now()], 200);
+});
+
 Route::controller(PageController::class)->group(function () {
     Route::get('/', 'home');
     Route::get('/about', 'about')->name('about');
