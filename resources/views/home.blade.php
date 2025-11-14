@@ -201,7 +201,7 @@
                         </div>
                     @endif
 
-                    <form action="{{ url('/contact') }}" method="POST" novalidate>
+                    <form action="{{ route('contact.store') }}" method="POST" novalidate>
                         @csrf
                         <div class="form-grid">
                             <div class="form-field">
