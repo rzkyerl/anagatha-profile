@@ -69,15 +69,15 @@
 
         <div class="grid-cards grid-cards--wide">
             <article class="card card--service" data-aos="fade-up" data-aos-delay="100">
-                <img src="{{ asset('assets/scope.svg') }}" alt="Executive Search & Leadership Placement" srcset="">
+                <img src="/assets/scope.svg" alt="Executive Search & Leadership Placement" srcset="">
                 <h3>Executive Search & Leadership Placement</h3>
             </article>
             <article class="card card--service" data-aos="fade-up" data-aos-delay="200">
-            <img src="{{ asset('assets/data-up.svg') }}" alt="Executive Search & Leadership Placement" srcset="">
+            <img src="/assets/data-up.svg" alt="Culture Fit Recruitment for Growing Startups" srcset="">
                 <h3>Culture Fit Recruitment for Growing Startups</h3>
             </article>
             <article class="card card--service" data-aos="fade-up" data-aos-delay="300">
-            <img src="{{ asset('assets/analytic-chart.svg') }}" alt="Executive Search & Leadership Placement" srcset="">
+            <img src="/assets/analytic-chart.svg" alt="Talent Pipeline Development for Specialized Roles" srcset="">
                 <h3>Talent Pipeline Development for Specialized Roles</h3>
             </article>
         </div>
