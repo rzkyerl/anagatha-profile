@@ -6,6 +6,33 @@
 (function() {
     'use strict';
 
+    // Generate WhatsApp URL from form data (fast - no server wait)
+    function generateWhatsAppUrl(formData) {
+        // Get WhatsApp phone from data attribute or use default
+        const formCard = document.querySelector('.card--form');
+        const phoneNumber = formCard ? (formCard.getAttribute('data-whatsapp-phone') || '6289684267761') : '6289684267761';
+        
+        const firstName = formData.get('first_name') || '';
+        const lastName = formData.get('last_name') || '';
+        const name = (firstName + ' ' + lastName).trim();
+        const email = formData.get('email') || '';
+        const phone = formData.get('phone') || '';
+        const message = formData.get('message') || '';
+        
+        // Build contact info
+        let contactInfo = name + ', ' + email;
+        if (phone) {
+            contactInfo += ', ' + phone;
+        }
+        
+        // Format message (same format as backend)
+        const whatsappMessage = 'Halo Anagatha, I\'m ' + contactInfo + '\n' + message;
+        
+        // Generate wa.me URL
+        const encodedMessage = encodeURIComponent(whatsappMessage);
+        return 'https://wa.me/' + phoneNumber + '?text=' + encodedMessage;
+    }
+
     // Auto-hide alerts after 5 seconds
     function initAutoHideAlerts() {
         const alerts = document.querySelectorAll('.alert');
@@ -20,7 +47,7 @@
         });
     }
 
-    // Open WhatsApp after successful form submission
+    // Open WhatsApp after successful form submission (from server session)
     function initWhatsAppRedirect() {
         // Check from data attribute first (more reliable)
         const formCard = document.querySelector('.card--form[data-whatsapp-url]');
@@ -46,13 +73,22 @@
         }
     }
 
-    // Handle form submission - open WhatsApp after redirect
+    // Handle form submission - open WhatsApp immediately (fast!)
     function initFormSubmission() {
         const form = document.querySelector('form[action*="/contact"]');
         if (form) {
             form.addEventListener('submit', function(e) {
-                // Form will submit normally, WhatsApp will open after page reloads with session data
-                // This is handled by initWhatsAppRedirect() after page loads
+                // Generate WhatsApp URL from form data immediately (no server wait)
+                const formData = new FormData(form);
+                const whatsappUrl = generateWhatsAppUrl(formData);
+                
+                // Open WhatsApp immediately (don't wait for server response)
+                if (whatsappUrl) {
+                    // Small delay to ensure form submits properly
+                    setTimeout(function() {
+                        window.open(whatsappUrl, '_blank');
+                    }, 100);
+                }
             });
         }
     }

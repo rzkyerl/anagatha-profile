@@ -187,6 +187,7 @@
             </div>
             <div class="contact-section__grid">
                 <div class="card card--form" data-aos="fade-up" data-aos-delay="100"
+                    data-whatsapp-phone="{{ config('whatsapp.recipient_phone', '6289684267761') }}"
                     @if (session('whatsapp_url')) data-whatsapp-url="{{ session('whatsapp_url') }}" @endif>
                     @if (session('status'))
                         <div class="alert alert--success" role="status">

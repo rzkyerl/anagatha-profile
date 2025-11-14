@@ -54,28 +54,17 @@ class ContactController extends Controller
             'message' => $validated['message'],
         ];
 
-        // Generate WhatsApp URL (always generate, even if email fails)
+        // Generate WhatsApp URL (for fallback - frontend generates it faster)
+        // Frontend JavaScript generates WhatsApp URL immediately, this is just for session fallback
         $whatsappPhone = config('whatsapp.recipient_phone');
         $whatsappUrl = null;
         if (!empty($whatsappPhone)) {
             try {
-                // Log the phone number for debugging
-                Log::info('WhatsApp phone number from config', ['phone' => $whatsappPhone, 'length' => strlen($whatsappPhone)]);
-                
                 $whatsappMessage = $this->whatsappService->formatContactMessage($data);
                 $whatsappUrl = $this->whatsappService->generateWhatsAppUrl($whatsappPhone, $whatsappMessage);
-                
-                // Log the generated URL (without message for privacy)
-                Log::info('WhatsApp URL generated successfully', ['url_base' => parse_url($whatsappUrl, PHP_URL_SCHEME) . '://' . parse_url($whatsappUrl, PHP_URL_HOST) . parse_url($whatsappUrl, PHP_URL_PATH)]);
             } catch (\Exception $e) {
-                Log::error('WhatsApp URL generation error: ' . $e->getMessage(), [
-                    'phone' => $whatsappPhone,
-                    'phone_length' => strlen($whatsappPhone ?? ''),
-                    'trace' => $e->getTraceAsString(),
-                ]);
+                Log::error('WhatsApp URL generation error: ' . $e->getMessage());
             }
-        } else {
-            Log::warning('WhatsApp recipient phone not configured. Please set WHATSAPP_RECIPIENT_PHONE in .env');
         }
 
         // Send email via queue/job (async - faster response for user)
@@ -91,8 +80,6 @@ class ContactController extends Controller
                 // Dispatch email job to queue (runs in background - faster response)
                 SendContactEmail::dispatch($data, $recipient);
                 $emailSent = true; // Consider it sent (will be processed in background)
-                
-                Log::info('Contact form email queued successfully', ['recipient' => $recipient]);
             } catch (\Exception $e) {
                 Log::error('Email queue error: ' . $e->getMessage(), [
                     'data' => $data,
