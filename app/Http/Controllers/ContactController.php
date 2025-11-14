@@ -3,12 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\Mail\ContactMessage;
+use App\Services\WhatsAppService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
 class ContactController extends Controller
 {
+    protected WhatsAppService $whatsappService;
+
+    public function __construct(WhatsAppService $whatsappService)
+    {
+        $this->whatsappService = $whatsappService;
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -30,18 +39,58 @@ class ContactController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        $data = $request->validate([
-            'name' => ['required', 'string', 'max:120'],
+        $validated = $request->validate([
+            'first_name' => ['required', 'string', 'max:60'],
+            'last_name' => ['required', 'string', 'max:60'],
             'email' => ['required', 'email', 'max:150'],
             'phone' => ['nullable', 'string', 'max:50'],
             'message' => ['required', 'string', 'max:2000'],
         ]);
 
-        $recipient = config('mail.from.address', 'info@anagataexecutive.com');
+        // Combine first_name and last_name into name
+        $data = [
+            'name' => trim($validated['first_name'] . ' ' . $validated['last_name']),
+            'email' => $validated['email'],
+            'phone' => $validated['phone'] ?? '',
+            'message' => $validated['message'],
+        ];
 
-        Mail::to($recipient)->send(new ContactMessage($data));
+        // Generate WhatsApp URL (always generate, even if email fails)
+        $whatsappPhone = config('whatsapp.recipient_phone');
+        $whatsappUrl = null;
+        if (!empty($whatsappPhone)) {
+            try {
+                $whatsappMessage = $this->whatsappService->formatContactMessage($data);
+                $whatsappUrl = $this->whatsappService->generateWhatsAppUrl($whatsappPhone, $whatsappMessage);
+            } catch (\Exception $e) {
+                Log::error('WhatsApp URL generation error: ' . $e->getMessage());
+            }
+        } else {
+            Log::warning('WhatsApp recipient phone not configured. Please set WHATSAPP_RECIPIENT_PHONE in .env');
+        }
 
-        return back()->with('status', 'Pesan Anda telah kami terima. Tim kami akan segera menghubungi Anda.');
+        // Try to send email via SMTP (but don't fail if it errors)
+        $emailSent = false;
+        try {
+            $recipient = config('mail.from.address', 'info@anagataexecutive.com');
+            Mail::to($recipient)->send(new ContactMessage($data));
+            $emailSent = true;
+        } catch (\Exception $e) {
+            Log::error('Email send error: ' . $e->getMessage(), [
+                'data' => $data,
+            ]);
+            // Continue even if email fails - WhatsApp will still work
+        }
+
+        // Always return success with WhatsApp URL
+        $statusMessage = 'Pesan Anda telah kami terima. Tim kami akan segera menghubungi Anda.';
+        if (!$emailSent && $whatsappUrl) {
+            $statusMessage = 'Pesan Anda telah kami terima. Silakan lanjutkan melalui WhatsApp.';
+        }
+
+        return back()
+            ->with('status', $statusMessage)
+            ->with('whatsapp_url', $whatsappUrl);
     }
 
     /**

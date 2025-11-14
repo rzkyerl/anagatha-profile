@@ -26,8 +26,11 @@ class ContactMessage extends Mailable
     public function build(): self
     {
         return $this
-            ->subject('Pesan Baru dari Form Kontak Anagata Executive')
+            ->subject('New Contact Message from ' . $this->data['name'] . ' - Anagata Executive')
             ->replyTo($this->data['email'], $this->data['name'])
-            ->view('emails.contact-message');
+            ->view('emails.contact-message')
+            ->with([
+                'data' => $this->data,
+            ]);
     }
 }
