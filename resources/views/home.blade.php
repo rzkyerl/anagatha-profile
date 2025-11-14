@@ -6,191 +6,166 @@
 @section('content')
 <section id="hero" class="hero home-hero">
     <div class="container hero__layout">
-        <div class="hero-text">
-            <span class="hero-eyebrow">Talent Intelligence Partner</span>
-            <h1>Where Data Meet Talent</h1>
-            <p class="text-lead">Menemukan talenta terbaik kini lebih cepat, akurat, dan berbasis data. Anagata Executive menghadirkan solusi rekrutmen end-to-end yang menggabungkan kecerdasan buatan, analitik, dan sentuhan manusiawi.</p>
-            <div class="cta-group">
-                <a class="cta-primary" href="{{ url('/#contact') }}">Hubungi Kami</a>
-                <a class="cta-secondary" href="{{ url('/#about') }}">Pelajari Lebih Lanjut</a>
-            </div>
+        <div class="hero-text" data-aos="fade-right">
+            <span class="hero-eyebrow">Human Resources Recruitment Agency</span>
+            <h1>Where Talent Thrives 
+            & Culture Elevates</h1>
+            <p class="text-lead">Discover top talent with speed, precision, and data-driven intelligence. Anagata Executive delivers end-to-end recruitment powered by AI, insight, and human expertise.</p>
+                <a class="cta-primary" href="{{ url('/#contact') }}">Find a Job</a>
         </div>
-        <div class="hero-visual">
-            <img class="hero-visual__image" src="/assets/hero-section.jpeg" alt="Ilustrasi tim Anagata Executive yang berkolaborasi">
+        <div class="hero-visual" data-aos="fade-left">
+            <img class="hero-visual__image" src="/assets/hero-sec.png" alt="Ilustrasi tim Anagata Executive yang berkolaborasi">
         </div>
     </div>
 </section>
 
 <section id="about">
-    <div class="container section-shell section-shell--center section-shell--narrow">
-        <h1>Manusia Tetap Pusat Dari Segalanya</h1>
-        <p class="text-lead">Kami membantu organisasi menghubungkan data dan bakat, sehingga keputusan rekrutmen menjadi lebih strategis dan berkelanjutan.</p>
-    </div>
-</section>
-
-<section>
-    <div class="container">
-        <article class="card quote-card">
-            <blockquote>
-                “Kami percaya, keberhasilan rekrutmen bukan hanya tentang menemukan orang yang tepat, tetapi juga membangun hubungan jangka panjang antara talenta dan perusahaan. Teknologi hanyalah alat; manusia tetap pusat dari segalanya.”
-            </blockquote>
-            <p class="quote-card__attribution">— Founder, Anagata Executive</p>
-        </article>
-    </div>
-</section>
-
-<section aria-labelledby="vision-mission">
     <div class="container section-shell section-shell--stack">
-        <div class="section-heading section-heading--left">
-            <h2 id="vision-mission" class="section-heading__title">Visi & Misi</h2>
-            <p class="section-heading__text">Fondasi yang memandu kami membantu klien mencapai pertumbuhan berkelanjutan.</p>
+        <div class="section-heading section-heading--left" data-aos="fade-up">
+            <h2 class="section-heading__title">Excellence in Talent Acquisition</h2>
+            <p class="section-heading__text">We deliver comprehensive recruitment solutions with a data-driven and technology enabled approach to ensure your organization's success. We are committed to finding the perfect fit for both our clients and candidates. By combining deep industry expertise, a personalized recruitment approach, and an extensive professional network, we identify and attract top talent with precision and care. Our process focuses not only on skills and experience, but also on cultural alignment and long-term potential, ensuring that every placement supports sustainable growth. Through this approach, we help companies build stronger teams while guiding candidates toward meaningful career opportunities.</p>
+        </div>  
+    </div>
+</section>
+
+<section aria-labelledby="vision-mission-heading">
+    <div class="container vision-mission-container">
+        <div class="section-heading section-heading--left" data-aos="fade-up">
+            <h2 id="vision-mission-heading" class="section-heading__title">Our Vision & Mission</h2>
+            <p class="section-heading__text">Guiding principles that shape our commitment to excellence in talent acquisition</p>
         </div>
-        <div class="grid-columns grid-columns--balanced">
-            <article class="content-block">
-                <h3>Visi</h3>
-                <p>Menjadi mitra strategis terpercaya dalam penyediaan talenta terbaik di berbagai industri.</p>
+        
+        <div class="vision-mission-grid">
+            <article class="vision-mission-card vision-mission-card--vision" data-aos="fade-up" data-aos-delay="100">
+                <div class="vision-mission-card__header">
+                    <div class="vision-mission-card__icon">
+                        <i class="fa-solid fa-eye"></i>
+                    </div>
+                    <h3 class="vision-mission-card__title">Our Vision</h3>
+                </div>
+                <p class="vision-mission-card__text">To become the most trusted and strategic talent partner in the industry, recognized for our ability to deliver exceptional talent solutions that drive organizational growth and success across diverse sectors.</p>
             </article>
-            <article class="content-block">
-                <h3>Misi</h3>
-                <ol class="list list--numbered">
-                    <li><span>1</span><div>Menghubungkan talenta unggul dengan peluang terbaik.</div></li>
-                    <li><span>2</span><div>Membangun hubungan jangka panjang yang saling menguntungkan.</div></li>
-                    <li><span>3</span><div>Menggunakan teknologi dan data sebagai penguat keputusan.</div></li>
-                    <li><span>4</span><div>Memberikan nilai tambah nyata bagi klien.</div></li>
-                    <li><span>5</span><div>Mendukung pengembangan karier kandidat.</div></li>
-                </ol>
+            
+            <article class="vision-mission-card vision-mission-card--mission" data-aos="fade-up" data-aos-delay="200">
+                <div class="vision-mission-card__header">
+                    <div class="vision-mission-card__icon">
+                        <i class="fa-solid fa-bullseye"></i>
+                    </div>
+                    <h3 class="vision-mission-card__title">Our Mission</h3>
+                </div>
+                <p class="vision-mission-card__text">To bridge the gap between exceptional talent and remarkable opportunities by leveraging cutting-edge technology, data-driven insights, and human expertise. We are committed to building lasting partnerships, delivering unparalleled value to our clients, and empowering candidates to achieve their career aspirations through meaningful placements that foster professional growth and organizational excellence.</p>
             </article>
         </div>
     </div>
 </section>
 
-<section>
-    <div class="container">
-        <article class="card card--muted card--narrow">
-            <h2>Sejarah Perusahaan</h2>
-            <p>Didirikan tahun 2025 oleh profesional di bidang teknologi dan SDM, Anagata Executive hadir untuk mengubah cara rekrutmen dilakukan. Dengan menggabungkan <strong>AI, analitik data, dan pemahaman manusia</strong>, kami membantu perusahaan menemukan kandidat yang tidak hanya kompeten, tetapi juga cocok secara budaya dan visi.</p>
-        </article>
-    </div>
-</section>
-
-<section aria-labelledby="culture">
-    <div class="container section-shell section-shell--stack">
-        <div class="section-heading">
-            <span class="section-heading__eyebrow">Cara Kami Bekerja</span>
-            <h2 id="culture" class="section-heading__title">Budaya Kami</h2>
-            <p class="section-heading__text">Nilai yang menuntun setiap interaksi dengan klien maupun kandidat.</p>
-        </div>
-        <div class="grid-cards">
-            <article class="card card--lift">
-                <h3>Kolaborasi Tanpa Batas</h3>
-                <p>Kami percaya inovasi lahir dari kolaborasi lintas disiplin untuk memecahkan tantangan rekrutmen kompleks.</p>
-            </article>
-            <article class="card card--lift">
-                <h3>Empati & Integritas</h3>
-                <p>Setiap interaksi dengan kandidat dan klien kami dasarkan pada empati, kepercayaan, dan tanggung jawab.</p>
-            </article>
-            <article class="card card--lift">
-                <h3>Data-Driven Mindset</h3>
-                <p>Keputusan kami ditunjang oleh data yang kuat tanpa mengabaikan intuisi dan pengalaman profesional.</p>
-            </article>
-        </div>
-    </div>
-</section>
 
 <section id="services" aria-labelledby="services-title">
     <div class="container section-shell section-shell--stack">
-        <div class="section-heading">
-            <span class="section-heading__eyebrow">Solusi Talent Terintegrasi</span>
-            <h2 id="services-title" class="section-heading__title">Layanan Kami</h2>
-            <p class="section-heading__text">Kami menggabungkan keahlian headhunter dengan teknologi analitik untuk memastikan setiap layanan menghadirkan nilai strategis paling tinggi bagi organisasi Anda.</p>
+        <div class="section-heading" data-aos="fade-up">
+            <h2 id="services-title" class="section-heading__title">What We Offer</h2>
+            <p class="section-heading__text">We provide comprehensive recruitment solutions tailored to your organization's unique needs. From executive leadership placements to specialized talent pipelines, our services combine data-driven insights with personalized expertise to deliver exceptional results that drive your business forward.</p>
         </div>
 
         <div class="grid-cards grid-cards--wide">
-            <article class="card card--service">
-                <h3>Head Hunter</h3>
-                <p>Kami membantu Anda mendapatkan kandidat terbaik untuk posisi strategis dengan metode pencarian dan seleksi berbasis data, mempercepat waktu rekrutmen tanpa mengorbankan kualitas.</p>
-                <a class="cta-secondary" href="{{ url('/#contact') }}">Diskusikan Kebutuhan</a>
+            <article class="card card--service" data-aos="fade-up" data-aos-delay="100">
+                <img src="{{ asset('assets/scope.svg') }}" alt="Executive Search & Leadership Placement" srcset="">
+                <h3>Executive Search & Leadership Placement</h3>
             </article>
-            <article class="card card--service">
-                <h3>Training</h3>
-                <p>Program pelatihan yang dirancang untuk meningkatkan kemampuan profesional dan kepemimpinan, disesuaikan dengan kebutuhan industri dan budaya organisasi.</p>
-                <a class="cta-secondary" href="{{ url('/#contact') }}">Rancang Program</a>
+            <article class="card card--service" data-aos="fade-up" data-aos-delay="200">
+            <img src="{{ asset('assets/data-up.svg') }}" alt="Executive Search & Leadership Placement" srcset="">
+                <h3>Culture Fit Recruitment for Growing Startups</h3>
             </article>
-            <article class="card card--service">
-                <h3>Outsourcing</h3>
-                <p>Solusi efisien untuk kebutuhan tenaga kerja sementara maupun tetap, dilengkapi sistem pemantauan kinerja dan manajemen HR digital.</p>
-                <a class="cta-secondary" href="{{ url('/#contact') }}">Cari Talenta</a>
+            <article class="card card--service" data-aos="fade-up" data-aos-delay="300">
+            <img src="{{ asset('assets/analytic-chart.svg') }}" alt="Executive Search & Leadership Placement" srcset="">
+                <h3>Talent Pipeline Development for Specialized Roles</h3>
             </article>
         </div>
     </div>
 </section>
 
-<section>
-    <div class="container">
-        <div class="cta-banner cta-banner--split">
-            <div>
-                <h2>Butuh kombinasi layanan?</h2>
-                <p>Kami dapat menyesuaikan paket layanan sesuai kebutuhan unik tim Anda.</p>
-            </div>
-            <a class="cta-primary" href="{{ url('/#contact') }}">Hubungi Konsultan</a>
-        </div>
-    </div>
-</section>
 
 <section id="why-us">
-    <div class="container section-shell section-shell--split">
-        <article>
-            <h2 class="section-heading__title">Integrasi Teknologi & Empati</h2>
-            <p class="text-lead">Kami tidak sekadar menemukan kandidat. Kami membangun kemitraan jangka panjang untuk memastikan talenta yang hadir mampu membawa dampak nyata bagi perusahaan Anda.</p>
-        </article>
-        <article class="card card--muted">
-            <h3 class="card__title">Value Proposition</h3>
-            <p>Kami menyatukan data, pengalaman industri, dan pemahaman mendalam terhadap manusia untuk memberikan keputusan rekrutmen yang lebih cerdas dan cepat.</p>
-        </article>
-    </div>
-</section>
-
-<section aria-labelledby="advantages">
     <div class="container section-shell section-shell--stack">
-        <div class="section-heading">
-            <span class="section-heading__eyebrow">Alasan Memilih Kami</span>
-            <h2 id="advantages" class="section-heading__title">Keunggulan Perusahaan</h2>
+        <div class="section-heading section-heading--left" data-aos="fade-up">
+            <h2 class="section-heading__title">Why Choose Us</h2>
+            <p class="section-heading__text">We deliver comprehensive recruitment solutions with a data-driven and technology-enabled approach to ensure your organization's success.</p>
         </div>
-        <ul class="list list--grid list--numbered">
-            <li><span>1</span><div>Proses cepat dan efisien untuk mengisi posisi kritikal.</div></li>
-            <li><span>2</span><div>Standar kualitas kandidat yang tinggi dan relevan.</div></li>
-            <li><span>3</span><div>Pengambilan keputusan berbasis data dan insight pasar terkini.</div></li>
-            <li><span>4</span><div>Jangkauan kandidat luas lintas industri dan wilayah.</div></li>
-            <li><span>5</span><div>Personalisasi yang memperhatikan kecocokan budaya.</div></li>
-            <li><span>6</span><div>Transparansi dan akurasi tinggi dalam setiap proses.</div></li>
-            <li><span>7</span><div>Analisis pasar tenaga kerja untuk strategi rekrutmen jangka panjang.</div></li>
-            <li><span>8</span><div>Integrasi mulus dengan sistem HR klien.</div></li>
-            <li><span>9</span><div>Efisiensi biaya berkat proses seleksi yang terukur.</div></li>
-            <li><span>10</span><div>Continuous learning system untuk meningkatkan kualitas layanan.</div></li>
-        </ul>
+        <div class="why-us-grid">
+            <article class="why-us-card" data-aos="fade-up" data-aos-delay="50">
+                <div class="why-us-card__icon">
+                    <i class="fa-solid fa-bolt"></i>
+                </div>
+                <h3 class="why-us-card__title">Fast & Efficient Hiring Process</h3>
+            </article>
+            <article class="why-us-card" data-aos="fade-up" data-aos-delay="100">
+                <div class="why-us-card__icon">
+                    <i class="fa-solid fa-star"></i>
+                </div>
+                <h3 class="why-us-card__title">Higher Candidate Quality</h3>
+            </article>
+            <article class="why-us-card" data-aos="fade-up" data-aos-delay="150">
+                <div class="why-us-card__icon">
+                    <i class="fa-solid fa-chart-line"></i>
+                </div>
+                <h3 class="why-us-card__title">Data-Driven Decision Making</h3>
+            </article>
+            <article class="why-us-card" data-aos="fade-up" data-aos-delay="200">
+                <div class="why-us-card__icon">
+                    <i class="fa-solid fa-network-wired"></i>
+                </div>
+                <h3 class="why-us-card__title">Wide Talent Network</h3>
+            </article>
+            <article class="why-us-card" data-aos="fade-up" data-aos-delay="250">
+                <div class="why-us-card__icon">
+                    <i class="fa-solid fa-handshake"></i>
+                </div>
+                <h3 class="why-us-card__title">Culture Fit Matching</h3>
+            </article>
+            <article class="why-us-card" data-aos="fade-up" data-aos-delay="300">
+                <div class="why-us-card__icon">
+                    <i class="fa-solid fa-eye"></i>
+                </div>
+                <h3 class="why-us-card__title">Transparent & Accurate</h3>
+            </article>
+            <article class="why-us-card" data-aos="fade-up" data-aos-delay="350">
+                <div class="why-us-card__icon">
+                    <i class="fa-solid fa-lightbulb"></i>
+                </div>
+                <h3 class="why-us-card__title">Labor Market Insights</h3>
+            </article>
+            <article class="why-us-card" data-aos="fade-up" data-aos-delay="400">
+                <div class="why-us-card__icon">
+                    <i class="fa-solid fa-plug"></i>
+                </div>
+                <h3 class="why-us-card__title">HR System Integration</h3>
+            </article>
+            <article class="why-us-card" data-aos="fade-up" data-aos-delay="450">
+                <div class="why-us-card__icon">
+                    <i class="fa-solid fa-coins"></i>
+                </div>
+                <h3 class="why-us-card__title">Cost Effective</h3>
+            </article>
+            <article class="why-us-card" data-aos="fade-up" data-aos-delay="500">
+                <div class="why-us-card__icon">
+                    <i class="fa-solid fa-arrow-trend-up"></i>
+                </div>
+                <h3 class="why-us-card__title">Continuous Improvement</h3>
+            </article>
+        </div>
     </div>
 </section>
 
-<section>
-    <div class="container">
-        <div class="cta-banner cta-banner--home">
-            <span class="cta-banner__badge">Talent Intelligence Partner</span>
-            <h2>Siap menemukan talenta terbaik?</h2>
-            <p>Kami hadir sebagai mitra strategis untuk mendukung transformasi talent acquisition perusahaan Anda.</p>
-            <a class="cta-primary cta-primary--glow" href="{{ url('/#contact') }}">Konsultasikan Sekarang</a>
-        </div>
-    </div>
-</section>
+
 
 <section id="contact">
     <div class="container section-shell contact-section">
-        <div class="section-heading section-heading--left contact-section__heading">
-            <span class="section-heading__eyebrow">Hubungi Kami</span>
-            <h2 class="section-heading__title">Mulai Kolaborasi Bersama Anagata Executive</h2>
-            <p class="section-heading__text">Kirimkan kebutuhan talent acquisition Anda. Tim kami siap membantu menyusun solusi yang paling tepat untuk organisasi Anda.</p>
+        <div class="section-heading contact-section__heading" data-aos="fade-up">
+            <h2 class="section-heading__title">Talk to US</h2>
+            <p class="section-heading__text">Let us help you find the people who will shape your success. Contact us today</p>
         </div>
         <div class="contact-section__grid">
-            <div class="card card--form">
+            <div class="card card--form" data-aos="fade-up" data-aos-delay="100">
             @if (session('status'))
                 <div class="alert alert--success" role="status">
                     {{ session('status') }}
@@ -199,38 +174,52 @@
 
             <form action="{{ url('/contact') }}" method="POST" novalidate>
                 @csrf
-                <div class="form-field">
-                    <label for="name">Nama</label>
-                    <div class="input-with-icon">
-                        <span class="input-icon" aria-hidden="true">
-                            <i class="fa-solid fa-user"></i>
-                        </span>
-                        <input id="name" type="text" name="name" value="{{ old('name') }}" placeholder="Masukkan nama Anda" required autocomplete="name">
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label for="first_name">First Name</label>
+                        <div class="input-with-icon">
+                            <span class="input-icon" aria-hidden="true">
+                                <i class="fa-solid fa-user"></i>
+                            </span>
+                            <input id="first_name" type="text" name="first_name" value="{{ old('first_name') }}" placeholder="Enter your first name" required autocomplete="given-name">
+                        </div>
+                        @error('first_name')
+                            <p class="form-error">{{ $message }}</p>
+                        @enderror
                     </div>
-                    @error('name')
-                        <p class="form-error">{{ $message }}</p>
-                    @enderror
-                </div>
-                <div class="form-field">
-                    <label for="email">Email</label>
-                    <div class="input-with-icon">
-                        <span class="input-icon" aria-hidden="true">
-                            <i class="fa-solid fa-envelope"></i>
-                        </span>
-                        <input id="email" type="email" name="email" value="{{ old('email') }}" placeholder="nama@perusahaan.com" required autocomplete="email">
+                    <div class="form-field">
+                        <label for="last_name">Last Name</label>
+                        <div class="input-with-icon">
+                            <span class="input-icon" aria-hidden="true">
+                                <i class="fa-solid fa-user"></i>
+                            </span>
+                            <input id="last_name" type="text" name="last_name" value="{{ old('last_name') }}" placeholder="Enter your last name" required autocomplete="family-name">
+                        </div>
+                        @error('last_name')
+                            <p class="form-error">{{ $message }}</p>
+                        @enderror
                     </div>
-                    @error('email')
-                        <p class="form-error">{{ $message }}</p>
-                    @enderror
                 </div>
                 <div class="form-grid">
                     <div class="form-field">
-                        <label for="phone">Telepon (opsional)</label>
+                        <label for="email">Email Address</label>
+                        <div class="input-with-icon">
+                            <span class="input-icon" aria-hidden="true">
+                                <i class="fa-solid fa-envelope"></i>
+                            </span>
+                            <input id="email" type="email" name="email" value="{{ old('email') }}" placeholder="Enter your email address" required autocomplete="email">
+                        </div>
+                        @error('email')
+                            <p class="form-error">{{ $message }}</p>
+                        @enderror
+                    </div>
+                    <div class="form-field">
+                        <label for="phone">Phone Number</label>
                         <div class="input-with-icon">
                             <span class="input-icon" aria-hidden="true">
                                 <i class="fa-solid fa-phone"></i>
                             </span>
-                            <input id="phone" type="text" name="phone" value="{{ old('phone') }}" placeholder="Nomor yang bisa dihubungi" autocomplete="tel">
+                            <input id="phone" type="text" name="phone" value="{{ old('phone') }}" placeholder="Enter your phone number" autocomplete="tel">
                         </div>
                         @error('phone')
                             <p class="form-error">{{ $message }}</p>
@@ -238,35 +227,21 @@
                     </div>
                 </div>
                 <div class="form-field">
-                    <label for="message">Pesan</label>
+                    <label for="message">Message</label>
                     <div class="input-with-icon textarea-with-icon">
-                        <span class="input-icon" aria-hidden="true">
+                        <!-- <span class="input-icon" aria-hidden="true">
                             <i class="fa-solid fa-comment-dots"></i>
-                        </span>
-                        <textarea id="message" name="message" placeholder="Ceritakan kebutuhan talent Anda" required rows="4">{{ old('message') }}</textarea>
+                        </span> -->
+                        <textarea id="message" name="message" placeholder="Tell us about your needs" required rows="4">{{ old('message') }}</textarea>
                     </div>
                     @error('message')
                         <p class="form-error">{{ $message }}</p>
                     @enderror
                 </div>
-                <p class="form-helper">Kami biasanya merespons dalam 1 hari kerja.</p>
-                <button type="submit" class="cta-primary">Kirim Pesan</button>
+                <button type="submit" class="cta-primary">Send Message</button>
             </form>
             </div>
-            <aside class="info-card contact-info" aria-label="Informasi kontak perusahaan">
-                <div>
-                    <h3>Kantor Pusat</h3>
-                    <p>Jl. [Nama Jalan], Jakarta, Indonesia</p>
-                </div>
-                <div class="contact-list">
-                    <p><strong>Telepon:</strong> +62 [Nomor]</p>
-                    <p><strong>Email:</strong> info@anagataexecutive.com</p>
-                </div>
-                <div>
-                    <h3>Lokasi Kantor</h3>
-                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.812526675196!2d106.81666651086821!3d-6.151341759427834!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNsKwMDknMDQuOCJTIDEwNsKwNDknMDQuMCJF!5e0!3m2!1sen!2sid!4v1731234567890" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Lokasi kantor Anagata Executive"></iframe>
-                </div>
-            </aside>
+            
         </div>
     </div>
 </section>
