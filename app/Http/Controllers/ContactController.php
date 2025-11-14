@@ -60,19 +60,29 @@ class ContactController extends Controller
         $whatsappUrl = null;
         if (!empty($whatsappPhone)) {
             try {
+                // Log the phone number for debugging
+                Log::info('WhatsApp phone number from config', ['phone' => $whatsappPhone, 'length' => strlen($whatsappPhone)]);
+                
                 $whatsappMessage = $this->whatsappService->formatContactMessage($data);
                 $whatsappUrl = $this->whatsappService->generateWhatsAppUrl($whatsappPhone, $whatsappMessage);
+                
+                // Log the generated URL (without message for privacy)
+                Log::info('WhatsApp URL generated successfully', ['url_base' => parse_url($whatsappUrl, PHP_URL_SCHEME) . '://' . parse_url($whatsappUrl, PHP_URL_HOST) . parse_url($whatsappUrl, PHP_URL_PATH)]);
             } catch (\Exception $e) {
-                Log::error('WhatsApp URL generation error: ' . $e->getMessage());
+                Log::error('WhatsApp URL generation error: ' . $e->getMessage(), [
+                    'phone' => $whatsappPhone,
+                    'phone_length' => strlen($whatsappPhone ?? ''),
+                    'trace' => $e->getTraceAsString(),
+                ]);
             }
         } else {
             Log::warning('WhatsApp recipient phone not configured. Please set WHATSAPP_RECIPIENT_PHONE in .env');
         }
 
         // Try to send email via SMTP (but don't fail if it errors)
-        // Email sending is disabled by default (set ENABLE_CONTACT_EMAIL=true in .env to enable)
+        // Email sending is enabled by default (set ENABLE_CONTACT_EMAIL=false in .env to disable)
         $emailSent = false;
-        $emailEnabled = env('ENABLE_CONTACT_EMAIL', false);
+        $emailEnabled = env('ENABLE_CONTACT_EMAIL', true); // Enabled by default
         
         if ($emailEnabled) {
             try {
