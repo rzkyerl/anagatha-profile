@@ -63,6 +63,30 @@ if [ ! -f .env ]; then
     fi
 fi
 
+# Inject environment variables into .env file if they exist
+# This ensures Railway environment variables are used
+if [ -n "$APP_KEY" ]; then
+    sed -i "s|^APP_KEY=.*|APP_KEY=$APP_KEY|" .env || echo "APP_KEY=$APP_KEY" >> .env
+fi
+if [ -n "$DB_CONNECTION" ]; then
+    sed -i "s|^DB_CONNECTION=.*|DB_CONNECTION=$DB_CONNECTION|" .env || echo "DB_CONNECTION=$DB_CONNECTION" >> .env
+fi
+if [ -n "$DB_HOST" ]; then
+    sed -i "s|^DB_HOST=.*|DB_HOST=$DB_HOST|" .env || echo "DB_HOST=$DB_HOST" >> .env
+fi
+if [ -n "$DB_PORT" ]; then
+    sed -i "s|^DB_PORT=.*|DB_PORT=$DB_PORT|" .env || echo "DB_PORT=$DB_PORT" >> .env
+fi
+if [ -n "$DB_DATABASE" ]; then
+    sed -i "s|^DB_DATABASE=.*|DB_DATABASE=$DB_DATABASE|" .env || echo "DB_DATABASE=$DB_DATABASE" >> .env
+fi
+if [ -n "$DB_USERNAME" ]; then
+    sed -i "s|^DB_USERNAME=.*|DB_USERNAME=$DB_USERNAME|" .env || echo "DB_USERNAME=$DB_USERNAME" >> .env
+fi
+if [ -n "$DB_PASSWORD" ]; then
+    sed -i "s|^DB_PASSWORD=.*|DB_PASSWORD=$DB_PASSWORD|" .env || echo "DB_PASSWORD=$DB_PASSWORD" >> .env
+fi
+
 # Generate APP_KEY if not set
 if ! grep -q "APP_KEY=base64:" .env 2>/dev/null; then
     echo "Generating APP_KEY..."
