@@ -11,7 +11,6 @@ services:
     environment:
       - APP_ENV=${APP_ENV:-local}
       - APP_DEBUG=${APP_DEBUG:-true}
-      - QUEUE_CONNECTION=database
       - DB_CONNECTION=${DB_CONNECTION:-mysql}
       - DB_HOST=${DB_HOST:-db}
       - DB_PORT=${DB_PORT:-3306}
@@ -25,32 +24,6 @@ services:
       - db
     networks:
       - anagatha-network
-
-  queue-worker:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: anagatha-profile-queue
-    command: /queue-worker.sh
-    environment:
-      - APP_ENV=${APP_ENV:-local}
-      - APP_DEBUG=${APP_DEBUG:-true}
-      - QUEUE_CONNECTION=database
-      - DB_CONNECTION=${DB_CONNECTION:-mysql}
-      - DB_HOST=${DB_HOST:-db}
-      - DB_PORT=${DB_PORT:-3306}
-      - DB_DATABASE=${DB_DATABASE:-laravel}
-      - DB_USERNAME=${DB_USERNAME:-root}
-      - DB_PASSWORD=${DB_PASSWORD:-}
-    volumes:
-      - .:/var/www
-      - ./storage:/var/www/storage
-    depends_on:
-      - db
-      - app
-    networks:
-      - anagatha-network
-    restart: unless-stopped
 
   db:
     image: mysql:8.0

@@ -18,30 +18,6 @@ services:
         value: production
       - key: APP_DEBUG
         value: false
-      - key: QUEUE_CONNECTION
-        value: database
     healthCheckPath: /
-    autoDeploy: true
-
-  - type: worker
-    name: anagatha-profile-queue
-    env: php
-    rootDir: public
-    buildCommand: |
-      composer install --no-dev --optimize-autoloader &&
-      npm ci &&
-      npm run build &&
-      rm -rf node_modules &&
-      php artisan config:cache &&
-      php artisan route:cache &&
-      php artisan view:cache
-    startCommand: php artisan queue:work --sleep=3 --tries=3 --max-time=3600
-    envVars:
-      - key: APP_ENV
-        value: production
-      - key: APP_DEBUG
-        value: false
-      - key: QUEUE_CONNECTION
-        value: database
     autoDeploy: true
 

@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Jobs\SendContactEmail;
+use App\Mail\ContactMessage;
 use App\Services\WhatsAppService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class ContactController extends Controller
 {
@@ -67,7 +68,7 @@ class ContactController extends Controller
             }
         }
 
-        // Send email via queue/job (async - faster response for user)
+        // Send email directly (synchronous)
         // Email sending is enabled by default (set ENABLE_CONTACT_EMAIL=false in .env to disable)
         $emailSent = false;
         $emailEnabled = env('ENABLE_CONTACT_EMAIL', true); // Enabled by default
@@ -77,16 +78,20 @@ class ContactController extends Controller
                 // Use MAIL_FROM_ADDRESS as recipient (or set MAIL_TO_ADDRESS in .env)
                 $recipient = env('MAIL_TO_ADDRESS', config('mail.from.address'));
                 
-                // Dispatch email job to queue (runs in background - faster response)
-                SendContactEmail::dispatch($data, $recipient);
-                $emailSent = true; // Consider it sent (will be processed in background)
+                // Send email directly
+                Mail::to($recipient)->send(new ContactMessage($data));
+                $emailSent = true;
+                Log::info('Contact form email sent successfully', [
+                    'recipient' => $recipient,
+                    'name' => $data['name'],
+                ]);
             } catch (\Exception $e) {
-                Log::error('Email queue error: ' . $e->getMessage(), [
+                Log::error('Email send error: ' . $e->getMessage(), [
                     'data' => $data,
                     'recipient' => $recipient ?? 'not set',
                     'trace' => $e->getTraceAsString(),
                 ]);
-                // Continue even if email queue fails - WhatsApp will still work
+                // Continue even if email fails - WhatsApp will still work
             }
         } else {
             // Email sending is disabled - code remains but won't execute

@@ -48,7 +48,6 @@ RUN cat > /start.sh << 'EOF'
 #!/bin/bash
 
 echo "Starting Laravel application..."
-echo "SERVICE_TYPE: ${SERVICE_TYPE:-web}"
 echo "PORT: ${PORT:-8000}"
 
 # Wait for .env to be available
@@ -111,7 +110,7 @@ if ! grep -q "APP_KEY=base64:" .env 2>/dev/null; then
     php artisan key:generate --force 2>&1 || echo "Warning: key:generate failed, continuing..."
 fi
 
-# Run migrations (for queue table)
+# Run migrations
 php artisan migrate --force 2>&1 || echo "Warning: migrate failed, continuing..."
 
 # Clear any cached config first
@@ -131,17 +130,11 @@ fi
 chmod -R 775 storage bootstrap/cache 2>&1 || true
 chown -R www-data:www-data storage bootstrap/cache 2>&1 || true
 
-# Check if this is a queue worker service
-if [ "${SERVICE_TYPE}" = "worker" ]; then
-    echo "Starting queue worker..."
-    echo "Queue connection: ${QUEUE_CONNECTION:-database}"
-    exec php artisan queue:work --sleep=3 --tries=3 --max-time=3600 --timeout=60
-else
-    echo "Starting PHP built-in server on port ${PORT:-8000}..."
-    echo "Server will be available at http://0.0.0.0:${PORT:-8000}"
-    # Start PHP built-in server (use exec to replace shell process)
-    exec php artisan serve --host=0.0.0.0 --port=${PORT:-8000} 2>&1
-fi
+# Start PHP built-in server
+echo "Starting PHP built-in server on port ${PORT:-8000}..."
+echo "Server will be available at http://0.0.0.0:${PORT:-8000}"
+# Start PHP built-in server (use exec to replace shell process)
+exec php artisan serve --host=0.0.0.0 --port=${PORT:-8000} 2>&1
 EOF
 RUN chmod +x /start.sh
 
