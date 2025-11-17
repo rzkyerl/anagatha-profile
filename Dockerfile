@@ -57,70 +57,13 @@ echo "User: $(whoami)"
 echo "PORT: ${PORT:-8000}"
 echo "=========================================="
 
-# Wait for .env to be available
-if [ ! -f .env ]; then
-    echo "Warning: .env file not found. Creating from .env.example..."
-    if [ -f .env.example ]; then
-        cp .env.example .env
-        echo "Created .env from .env.example"
-    else
-        echo "Error: .env.example not found!"
-        exit 1
-    fi
+# Log critical env that must exist
+if [ -z "${APP_KEY:-}" ]; then
+    echo "ERROR: APP_KEY is not set in the environment."
+    exit 1
 fi
 
-# Inject environment variables into .env file if they exist
-# This ensures Railway environment variables are used
-# Function to safely inject env var (handles values with spaces)
-inject_env_var() {
-    local var_name=$1
-    local var_value=$2
-    if [ -n "$var_value" ]; then
-        # Quote value if it contains spaces or special characters
-        local formatted_value="$var_value"
-        if echo "$var_value" | grep -qE '[[:space:]"#]'; then
-            # Escape quotes in value and wrap in quotes
-            formatted_value=$(echo "$var_value" | sed 's/"/\\"/g')
-            formatted_value="\"${formatted_value}\""
-        fi
-        # Remove existing line and add new one (safer than sed replacement)
-        if grep -q "^${var_name}=" .env 2>/dev/null; then
-            grep -v "^${var_name}=" .env > .env.tmp 2>/dev/null && mv .env.tmp .env || true
-        fi
-        echo "${var_name}=${formatted_value}" >> .env
-        echo "  - ${var_name} injected"
-    else
-        echo "  - ${var_name} not found in environment"
-    fi
-}
-
-echo "Injecting environment variables into .env file..."
-inject_env_var "APP_KEY" "$APP_KEY"
-inject_env_var "GOOGLE_SHEET_ID" "$GOOGLE_SHEET_ID"
-inject_env_var "GOOGLE_SHEET_NAME" "$GOOGLE_SHEET_NAME"
-
-# Inject GOOGLE_CREDENTIALS_JSON (JSON string needs special handling)
-if [ -n "$GOOGLE_CREDENTIALS_JSON" ]; then
-    # Remove existing line
-    if grep -q "^GOOGLE_CREDENTIALS_JSON=" .env 2>/dev/null; then
-        grep -v "^GOOGLE_CREDENTIALS_JSON=" .env > .env.tmp 2>/dev/null && mv .env.tmp .env || true
-    fi
-    # JSON strings need to be properly escaped and quoted
-    # Escape backslashes first, then quotes, then wrap in quotes
-    escaped_json=$(echo "$GOOGLE_CREDENTIALS_JSON" | sed 's/\\/\\\\/g' | sed 's/"/\\"/g')
-    echo "GOOGLE_CREDENTIALS_JSON=\"${escaped_json}\"" >> .env
-    echo "  - GOOGLE_CREDENTIALS_JSON injected"
-else
-    echo "  - GOOGLE_CREDENTIALS_JSON not found in environment"
-fi
-
-# Generate APP_KEY if not set
-if ! grep -q "APP_KEY=base64:" .env 2>/dev/null; then
-    echo "Generating APP_KEY..."
-    php artisan key:generate --force 2>&1 || echo "Warning: key:generate failed, continuing..."
-fi
-
-# Clear any cached config FIRST (before injecting env vars)
+# Clear any cached config FIRST
 php artisan config:clear 2>&1 || true
 php artisan route:clear 2>&1 || true
 php artisan view:clear 2>&1 || true
@@ -128,23 +71,19 @@ php artisan view:clear 2>&1 || true
 # Regenerate autoload to ensure all classes are available
 composer dump-autoload --optimize --no-interaction 2>&1 || echo "Warning: composer dump-autoload failed, continuing..."
 
-# Run migrations (after env vars are injected)
+# Run migrations (safe to skip if DB not available)
 php artisan migrate --force 2>&1 || echo "Warning: migrate failed, continuing..."
 
-# IMPORTANT: Cache config AFTER environment variables are injected
-# This ensures Laravel reads from environment variables, not cached .env values
-if [ -f .env ]; then
-    echo "Caching Laravel configuration (after env vars injected)..."
-    php artisan config:cache 2>&1 || {
-        echo "WARNING: config:cache failed, clearing and continuing without cache..."
-        php artisan config:clear 2>&1 || true
-    }
-    php artisan route:cache 2>&1 || {
-        echo "WARNING: route:cache failed, clearing route cache..."
-        php artisan route:clear 2>&1 || true
-    }
-    php artisan view:cache 2>&1 || echo "Warning: view:cache failed, continuing..."
-fi
+echo "Caching Laravel configuration..."
+php artisan config:cache 2>&1 || {
+    echo "WARNING: config:cache failed, clearing and continuing without cache..."
+    php artisan config:clear 2>&1 || true
+}
+php artisan route:cache 2>&1 || {
+    echo "WARNING: route:cache failed, clearing route cache..."
+    php artisan route:clear 2>&1 || true
+}
+php artisan view:cache 2>&1 || echo "Warning: view:cache failed, continuing..."
 
 # Ensure storage is writable
 chmod -R 775 storage bootstrap/cache 2>&1 || true
