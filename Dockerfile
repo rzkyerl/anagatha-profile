@@ -71,37 +71,17 @@ if [ -n "$APP_KEY" ]; then
 else
     echo "  - APP_KEY not found in environment"
 fi
-if [ -n "$DB_CONNECTION" ]; then
-    sed -i "s|^DB_CONNECTION=.*|DB_CONNECTION=$DB_CONNECTION|" .env 2>/dev/null || echo "DB_CONNECTION=$DB_CONNECTION" >> .env
-    echo "  - DB_CONNECTION injected"
-fi
-if [ -n "$DB_HOST" ]; then
-    sed -i "s|^DB_HOST=.*|DB_HOST=$DB_HOST|" .env 2>/dev/null || echo "DB_HOST=$DB_HOST" >> .env
-    echo "  - DB_HOST injected: $DB_HOST"
+if [ -n "$GOOGLE_SHEET_ID" ]; then
+    sed -i "s|^GOOGLE_SHEET_ID=.*|GOOGLE_SHEET_ID=$GOOGLE_SHEET_ID|" .env 2>/dev/null || echo "GOOGLE_SHEET_ID=$GOOGLE_SHEET_ID" >> .env
+    echo "  - GOOGLE_SHEET_ID injected"
 else
-    echo "  - DB_HOST not found in environment"
+    echo "  - GOOGLE_SHEET_ID not found in environment"
 fi
-if [ -n "$DB_PORT" ]; then
-    sed -i "s|^DB_PORT=.*|DB_PORT=$DB_PORT|" .env 2>/dev/null || echo "DB_PORT=$DB_PORT" >> .env
-    echo "  - DB_PORT injected: $DB_PORT"
-fi
-if [ -n "$DB_DATABASE" ]; then
-    sed -i "s|^DB_DATABASE=.*|DB_DATABASE=$DB_DATABASE|" .env 2>/dev/null || echo "DB_DATABASE=$DB_DATABASE" >> .env
-    echo "  - DB_DATABASE injected"
+if [ -n "$GOOGLE_SHEET_NAME" ]; then
+    sed -i "s|^GOOGLE_SHEET_NAME=.*|GOOGLE_SHEET_NAME=$GOOGLE_SHEET_NAME|" .env 2>/dev/null || echo "GOOGLE_SHEET_NAME=$GOOGLE_SHEET_NAME" >> .env
+    echo "  - GOOGLE_SHEET_NAME injected"
 else
-    echo "  - DB_DATABASE not found in environment"
-fi
-if [ -n "$DB_USERNAME" ]; then
-    sed -i "s|^DB_USERNAME=.*|DB_USERNAME=$DB_USERNAME|" .env 2>/dev/null || echo "DB_USERNAME=$DB_USERNAME" >> .env
-    echo "  - DB_USERNAME injected"
-else
-    echo "  - DB_USERNAME not found in environment"
-fi
-if [ -n "$DB_PASSWORD" ]; then
-    sed -i "s|^DB_PASSWORD=.*|DB_PASSWORD=$DB_PASSWORD|" .env 2>/dev/null || echo "DB_PASSWORD=$DB_PASSWORD" >> .env
-    echo "  - DB_PASSWORD injected"
-else
-    echo "  - DB_PASSWORD not found in environment"
+    echo "  - GOOGLE_SHEET_NAME not found in environment"
 fi
 
 # Generate APP_KEY if not set
@@ -110,10 +90,7 @@ if ! grep -q "APP_KEY=base64:" .env 2>/dev/null; then
     php artisan key:generate --force 2>&1 || echo "Warning: key:generate failed, continuing..."
 fi
 
-# Run migrations
-php artisan migrate --force 2>&1 || echo "Warning: migrate failed, continuing..."
-
-# Clear any cached config first
+# Clear any cached config FIRST (before injecting env vars)
 php artisan config:clear 2>&1 || true
 php artisan route:clear 2>&1 || true
 php artisan view:clear 2>&1 || true
@@ -121,9 +98,13 @@ php artisan view:clear 2>&1 || true
 # Regenerate autoload to ensure all classes are available
 composer dump-autoload --optimize --no-interaction 2>&1 || echo "Warning: composer dump-autoload failed, continuing..."
 
-# Cache Laravel config (only if .env exists and valid)
+# Run migrations (after env vars are injected)
+php artisan migrate --force 2>&1 || echo "Warning: migrate failed, continuing..."
+
+# IMPORTANT: Cache config AFTER environment variables are injected
+# This ensures Laravel reads from environment variables, not cached .env values
 if [ -f .env ]; then
-    echo "Caching Laravel configuration..."
+    echo "Caching Laravel configuration (after env vars injected)..."
     php artisan config:cache 2>&1 || echo "Warning: config:cache failed, continuing..."
     php artisan route:cache 2>&1 || echo "Warning: route:cache failed, continuing..."
     php artisan view:cache 2>&1 || echo "Warning: view:cache failed, continuing..."
