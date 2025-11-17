@@ -99,6 +99,21 @@ inject_env_var "APP_KEY" "$APP_KEY"
 inject_env_var "GOOGLE_SHEET_ID" "$GOOGLE_SHEET_ID"
 inject_env_var "GOOGLE_SHEET_NAME" "$GOOGLE_SHEET_NAME"
 
+# Inject GOOGLE_CREDENTIALS_JSON (JSON string needs special handling)
+if [ -n "$GOOGLE_CREDENTIALS_JSON" ]; then
+    # Remove existing line
+    if grep -q "^GOOGLE_CREDENTIALS_JSON=" .env 2>/dev/null; then
+        grep -v "^GOOGLE_CREDENTIALS_JSON=" .env > .env.tmp 2>/dev/null && mv .env.tmp .env || true
+    fi
+    # JSON strings need to be properly escaped and quoted
+    # Escape backslashes first, then quotes, then wrap in quotes
+    escaped_json=$(echo "$GOOGLE_CREDENTIALS_JSON" | sed 's/\\/\\\\/g' | sed 's/"/\\"/g')
+    echo "GOOGLE_CREDENTIALS_JSON=\"${escaped_json}\"" >> .env
+    echo "  - GOOGLE_CREDENTIALS_JSON injected"
+else
+    echo "  - GOOGLE_CREDENTIALS_JSON not found in environment"
+fi
+
 # Generate APP_KEY if not set
 if ! grep -q "APP_KEY=base64:" .env 2>/dev/null; then
     echo "Generating APP_KEY..."
