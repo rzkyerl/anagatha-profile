@@ -22,7 +22,9 @@
         const hide = function () {
             toast.classList.add('toast--hiding');
             setTimeout(function () {
-                toast.remove();
+                if (toast.parentNode) {
+                    toast.remove();
+                }
             }, 350);
         };
 
@@ -37,6 +39,16 @@
                 hide();
             });
         }
+    }
+
+    // Also check for toast after a short delay (for redirects)
+    function checkForToast() {
+        setTimeout(function () {
+            const toastStack = document.querySelector('[data-toast]');
+            if (toastStack && !toastStack.querySelector('.toast--visible')) {
+                initToast();
+            }
+        }, 100);
     }
 
     function initFormGuard() {
@@ -82,9 +94,22 @@
             el.addEventListener('blur', updateSubmitState);
         });
 
-        form.addEventListener('submit', function () {
+        let isSubmitting = false;
+        
+        form.addEventListener('submit', function (e) {
+            if (isSubmitting) {
+                e.preventDefault();
+                return false;
+            }
+
+            isSubmitting = true;
             submitBtn.disabled = true;
             submitBtn.classList.add('is-disabled');
+
+            // Reset submitting flag after 3 seconds (in case of error)
+            setTimeout(function () {
+                isSubmitting = false;
+            }, 3000);
         });
     }
 
@@ -106,14 +131,21 @@
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', function() {
             initToast();
+            checkForToast();
             initFormGuard();
             initAutoHideAlerts();
         });
     } else {
         // DOM is already ready
         initToast();
+        checkForToast();
         initFormGuard();
         initAutoHideAlerts();
     }
+
+    // Also check on page show (for back/forward navigation)
+    window.addEventListener('pageshow', function() {
+        initToast();
+    });
 })();
 

@@ -10,13 +10,21 @@
                 <div class="toast__icon">
                     @if (session('toast_type', 'success') === 'success')
                         <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
+                    @elseif (session('toast_type') === 'warning')
+                        <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
                     @else
                         <i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i>
                     @endif
                 </div>
                 <div class="toast__body">
                     <p class="toast__title">
-                        {{ session('toast_type', 'success') === 'success' ? 'Success' : 'Something went wrong' }}
+                        @if (session('toast_type', 'success') === 'success')
+                            Success
+                        @elseif (session('toast_type') === 'warning')
+                            Warning
+                        @else
+                            Something went wrong
+                        @endif
                     </p>
                     <p class="toast__message">{{ session('status') }}</p>
                 </div>
@@ -280,9 +288,9 @@
                         <div class="form-field">
                             <label for="message">Message</label>
                             <div class="input-with-icon textarea-with-icon">
-                                <!-- <span class="input-icon" aria-hidden="true">
+                                <span class="input-icon" aria-hidden="true">
                                 <i class="fa-solid fa-comment-dots"></i>
-                            </span> -->
+                            </span>
                                 <textarea id="message" name="message" placeholder="Tell us about your needs" required rows="4">{{ old('message') }}</textarea>
                             </div>
                             @error('message')

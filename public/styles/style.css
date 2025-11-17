@@ -266,7 +266,7 @@ body.nav-open {
 }
 
 .nav-links a {
-    font-size: 0.95rem;
+    font-size: 1.05rem;
     font-weight: 500;
     color: var(--text-500);
     position: relative;
@@ -740,12 +740,16 @@ textarea {
     resize: vertical;
     min-height: 150px;
     border-radius: var(--radius-base);
-    padding-inline-start: 1,2rem;
+    padding-inline-start: 1.2rem;
 }
 
 .textarea-with-icon {
     border-radius: var(--radius-base);
     align-items: flex-start;
+}
+
+.textarea-with-icon .input-icon {
+    top: 1.15rem;
 }
 
 .form-helper {
@@ -899,6 +903,15 @@ textarea {
     color: #ffffff;
 }
 
+.toast--warning {
+    border-color: rgba(234, 179, 8, 0.18);
+}
+
+.toast--warning .toast__icon {
+    background: radial-gradient(circle at 20% 20%, #fef3c7, #eab308);
+    color: #ffffff;
+}
+
 @media (max-width: 640px) {
     .toast-stack {
         top: 1rem;
@@ -984,8 +997,9 @@ footer {
     width: 1.2rem;
 }
 
-.footer-contact a::hover {
-    border-bottom: 1px solid var(--brand-200);
+.footer-contact a:hover {
+    text-decoration: underline;
+    color: #ffffff;
 }
 
 .footer-bottom {

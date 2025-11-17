@@ -53,7 +53,7 @@ class GoogleSheetService
                 $data['email'] ?? '',
                 $data['phone'] ?? '',
                 $data['message'] ?? '',
-                now()->toDateTimeString(),
+                now('Asia/Jakarta')->toDateTimeString(),
             ]];
 
             $body = new ValueRange([

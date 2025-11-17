@@ -48,20 +48,43 @@ class ContactController extends Controller
                 ->with('toast_type', 'success');
         }
 
+        // XSS detection BEFORE validation - check for script tags or javascript:
+        $allInputs = implode(' ', array_filter([
+            $request->input('first_name'),
+            $request->input('last_name'),
+            $request->input('email'),
+            $request->input('phone'),
+            $request->input('message'),
+        ]));
+        $xssPatterns = ['<script', 'javascript:', 'onerror=', 'onload=', 'onclick=', 'onmouseover=', '<img', 'onerror'];
+        foreach ($xssPatterns as $pattern) {
+            if (stripos($allInputs, $pattern) !== false) {
+                Log::warning('XSS attempt detected in contact form', [
+                    'ip' => $request->ip(),
+                    'user_agent' => $request->userAgent(),
+                    'pattern' => $pattern,
+                ]);
+                return back()
+                    ->with('status', 'Invalid characters detected in your message. Please use only plain text and avoid special characters like < > or script tags.')
+                    ->with('toast_type', 'warning')
+                    ->withInput();
+            }
+        }
+
         $validated = $request->validate([
-            'first_name' => ['required', 'string', 'min:2', 'max:60'],
-            'last_name' => ['required', 'string', 'min:2', 'max:60'],
+            'first_name' => ['required', 'string', 'min:2', 'max:60', 'regex:/^[^<>]*$/'],
+            'last_name' => ['required', 'string', 'min:2', 'max:60', 'regex:/^[^<>]*$/'],
             'email' => ['required', 'email', 'max:150'],
-            'phone' => ['nullable', 'string', 'max:50'],
-            'message' => ['required', 'string', 'min:10', 'max:2000'],
+            'phone' => ['nullable', 'string', 'max:50', 'regex:/^[^<>]*$/'],
+            'message' => ['required', 'string', 'min:10', 'max:2000', 'regex:/^[^<>]*$/'],
         ]);
 
-        // Combine first_name and last_name into name
+        // Sanitize input - strip any remaining HTML tags and trim whitespace
         $data = [
-            'name' => trim($validated['first_name'] . ' ' . $validated['last_name']),
-            'email' => $validated['email'],
-            'phone' => $validated['phone'] ?? '',
-            'message' => $validated['message'],
+            'name' => trim(strip_tags($validated['first_name'] . ' ' . $validated['last_name'])),
+            'email' => filter_var($validated['email'], FILTER_SANITIZE_EMAIL),
+            'phone' => $validated['phone'] ? trim(strip_tags($validated['phone'])) : '',
+            'message' => trim(strip_tags($validated['message'])),
         ];
 
         // Submit directly to Google Sheets via Service Account
