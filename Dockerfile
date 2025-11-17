@@ -46,9 +46,16 @@ EXPOSE 8000
 # Create startup script
 RUN cat > /start.sh << 'EOF'
 #!/bin/bash
+# Ensure we exit on critical errors, but continue on warnings
+set -u  # Exit on undefined variables
 
-echo "Starting Laravel application..."
+echo "=========================================="
+echo "LARAVEL STARTUP SCRIPT STARTED"
+echo "Timestamp: $(date)"
+echo "Working Directory: $(pwd)"
+echo "User: $(whoami)"
 echo "PORT: ${PORT:-8000}"
+echo "=========================================="
 
 # Wait for .env to be available
 if [ ! -f .env ]; then
@@ -146,10 +153,16 @@ echo "Health check endpoint: http://0.0.0.0:$PORT/health"
 echo "=========================================="
 
 # Use exec to replace shell process and ensure proper signal handling
-exec php artisan serve --host=0.0.0.0 --port=$PORT
+echo "About to start PHP server..."
+echo "Command: php artisan serve --host=0.0.0.0 --port=$PORT"
+echo "=========================================="
+
+# Start the server - this will replace the current process
+exec php artisan serve --host=0.0.0.0 --port=$PORT 2>&1
 EOF
 RUN chmod +x /start.sh
 
 # Start PHP built-in server (Railway sets PORT automatically)
-CMD ["/start.sh"]
+# Use bash explicitly to ensure script runs and output is visible
+CMD ["/bin/bash", "/start.sh"]
 
