@@ -71,25 +71,33 @@ fi
 
 # Inject environment variables into .env file if they exist
 # This ensures Railway environment variables are used
+# Function to safely inject env var (handles values with spaces)
+inject_env_var() {
+    local var_name=$1
+    local var_value=$2
+    if [ -n "$var_value" ]; then
+        # Quote value if it contains spaces or special characters
+        local formatted_value="$var_value"
+        if echo "$var_value" | grep -qE '[[:space:]"#]'; then
+            # Escape quotes in value and wrap in quotes
+            formatted_value=$(echo "$var_value" | sed 's/"/\\"/g')
+            formatted_value="\"${formatted_value}\""
+        fi
+        # Remove existing line and add new one (safer than sed replacement)
+        if grep -q "^${var_name}=" .env 2>/dev/null; then
+            grep -v "^${var_name}=" .env > .env.tmp 2>/dev/null && mv .env.tmp .env || true
+        fi
+        echo "${var_name}=${formatted_value}" >> .env
+        echo "  - ${var_name} injected"
+    else
+        echo "  - ${var_name} not found in environment"
+    fi
+}
+
 echo "Injecting environment variables into .env file..."
-if [ -n "$APP_KEY" ]; then
-    sed -i "s|^APP_KEY=.*|APP_KEY=$APP_KEY|" .env 2>/dev/null || echo "APP_KEY=$APP_KEY" >> .env
-    echo "  - APP_KEY injected"
-else
-    echo "  - APP_KEY not found in environment"
-fi
-if [ -n "$GOOGLE_SHEET_ID" ]; then
-    sed -i "s|^GOOGLE_SHEET_ID=.*|GOOGLE_SHEET_ID=$GOOGLE_SHEET_ID|" .env 2>/dev/null || echo "GOOGLE_SHEET_ID=$GOOGLE_SHEET_ID" >> .env
-    echo "  - GOOGLE_SHEET_ID injected"
-else
-    echo "  - GOOGLE_SHEET_ID not found in environment"
-fi
-if [ -n "$GOOGLE_SHEET_NAME" ]; then
-    sed -i "s|^GOOGLE_SHEET_NAME=.*|GOOGLE_SHEET_NAME=$GOOGLE_SHEET_NAME|" .env 2>/dev/null || echo "GOOGLE_SHEET_NAME=$GOOGLE_SHEET_NAME" >> .env
-    echo "  - GOOGLE_SHEET_NAME injected"
-else
-    echo "  - GOOGLE_SHEET_NAME not found in environment"
-fi
+inject_env_var "APP_KEY" "$APP_KEY"
+inject_env_var "GOOGLE_SHEET_ID" "$GOOGLE_SHEET_ID"
+inject_env_var "GOOGLE_SHEET_NAME" "$GOOGLE_SHEET_NAME"
 
 # Generate APP_KEY if not set
 if ! grep -q "APP_KEY=base64:" .env 2>/dev/null; then
