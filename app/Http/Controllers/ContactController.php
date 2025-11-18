@@ -94,20 +94,28 @@ class ContactController extends Controller
         } catch (\RuntimeException $e) {
             // Handle configuration errors (missing credentials or env vars)
             $errorMsg = $e->getMessage();
-            Log::error('Google Sheets configuration error: ' . $errorMsg, [
+            Log::error('Google Sheets configuration error', [
+                'message' => $errorMsg,
                 'data' => $data,
                 'spreadsheet_id' => config('google_sheets.spreadsheet_id'),
                 'sheet_name' => config('google_sheets.sheet_name'),
+                'has_credentials_json' => !empty(env('GOOGLE_CREDENTIALS_JSON')),
+                'has_credentials_base64' => !empty(env('GOOGLE_CREDENTIALS_BASE64')),
+                'has_credentials_path' => !empty(env('GOOGLE_CREDENTIALS_PATH')),
+                'default_credentials_exists' => file_exists(storage_path('app/google/credentials.json')),
             ]);
             $statusMessage = 'We received your message, but there was a configuration issue. Our team will follow up manually.';
             $toastType = 'error';
         } catch (\Throwable $e) {
             // Handle any other errors
             $errorMsg = $e->getMessage();
-            Log::error('Google Sheets error: ' . $errorMsg, [
-                'data' => $data,
+            Log::error('Google Sheets error', [
+                'message' => $errorMsg,
                 'class' => get_class($e),
                 'code' => $e->getCode(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'data' => $data,
                 'spreadsheet_id' => config('google_sheets.spreadsheet_id'),
                 'sheet_name' => config('google_sheets.sheet_name'),
                 'trace' => $e->getTraceAsString(),
@@ -151,5 +159,47 @@ class ContactController extends Controller
     public function destroy(string $id)
     {
         // Optional: implement if needed
+    }
+
+    /**
+     * Test Google Sheets connection (for debugging)
+     * Only accessible in non-production environment or with proper auth
+     */
+    public function testGoogleSheets()
+    {
+        // Only allow in debug mode or local environment for security
+        if (config('app.env') === 'production' && !config('app.debug')) {
+            abort(404);
+        }
+
+        try {
+            $service = app(GoogleSheetService::class);
+            $result = $service->testConnection();
+
+            // Log the test result
+            if ($result['status'] === 'error') {
+                Log::warning('Google Sheets test connection failed', $result);
+            } else {
+                Log::info('Google Sheets test connection successful', $result);
+            }
+
+            return response()->json($result, $result['status'] === 'error' ? 500 : 200);
+        } catch (\Throwable $e) {
+            Log::error('Google Sheets test connection exception', [
+                'message' => $e->getMessage(),
+                'class' => get_class($e),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to test connection: ' . $e->getMessage(),
+                'details' => [
+                    'class' => get_class($e),
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine(),
+                ],
+            ], 500);
+        }
     }
 }

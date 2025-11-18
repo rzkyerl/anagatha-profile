@@ -140,15 +140,40 @@ class GoogleSheetService
             // Google API specific errors
             $errorDetails = json_decode($e->getMessage(), true);
             $errorMessage = $e->getMessage();
-            if (isset($errorDetails['error']['message'])) {
-                $errorMessage = $errorDetails['error']['message'];
+            $errorCode = $e->getCode();
+            
+            if (isset($errorDetails['error'])) {
+                $errorMessage = $errorDetails['error']['message'] ?? $errorMessage;
+                $errorCode = $errorDetails['error']['code'] ?? $errorCode;
+                $errorReason = $errorDetails['error']['status'] ?? null;
             }
-            Log::error('Google Sheets API error: ' . $errorMessage, [
-                'code' => $e->getCode(),
+
+            // More detailed logging
+            Log::error('Google Sheets API error', [
+                'code' => $errorCode,
+                'message' => $errorMessage,
+                'reason' => $errorReason ?? null,
+                'full_error' => $e->getMessage(),
                 'data' => $data,
                 'spreadsheet_id' => $this->spreadsheetId,
                 'sheet_name' => $this->sheetName,
+                'trace' => $e->getTraceAsString(),
             ]);
+
+            // Common error codes:
+            // 404 = Spreadsheet not found
+            // 403 = Permission denied
+            // 400 = Bad request (invalid range, etc.)
+            if ($errorCode == 403) {
+                Log::critical('Google Sheets permission denied - Service account may not have access to spreadsheet', [
+                    'spreadsheet_id' => $this->spreadsheetId,
+                ]);
+            } elseif ($errorCode == 404) {
+                Log::critical('Google Sheets not found - Check spreadsheet ID', [
+                    'spreadsheet_id' => $this->spreadsheetId,
+                ]);
+            }
+
             return false;
         } catch (\Throwable $e) {
             Log::error('Google Sheets append error', [
@@ -162,5 +187,122 @@ class GoogleSheetService
             ]);
             return false;
         }
+    }
+
+    /**
+     * Test Google Sheets connection and configuration
+     * Returns array with status and error details
+     */
+    public function testConnection(): array
+    {
+        $result = [
+            'status' => 'ok',
+            'message' => 'Connection successful',
+            'details' => [],
+        ];
+
+        try {
+            // Test 1: Check credentials
+            $credentials = $this->resolveCredentials();
+            $result['details']['credentials'] = [
+                'has_client_email' => !empty($credentials['client_email']),
+                'has_private_key' => !empty($credentials['private_key']),
+                'client_email' => $credentials['client_email'] ?? null,
+            ];
+
+            // Test 2: Check spreadsheet ID
+            $result['details']['spreadsheet_id'] = $this->spreadsheetId;
+            $result['details']['sheet_name'] = $this->sheetName;
+
+            // Test 3: Try to read spreadsheet metadata (this will fail if no access)
+            try {
+                $spreadsheet = $this->sheetsService->spreadsheets->get($this->spreadsheetId);
+                $result['details']['spreadsheet'] = [
+                    'title' => $spreadsheet->getProperties()->getTitle(),
+                    'sheets_count' => count($spreadsheet->getSheets()),
+                ];
+            } catch (\Google\Service\Exception $e) {
+                $errorDetails = json_decode($e->getMessage(), true);
+                $errorMessage = $e->getMessage();
+                $errorCode = $e->getCode();
+                
+                if (isset($errorDetails['error'])) {
+                    $errorMessage = $errorDetails['error']['message'] ?? $errorMessage;
+                    $errorCode = $errorDetails['error']['code'] ?? $errorCode;
+                }
+
+                // 404 = Spreadsheet not found or no access
+                // 403 = Permission denied
+                if ($errorCode == 404) {
+                    $result['status'] = 'error';
+                    $result['message'] = 'Spreadsheet not found or service account has no access';
+                    $result['details']['error'] = [
+                        'code' => $errorCode,
+                        'message' => $errorMessage,
+                        'suggestion' => 'Make sure the service account email has access to the spreadsheet',
+                    ];
+                } elseif ($errorCode == 403) {
+                    $result['status'] = 'error';
+                    $result['message'] = 'Permission denied: Service account cannot access the spreadsheet';
+                    $result['details']['error'] = [
+                        'code' => $errorCode,
+                        'message' => $errorMessage,
+                        'suggestion' => 'Share the spreadsheet with the service account email: ' . ($credentials['client_email'] ?? 'N/A'),
+                    ];
+                } else {
+                    $result['status'] = 'error';
+                    $result['message'] = 'Unable to access spreadsheet';
+                    $result['details']['error'] = [
+                        'code' => $errorCode,
+                        'message' => $errorMessage,
+                    ];
+                }
+                return $result;
+            }
+
+            // Test 4: Try to read the sheet to verify it exists
+            try {
+                $response = $this->sheetsService->spreadsheets_values->get(
+                    $this->spreadsheetId,
+                    $this->sheetName . '!A1'
+                );
+                $result['details']['sheet_access'] = 'ok';
+            } catch (\Google\Service\Exception $e) {
+                $errorDetails = json_decode($e->getMessage(), true);
+                $errorMessage = $e->getMessage();
+                
+                if (isset($errorDetails['error']['message'])) {
+                    $errorMessage = $errorDetails['error']['message'];
+                }
+
+                // Sheet not found
+                if (strpos($errorMessage, 'Unable to parse range') !== false || 
+                    strpos($errorMessage, 'does not exist') !== false) {
+                    $result['status'] = 'warning';
+                    $result['message'] = 'Sheet name might be incorrect';
+                    $result['details']['sheet_error'] = $errorMessage;
+                    $result['details']['suggestion'] = 'Check if the sheet name "' . $this->sheetName . '" exists in the spreadsheet';
+                }
+            }
+
+        } catch (\RuntimeException $e) {
+            $result['status'] = 'error';
+            $result['message'] = $e->getMessage();
+            $result['details']['error'] = [
+                'class' => get_class($e),
+                'message' => $e->getMessage(),
+            ];
+        } catch (\Throwable $e) {
+            $result['status'] = 'error';
+            $result['message'] = 'Unexpected error: ' . $e->getMessage();
+            $result['details']['error'] = [
+                'class' => get_class($e),
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+        }
+
+        return $result;
     }
 }

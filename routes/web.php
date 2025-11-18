@@ -9,6 +9,10 @@ Route::get('/health', function () {
     return response()->json(['status' => 'ok', 'timestamp' => now()], 200);
 });
 
+// Google Sheets test endpoint (for debugging)
+Route::get('/test-google-sheets', [ContactController::class, 'testGoogleSheets'])
+    ->name('test.google-sheets');
+
 Route::controller(PageController::class)->group(function () {
     Route::get('/', 'home');
     Route::get('/about', 'about')->name('about');
