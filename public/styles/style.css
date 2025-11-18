@@ -647,11 +647,23 @@ section > .container:not(.hero__layout) {
 .card.card--form .input-with-icon {
     background: rgba(255, 255, 255, 0.95);
     border-color: rgba(255, 255, 255, 0.3);
+    transition: border 0.2s ease, box-shadow 0.2s ease;
 }
 
 .card.card--form .input-with-icon:focus-within {
     border-color: #ffffff;
     box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.3);
+}
+
+.card.card--form .input-with-icon.is-invalid {
+    border-color: #FFB800;
+    box-shadow: 0 0 0 4px rgba(255, 184, 0, 0.35);
+    transition: border 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card.card--form .input-with-icon.is-invalid:focus-within {
+    border-color: #FFB800;
+    box-shadow: 0 0 0 4px rgba(255, 184, 0, 0.45);
 }
 
 .card.card--form .input-icon {
@@ -692,11 +704,14 @@ form {
     display: grid;
     gap: 1rem;
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    align-items: start;
 }
 
 .form-field {
     display: grid;
     gap: 0.6rem;
+    position: relative;
+    min-height: fit-content;
 }
 
 .form-field label {
@@ -712,12 +727,23 @@ form {
     background: #ffffff;
     border: 1px solid var(--border-200);
     padding-inline-start: 3rem;
-    transition: border var(--transition-base), box-shadow var(--transition-base);
+    transition: border 0.2s ease, box-shadow 0.2s ease;
 }
 
 .input-with-icon:focus-within {
     border-color: rgba(128, 10, 10, 0.4);
     box-shadow: 0 0 0 4px rgba(128, 10, 10, 0.18);
+}
+
+.input-with-icon.is-invalid {
+    border-color: #FFB800;
+    box-shadow: 0 0 0 4px rgba(255, 184, 0, 0.2);
+    transition: border 0.3s ease, box-shadow 0.3s ease;
+}
+
+.input-with-icon.is-invalid:focus-within {
+    border-color: #FFB800;
+    box-shadow: 0 0 0 4px rgba(255, 184, 0, 0.3);
 }
 
 .input-with-icon textarea {
@@ -768,6 +794,53 @@ textarea {
     color: #d14d62;
     font-size: 0.85rem;
     font-weight: 500;
+    margin-top: 0.2rem;
+    line-height: 1.4;
+}
+
+.form-error-realtime {
+    color: #FFB800;
+    font-weight: 600;
+    margin-top: 0.2rem;
+    line-height: 1.4;
+    min-height: 1.4rem;
+    opacity: 0;
+    max-height: 0;
+    overflow: hidden;
+    transform: translateY(-4px);
+    transition: opacity 0.3s ease, transform 0.3s ease, max-height 0.3s ease, margin-top 0.3s ease;
+    pointer-events: none;
+}
+
+.form-error-realtime.is-visible {
+    opacity: 1;
+    max-height: 3rem;
+    transform: translateY(0);
+    margin-top: 0.2rem;
+    pointer-events: auto;
+}
+
+.message-counter {
+    font-size: 0.8rem;
+    margin-top: 0.4rem;
+    text-align: right;
+    transition: color 0.2s ease;
+    line-height: 1.4;
+}
+
+.message-counter--below-min {
+    color: #FFB800;
+    font-weight: 600;
+}
+
+.message-counter--valid {
+    color: var(--text-500);
+    font-weight: 500;
+}
+
+.message-counter--over-max {
+    color: #ff0000;
+    font-weight: 600;
 }
 
 .alert {

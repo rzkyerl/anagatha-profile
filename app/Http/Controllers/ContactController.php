@@ -67,10 +67,10 @@ class ContactController extends Controller
         }
 
         $validated = $request->validate([
-            'first_name' => ['required', 'string', 'min:2', 'max:60', 'regex:/^[^<>]*$/'],
-            'last_name' => ['required', 'string', 'min:2', 'max:60', 'regex:/^[^<>]*$/'],
-            'email' => ['required', 'email', 'max:150'],
-            'phone' => ['nullable', 'string', 'max:50', 'regex:/^[^<>]*$/'],
+            'first_name' => ['required', 'string', 'min:4', 'max:60', 'regex:/^[^<>]*$/'],
+            'last_name' => ['nullable', 'string', 'max:60', 'regex:/^[^<>]*$/'],
+            'email' => ['required', 'email', 'max:35'],
+            'phone' => ['required', 'string', 'min:10', 'max:15', 'regex:/^\(\+\d{1,2}\)\s?\d{6,}$/'],
             'message' => ['required', 'string', 'min:10', 'max:2000', 'regex:/^[^<>]*$/'],
         ]);
 

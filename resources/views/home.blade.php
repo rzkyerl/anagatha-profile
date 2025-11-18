@@ -241,13 +241,13 @@
                                 @enderror
                             </div>
                             <div class="form-field">
-                                <label for="last_name">Last Name</label>
+                                <label for="last_name">Last Name (optional)</label>
                                 <div class="input-with-icon">
                                     <span class="input-icon" aria-hidden="true">
                                         <i class="fa-solid fa-user"></i>
                                     </span>
                                     <input id="last_name" type="text" name="last_name"
-                                        value="{{ old('last_name') }}" placeholder="Enter your last name" required
+                                        value="{{ old('last_name') }}" placeholder="Enter your last name"
                                         autocomplete="family-name">
                                 </div>
                                 @error('last_name')
@@ -289,7 +289,7 @@
                                 <span class="input-icon" aria-hidden="true">
                                 <i class="fa-solid fa-comment-dots"></i>
                             </span>
-                                <textarea id="message" name="message" placeholder="Tell us about your needs" required rows="4">{{ old('message') }}</textarea>
+                                <textarea id="message" name="message" placeholder="Tell us about your job interests, skills, experience, or what you're looking for" required rows="4">{{ old('message') }}</textarea>
                             </div>
                             @error('message')
                                 <p class="form-error">{{ $message }}</p>
