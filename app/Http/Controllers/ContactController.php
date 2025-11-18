@@ -163,13 +163,20 @@ class ContactController extends Controller
 
     /**
      * Test Google Sheets connection (for debugging)
-     * Only accessible in non-production environment or with proper auth
+     * Only accessible when ENABLE_GOOGLE_SHEETS_TEST is true or in debug mode
      */
     public function testGoogleSheets()
     {
-        // Only allow in debug mode or local environment for security
-        if (config('app.env') === 'production' && !config('app.debug')) {
-            abort(404);
+        // Allow access if:
+        // 1. ENABLE_GOOGLE_SHEETS_TEST env is true, OR
+        // 2. APP_DEBUG is true, OR
+        // 3. APP_ENV is not production
+        $enableTest = env('ENABLE_GOOGLE_SHEETS_TEST', false);
+        $isDebug = config('app.debug', false);
+        $isProduction = config('app.env') === 'production';
+
+        if ($isProduction && !$enableTest && !$isDebug) {
+            abort(404, 'Test endpoint is disabled in production. Set ENABLE_GOOGLE_SHEETS_TEST=true to enable.');
         }
 
         try {
