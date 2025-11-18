@@ -217,9 +217,15 @@ class GoogleSheetService
             // Test 3: Try to read spreadsheet metadata (this will fail if no access)
             try {
                 $spreadsheet = $this->sheetsService->spreadsheets->get($this->spreadsheetId);
+                $sheets = $spreadsheet->getSheets();
+                $sheetNames = [];
+                foreach ($sheets as $sheet) {
+                    $sheetNames[] = $sheet->getProperties()->getTitle();
+                }
                 $result['details']['spreadsheet'] = [
                     'title' => $spreadsheet->getProperties()->getTitle(),
-                    'sheets_count' => count($spreadsheet->getSheets()),
+                    'sheets_count' => count($sheets),
+                    'available_sheets' => $sheetNames,
                 ];
             } catch (\Google\Service\Exception $e) {
                 $errorDetails = json_decode($e->getMessage(), true);
@@ -281,7 +287,16 @@ class GoogleSheetService
                     $result['status'] = 'warning';
                     $result['message'] = 'Sheet name might be incorrect';
                     $result['details']['sheet_error'] = $errorMessage;
-                    $result['details']['suggestion'] = 'Check if the sheet name "' . $this->sheetName . '" exists in the spreadsheet';
+                    $result['details']['configured_sheet_name'] = $this->sheetName;
+                    
+                    // Get available sheet names from previous test
+                    if (isset($result['details']['spreadsheet']['available_sheets'])) {
+                        $availableSheets = $result['details']['spreadsheet']['available_sheets'];
+                        $result['details']['suggestion'] = 'Configured sheet name "' . $this->sheetName . '" not found. Available sheet names: ' . implode(', ', $availableSheets);
+                        $result['details']['recommended_sheet_name'] = !empty($availableSheets) ? $availableSheets[0] : null;
+                    } else {
+                        $result['details']['suggestion'] = 'Check if the sheet name "' . $this->sheetName . '" exists in the spreadsheet. Open the spreadsheet and check the tab name at the bottom.';
+                    }
                 }
             }
 
