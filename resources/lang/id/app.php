@@ -45,9 +45,9 @@ Dengan pengalaman industri yang kuat, pendekatan yang personal, dan jaringan pro
         'title' => 'Layanan Kami',
         'description' => 'Kami menawarkan solusi rekrutmen yang fleksibel dan bisa disesuaikan dengan kebutuhan bisnis Anda. Mulai dari posisi eksekutif sampai talenta spesialis, proses kami menggabungkan data, teknologi, dan analisis mendalam untuk hasil yang lebih efektif.',
         'cards' => [
-            'executive' => 'Executive Search & Penempatan Leader',
-            'culture_fit' => 'Rekrutmen Berbasis Culture Fit untuk Startup',
-            'pipeline' => 'Pengembangan Pipeline Talenta untuk Posisi Spesialis',
+            'executive' => 'Rekrutmen Eksekutif & Profesional',
+            'culture_fit' => 'Pelatihan & Pengembangan SDM Perusahaan',
+            'pipeline' => 'Layanan Outsourcing Tenaga Kerja Profesional',
         ],
         'modal_copy' => [
             'subtitle' => 'Apa yang Anda dapatkan',
@@ -55,28 +55,44 @@ Dengan pengalaman industri yang kuat, pendekatan yang personal, dan jaringan pro
         ],
         'modal' => [
             'executive' => [
-                'summary' => 'Pendampingan rekrutmen end-to-end untuk level C dan leader strategis dengan proses rahasia, asesmen terstruktur, dan rekomendasi berbasis data.',
-                'details' => [
-                    'Riset kandidat eksekutif dan pemetaan pasar khusus',
-                    'Asesmen perilaku, kepemimpinan, dan kecocokan budaya',
-                    'Laporan progres mingguan serta alignment stakeholder',
-                ],
+                'summary' => 'Anagata Executive adalah Perusahaan rekrutmen profesional yang berfokus pada pencarian dan seleksi talenta berpengalaman untuk posisi strategis, manajerial, hingga eksekutif. Dengan pendekatan yang terstruktur dan analisis kebutuhan yang mendalam, Anagata Executive membantu perusahaan menemukan kandidat yang tepat, tidak hanya dari sisi kompetensi, tetapi juga kecocokan budaya dan potensi jangka panjang.
+
+Didukung oleh teknologi modern (AI) dan pemanfaatan data dalam proses talent mapping, Anagata Executive memastikan proses rekrutmen berjalan lebih efisien, akurat, dan objektif. Setiap kandidat yang direkomendasikan melalui evaluasi menyeluruh, mulai dari penilaian kemampuan teknis, kepemimpinan, hingga karakter dan motivasi kerja.
+
+Sebagai mitra strategis bagi perusahaan, Anagata Executive tidak hanya menyediakan layanan pencarian kandidat, tetapi juga memberikan insight terkait tren tenaga kerja, kebutuhan kompetensi masa depan, serta strategi rekrutmen yang relevan dengan dinamika industri. Dengan standar profesionalisme yang tinggi, Anagata Executive berkomitmen membantu perusahaan membangun tim yang kuat, adaptif, dan siap menghadapi tantangan bisnis.',
+                'details' => [],
             ],
             'culture_fit' => [
-                'summary' => 'Sprint rekrutmen untuk startup agar budaya dan nilai perusahaan menjadi filter utama, dilengkapi scorecard, storytelling, dan kesiapan onboarding.',
+                'summary' => 'Anagata Executive adalah perusahaan penyedia layanan pelatihan profesional yang berkomitmen membantu organisasi meningkatkan kompetensi, produktivitas, dan kualitas sumber daya manusia melalui program pengembangan yang terstruktur, relevan, dan berstandar tinggi.
+
+Dengan pengalaman para fasilitator yang kompeten di bidangnya, kami menghadirkan solusi pelatihan yang dirancang berdasarkan kebutuhan industri terkini serta tantangan bisnis yang terus berkembang. Setiap program dirumuskan untuk memberikan wawasan praktis, peningkatan keterampilan, dan perubahan perilaku yang berdampak langsung pada kinerja individu maupun organisasi.
+
+Kami menyediakan beragam layanan pelatihan, mulai dari leadership development, soft skills training, peningkatan kemampuan teknis (technical skills), hingga program khusus yang disesuaikan (customized training) untuk memenuhi kebutuhan spesifik perusahaan Anda.
+
+Visi kami adalah menjadi mitra strategis terpercaya dalam pengembangan talenta perusahaan di seluruh Indonesia.
+
+Misi kami adalah menghadirkan program pelatihan berkualitas, berbasis data, metodologi modern, dan hasil yang terukur.
+
+Melalui pendekatan yang interaktif, praktis, dan berorientasi hasil, Anagata Executive senantiasa mendukung perusahaan untuk membangun tim yang lebih unggul, adaptif, dan siap menghadapi tantangan masa depan.
+
+Jenis Training yang Kami Berikan:',
                 'details' => [
-                    'Membangun scorecard budaya dan panduan wawancara',
-                    'Pesan employer branding dan storytelling kandidat',
-                    'Dukungan negosiasi penawaran untuk tim yang tumbuh cepat',
+                    'Human Resource',
+                    'Finance',
+                    'Self Development',
+                    'Safety and Technical',
+                    'Environmental / Environment',
                 ],
             ],
             'pipeline' => [
-                'summary' => 'Siapkan talenta spesialis sebelum dibutuhkan melalui pipeline siap-hire, insight pasar berkelanjutan, dan engagement proaktif.',
-                'details' => [
-                    'Segmentasi talenta dan validasi gap keterampilan',
-                    'Sourcing berkelanjutan dengan workflow nurturing',
-                    'Laporan dashboard untuk proyeksi kebutuhan hiring',
-                ],
+                'summary' => 'Anagata Executive adalah perusahaan outsourcing yang berkomitmen menghadirkan solusi tenaga kerja yang profesional, efektif, dan terpercaya bagi berbagai sektor industri. Dengan pengalaman bertahun-tahun dalam pengelolaan sumber daya manusia, kami menyediakan layanan yang dirancang untuk membantu perusahaan fokus pada aktivitas inti bisnis, sementara kebutuhan operasional ditangani oleh tenaga ahli yang kompeten.
+
+Sebagai mitra strategis, kami memahami bahwa setiap perusahaan memiliki kebutuhan unik. Oleh karena itu, Anagata Executive menawarkan layanan outsourcing yang fleksibel dan dapat disesuaikan, mulai dari penyediaan tenaga kerja operasional, administratif, hingga staf spesialis yang telah melalui proses seleksi ketat dan pelatihan standar industri.
+
+Dengan sistem manajemen SDM berbasis teknologi, kami memastikan proses rekrutmen, monitoring kinerja, hingga administrasi payroll berjalan transparan, akurat, serta mematuhi ketentuan perundang-undangan ketenagakerjaan di Indonesia. Komitmen ini menjadi dasar kami dalam memberikan pelayanan yang tidak hanya cepat dan efisien, tetapi juga berkelanjutan.
+
+Kami percaya bahwa kualitas sumber daya manusia adalah fondasi utama keberhasilan bisnis. Karena itu, kami menghadirkan tim profesional yang siap mendukung produktivitas dan pertumbuhan perusahaan Anda.',
+                'details' => [],
             ],
         ],
     ],

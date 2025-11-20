@@ -139,8 +139,48 @@
             lastFocusedElement = document.activeElement;
 
             titleEl.textContent = service.title || '';
-            if (summaryEl) {
-                summaryEl.textContent = service.summary || '';
+            if (summaryEl && service.summary) {
+                // Format summary with proper paragraph breaks
+                let formattedSummary = service.summary.trim();
+                
+                // Split by double newlines or lines that start special keywords
+                // First, normalize: replace multiple newlines with double newline
+                formattedSummary = formattedSummary.replace(/\n{3,}/g, '\n\n');
+                
+                // Split by double newlines to get main paragraphs
+                const paragraphs = formattedSummary
+                    .split(/\n\s*\n/)
+                    .map(para => para.replace(/\n/g, ' ').trim())
+                    .filter(para => para.length > 0);
+                
+                // Process each paragraph
+                const processedParagraphs = paragraphs.map(para => {
+                    // Check if this paragraph starts with Visi/Misi
+                    const visiMisiMatch = para.match(/^(Visi kami|Misi kami|Our vision|Our mission)\s+(adalah|is)\s+(.+)$/i);
+                    if (visiMisiMatch) {
+                        const title = visiMisiMatch[1];
+                        const connector = visiMisiMatch[2];
+                        let content = visiMisiMatch[3];
+                        // Make "Anagata Executive" bold in content
+                        content = content.replace(/(Anagata Executive)/gi, '<strong>$1</strong>');
+                        return `<p><strong>${title} ${connector}</strong> ${content}</p>`;
+                    }
+                    
+                    // Check if this paragraph is "Jenis Training" heading
+                    const jenisTrainingMatch = para.match(/^(Jenis Training yang Kami Berikan|Types of Training We Provide)[:：]?\s*$/i);
+                    if (jenisTrainingMatch) {
+                        return `<p><strong>${jenisTrainingMatch[1]}:</strong></p>`;
+                    }
+                    
+                    // Make "Anagata Executive" bold everywhere in regular paragraphs
+                    para = para.replace(/(Anagata Executive)/gi, '<strong>$1</strong>');
+                    
+                    // Regular paragraph - wrap in <p>
+                    return `<p>${para}</p>`;
+                });
+                
+                formattedSummary = processedParagraphs.join('');
+                summaryEl.innerHTML = formattedSummary;
             }
 
             if (imageEl) {

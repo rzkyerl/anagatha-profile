@@ -101,18 +101,39 @@
             <div class="grid-cards grid-cards--wide">
                 <article class="card card--service" data-service-card data-service-key="executive" role="button"
                     tabindex="0" aria-haspopup="dialog" aria-controls="service-modal" data-aos="fade-up" data-aos-delay="100">
-                    <img src="/assets/scope.svg" alt="Executive Search & Leadership Placement" srcset="">
-                    <h3>{{ __('app.services.cards.executive') }}</h3>
+                    <div class="card--service__content">
+                        <div class="card--service__text">
+                            <h3>{{ __('app.services.cards.executive') }}</h3>
+                        </div>
+                        <div class="card--service__divider"></div>
+                        <div class="card--service__icon">
+                            <img src="/assets/scope.svg" alt="Executive Search & Leadership Placement" srcset="">
+                        </div>
+                    </div>
                 </article>
                 <article class="card card--service" data-service-card data-service-key="culture_fit" role="button"
                     tabindex="0" aria-haspopup="dialog" aria-controls="service-modal" data-aos="fade-up" data-aos-delay="200">
-                    <img src="/assets/data-up.svg" alt="Culture Fit Recruitment for Growing Startups" srcset="">
-                    <h3>{{ __('app.services.cards.culture_fit') }}</h3>
+                    <div class="card--service__content">
+                        <div class="card--service__text">
+                            <h3>{{ __('app.services.cards.culture_fit') }}</h3>
+                        </div>
+                        <div class="card--service__divider"></div>
+                        <div class="card--service__icon">
+                            <img src="/assets/data-up.svg" alt="Culture Fit Recruitment for Growing Startups" srcset="">
+                        </div>
+                    </div>
                 </article>
                 <article class="card card--service" data-service-card data-service-key="pipeline" role="button"
                     tabindex="0" aria-haspopup="dialog" aria-controls="service-modal" data-aos="fade-up" data-aos-delay="300">
-                    <img src="/assets/analytic-chart.svg" alt="Talent Pipeline Development for Specialized Roles" srcset="">
-                    <h3>{{ __('app.services.cards.pipeline') }}</h3>
+                    <div class="card--service__content">
+                        <div class="card--service__text">
+                            <h3>{{ __('app.services.cards.pipeline') }}</h3>
+                        </div>
+                        <div class="card--service__divider"></div>
+                        <div class="card--service__icon">
+                            <img src="/assets/analytic-chart.svg" alt="Talent Pipeline Development for Specialized Roles" srcset="">
+                        </div>
+                    </div>
                 </article>
             </div>
         </div>
@@ -122,22 +143,29 @@
         <div class="service-modal__backdrop" data-service-modal-close></div>
         <div class="service-modal__dialog" data-service-modal-dialog role="dialog" aria-modal="true"
             aria-labelledby="service-modal-title" tabindex="-1">
-            <button type="button" class="service-modal__close" aria-label="{{ __('app.aria.close_toast') }}"
-                data-service-modal-close>
-                <i class="fa-solid fa-xmark" aria-hidden="true"></i>
-            </button>
+            <div class="service-modal__header">
+                <div class="service-modal__header-left">
+                    <p class="service-modal__eyebrow" data-service-modal-subtitle>{{ __('app.services.modal_copy.subtitle') }}</p>
+                    <div class="service-modal__title-wrapper">
+                        <h3 class="service-modal__title" id="service-modal-title" data-service-modal-title></h3>
+                        <div class="service-modal__divider"></div>
+                        <div class="service-modal__icon">
+                            <img src="" alt="" class="service-modal__header-icon is-hidden" data-service-modal-image>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="service-modal__close" aria-label="{{ __('app.aria.close_toast') }}"
+                    data-service-modal-close>
+                    <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+                </button>
+            </div>
             <div class="service-modal__body">
                 <div class="service-modal__content">
-                    <p class="service-modal__eyebrow" data-service-modal-subtitle>{{ __('app.services.modal_copy.subtitle') }}</p>
-                    <h3 class="service-modal__title" id="service-modal-title" data-service-modal-title></h3>
                     <p class="service-modal__summary" data-service-modal-summary></p>
                     <ul class="service-modal__list" data-service-modal-list hidden></ul>
                     <a class="cta-primary service-modal__cta" href="#contact" data-service-modal-cta>
                         {{ __('app.services.modal_copy.cta') }}
                     </a>
-                </div>
-                <div class="service-modal__visual">
-                    <img src="" alt="" class="service-modal__image is-hidden" data-service-modal-image>
                 </div>
             </div>
         </div>
