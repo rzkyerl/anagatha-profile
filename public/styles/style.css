@@ -390,7 +390,7 @@ body.nav-open {
 
 @media (max-width: 768px) {
     :root {
-        --header-height: 72px;
+        --header-height: 64px;
     }
 }
 
@@ -758,7 +758,7 @@ section > .container:not(.hero__layout) {
 }
 
 .card--service__icon {
-    padding: 2rem;
+    padding: 1.5rem;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -769,8 +769,8 @@ section > .container:not(.hero__layout) {
 
 .card--service__icon img {
     filter: brightness(0) invert(1);
-    max-width: 80px;
-    max-height: 80px;
+    max-width: 60px;
+    max-height: 60px;
     width: auto;
     height: auto;
     object-fit: contain;
@@ -2112,6 +2112,7 @@ footer {
     }
     
     .card--service__icon {
+        padding: 1.25rem;
         overflow: hidden;
         display: flex;
         align-items: center;
@@ -2119,8 +2120,8 @@ footer {
     }
     
     .card--service__icon img {
-        max-width: 70px;
-        max-height: 70px;
+        max-width: 50px;
+        max-height: 50px;
         width: auto;
         height: auto;
         object-fit: contain;
@@ -2685,7 +2686,7 @@ footer {
     }
 
     .card--service__icon {
-        padding: 1.5rem;
+        padding: 1.25rem;
         overflow: hidden;
         display: flex;
         align-items: center;
@@ -2693,8 +2694,8 @@ footer {
     }
 
     .card--service__icon img {
-        max-width: 60px;
-        max-height: 60px;
+        max-width: 45px;
+        max-height: 45px;
         width: auto;
         height: auto;
         object-fit: contain;
@@ -2879,7 +2880,7 @@ footer {
     }
 
     .card--service__icon {
-        padding: 1.25rem;
+        padding: 1rem;
         overflow: hidden;
         display: flex;
         align-items: center;
@@ -2887,8 +2888,8 @@ footer {
     }
 
     .card--service__icon img {
-        max-width: 50px;
-        max-height: 50px;
+        max-width: 40px;
+        max-height: 40px;
         width: auto;
         height: auto;
         object-fit: contain;
