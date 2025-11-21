@@ -696,7 +696,7 @@ section > .container:not(.hero__layout) {
 
 .card--service__content {
     display: grid;
-    grid-template-columns: auto 1px 1fr;
+    grid-template-columns: 1fr 1px 1fr;
     align-items: stretch;
     height: 100%;
     min-height: 180px;
@@ -767,8 +767,6 @@ section > .container:not(.hero__layout) {
     height: 100%;
     order: 1;
     overflow: hidden;
-    max-width: 120px;
-    width: 100%;
 }
 
 .card--service__icon img {
@@ -2123,8 +2121,6 @@ footer {
         display: flex;
         align-items: center;
         justify-content: center;
-        max-width: 100px;
-        width: 100%;
     }
     
     .card--service__icon img {
@@ -2701,8 +2697,6 @@ footer {
         display: flex;
         align-items: center;
         justify-content: center;
-        max-width: 90px;
-        width: 100%;
     }
 
     .card--service__icon img {
@@ -2899,8 +2893,6 @@ footer {
         display: flex;
         align-items: center;
         justify-content: center;
-        max-width: 80px;
-        width: 100%;
     }
 
     .card--service__icon img {
