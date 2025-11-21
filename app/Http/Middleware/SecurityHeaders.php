@@ -15,6 +15,12 @@ class SecurityHeaders
      */
     public function handle(Request $request, Closure $next): Response
     {
+        // Generate a nonce for this request (for CSP inline scripts)
+        $nonce = base64_encode(random_bytes(16));
+        
+        // Share nonce with views
+        view()->share('cspNonce', $nonce);
+
         $response = $next($request);
 
         // Remove X-Powered-By header to hide server information
@@ -24,10 +30,12 @@ class SecurityHeaders
         // Forces browsers to use HTTPS for future connections
         $response->headers->set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
 
-        // Content-Security-Policy (CSP)
+        // Content-Security-Policy (CSP) with nonce for inline scripts
         // Prevents XSS attacks by controlling which resources can be loaded
+        // Using nonce instead of 'unsafe-inline' for better security
+        // Removed 'unsafe-eval' as it's not needed and dangerous
         $csp = "default-src 'self'; " .
-               "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://unpkg.com https://www.googletagmanager.com https://www.google-analytics.com; " .
+               "script-src 'self' 'nonce-{$nonce}' https://cdn.jsdelivr.net https://unpkg.com https://www.googletagmanager.com https://www.google-analytics.com; " .
                "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; " .
                "font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com data:; " .
                "img-src 'self' data: https: blob:; " .

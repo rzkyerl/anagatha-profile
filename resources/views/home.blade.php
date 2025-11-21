@@ -383,7 +383,7 @@
                 ],
             ];
         @endphp
-        <script>
+        <script nonce="{{ $cspNonce ?? '' }}">
             window.contactFormMessages = @json($contactValidationMessages);
             window.serviceModalCopy = @json($serviceModalCopy);
             window.serviceCardData = @json($serviceModalData);
