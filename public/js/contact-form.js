@@ -123,7 +123,7 @@
                 required: true,
                 min: 8,
                 max: 15,
-                regex: /^\(\+\d{1,2}\)\s?\d{6,}$/,
+                regex: /^\(\+\d{1,2}\)\s?\d{8,15}$/,
                 countryCodeRegex: /^\(\+\d{1,2}\)$/,
                 message: buildMessages('phone', {
                     required: 'Phone number is required',
@@ -211,7 +211,9 @@
                 }
                 
                 // Skip general min/max check for phone (we already validated digits)
-                // Continue to regex check
+                // Skip regex check for phone (we already validated format and digits)
+                // Return early since all phone validations are complete
+                return { valid: true, error: null };
             } else {
                 // Check min length (for non-phone fields)
                 if (rules.min && trimmedValue.length < rules.min) {
@@ -224,8 +226,8 @@
                 }
             }
 
-            // Check regex pattern
-            if (rules.regex && !rules.regex.test(trimmedValue)) {
+            // Check regex pattern (skip for phone as it's already validated)
+            if (fieldName !== 'phone' && rules.regex && !rules.regex.test(trimmedValue)) {
                 return { valid: false, error: rules.message.regex };
             }
 
