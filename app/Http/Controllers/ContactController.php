@@ -70,7 +70,31 @@ class ContactController extends Controller
             'first_name' => ['required', 'string', 'min:4', 'max:60', 'regex:/^[^<>]*$/'],
             'last_name' => ['nullable', 'string', 'max:60', 'regex:/^[^<>]*$/'],
             'email' => ['required', 'email', 'max:35'],
-            'phone' => ['required', 'string', 'min:10', 'max:15', 'regex:/^\(\+\d{1,2}\)\s?\d{6,}$/'],
+            'phone' => [
+                'required',
+                'string',
+                'max:25', // Increased to accommodate format like (+62) + space + 15 digits
+                'regex:/^\(\+\d{1,2}\)\s?\d+$/',
+                function ($attribute, $value, $fail) {
+                    // Extract country code and phone number part
+                    if (!preg_match('/^\((\+\d{1,2})\)\s?(.*)$/', $value, $matches)) {
+                        $fail('The phone number must be in format (+X) YYYYYYYY or (+XX) YYYYYYYY.');
+                        return;
+                    }
+                    
+                    $phoneNumberPart = $matches[2] ?? '';
+                    // Extract only digits from phone number part
+                    $phoneDigits = preg_replace('/\D/', '', $phoneNumberPart);
+                    
+                    // Validate digit count (8-15 digits after country code)
+                    if (strlen($phoneDigits) < 8) {
+                        $fail('The phone number must be at least 8 digits after country code.');
+                    }
+                    if (strlen($phoneDigits) > 15) {
+                        $fail('The phone number must not exceed 15 digits after country code.');
+                    }
+                },
+            ],
             'message' => ['required', 'string', 'min:10', 'max:2000', 'regex:/^[^<>]*$/'],
         ]);
 
