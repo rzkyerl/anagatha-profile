@@ -45,7 +45,8 @@
             </div>
             <div class="hero-visual" data-aos="fade-left">
                 <img class="hero-visual__image" src="/assets/hero-sec.png"
-                    alt="Ilustrasi tim Anagata Executive yang berkolaborasi">
+                    alt="Ilustrasi tim Anagata Executive yang berkolaborasi"
+                    loading="eager" decoding="async" fetchpriority="high">
             </div>
         </div>
     </section>
@@ -355,10 +356,10 @@
                 <h2 class="section-heading__title">{{ __('app.supported_by.title') }}</h2>
             </div>
             <div class="supported-by-logos" data-aos="fade-up" data-aos-delay="100">
-                <img src="/assets/logo-google-ai.png" alt="{{ __('app.logos.google_ai') }}" loading="lazy" decoding="async">
-                <img src="/assets/logo-kemnaker.png" alt="{{ __('app.logos.kemnaker') }}" loading="lazy" decoding="async">
-                <img src="/assets/logo-bnsp.png" alt="{{ __('app.logos.bnsp') }}" loading="lazy" decoding="async">
-                <img src="/assets/logo-akulita.png" alt="{{ __('app.logos.akulita') }}" loading="lazy" decoding="async">
+                <img src="/assets/logo-google-ai.png" alt="{{ __('app.logos.google_ai') }}" loading="lazy" decoding="async" fetchpriority="low">
+                <img src="/assets/logo-kemnaker.png" alt="{{ __('app.logos.kemnaker') }}" loading="lazy" decoding="async" fetchpriority="low">
+                <img src="/assets/logo-bnsp.png" alt="{{ __('app.logos.bnsp') }}" loading="lazy" decoding="async" fetchpriority="low">
+                <img src="/assets/logo-akulita.png" alt="{{ __('app.logos.akulita') }}" loading="lazy" decoding="async" fetchpriority="low">
             </div>
         </div>
     </section>
