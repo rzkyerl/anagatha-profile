@@ -10,11 +10,21 @@
         </a>
 
         <nav id="primary-navigation" class="nav-links" aria-label="Navigasi utama" data-nav-links>
-            <a href="{{ url('/#hero') }}" data-nav-link="hero">{{ __('app.nav.home') }}</a>
-            <a href="{{ url('/#about') }}" data-nav-link="about">{{ __('app.nav.about') }}</a>
-            <a href="{{ url('/#services') }}" data-nav-link="services">{{ __('app.nav.services') }}</a>
-            <a href="{{ url('/#why-us') }}" data-nav-link="why-us">{{ __('app.nav.why_us') }}</a>
-            <a href="{{ url('/#contact') }}" data-nav-link="contact">{{ __('app.nav.contact') }}</a>
+            <a href="{{ route('home') }}"
+                class="nav-links__link {{ request()->routeIs('home') ? 'is-active' : '' }}"
+                data-nav-link="hero">{{ __('app.nav.home') }}</a>
+            <a href="{{ route('about') }}"
+                class="nav-links__link {{ request()->routeIs('about') ? 'is-active' : '' }}"
+                data-nav-link="about">{{ __('app.nav.about') }}</a>
+            <a href="{{ route('services') }}"
+                class="nav-links__link {{ request()->routeIs('services') ? 'is-active' : '' }}"
+                data-nav-link="services">{{ __('app.nav.services') }}</a>
+            <a href="{{ route('why-us') }}"
+                class="nav-links__link {{ request()->routeIs('why-us') ? 'is-active' : '' }}"
+                data-nav-link="why-us">{{ __('app.nav.why_us') }}</a>
+            <a href="{{ route('contact') }}"
+                class="nav-links__link nav-links__link--cta {{ request()->routeIs('contact') ? 'is-active' : '' }}"
+                data-nav-link="contact">{{ __('app.nav.contact') }}</a>
         </nav>
 
         <div class="nav-actions">

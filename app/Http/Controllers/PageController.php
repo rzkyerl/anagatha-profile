@@ -13,21 +13,21 @@ class PageController extends Controller
 
     public function about()
     {
-        return redirect()->to(url('/#about'));
+        return view('about');
     }
 
     public function services()
     {
-        return redirect()->to(url('/#services'));
+        return view('service');
     }
 
     public function whyUs()
     {
-        return redirect()->to(url('/#why-us'));
+        return view('why_us');
     }
 
     public function contact()
     {
-        return redirect()->to(url('/#contact'));
+        return view('contact');
     }
 }

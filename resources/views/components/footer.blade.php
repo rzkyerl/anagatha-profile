@@ -6,11 +6,11 @@
         </div>
         
         <nav class="footer-links" aria-label="{{ __('app.footer.nav_label') }}" data-aos="fade-up" data-aos-delay="50">
-            <a href="{{ url('/#hero') }}">{{ __('app.nav.home') }}</a>
-            <a href="{{ url('/#about') }}">{{ __('app.nav.about') }}</a>
-            <a href="{{ url('/#services') }}">{{ __('app.nav.services') }}</a>
-            <a href="{{ url('/#why-us') }}">{{ __('app.nav.why_us') }}</a>
-            <a href="{{ url('/#contact') }}">{{ __('app.nav.contact') }}</a>
+            <a href="{{ route('home') }}">{{ __('app.nav.home') }}</a>
+            <a href="{{ route('about') }}">{{ __('app.nav.about') }}</a>
+            <a href="{{ route('services') }}">{{ __('app.nav.services') }}</a>
+            <a href="{{ route('why-us') }}">{{ __('app.nav.why_us') }}</a>
+            <a href="{{ route('contact') }}">{{ __('app.nav.contact') }}</a>
         </nav>
         
         <div class="footer-contacts" data-aos="fade-up" data-aos-delay="100">
