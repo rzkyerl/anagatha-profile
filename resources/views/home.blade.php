@@ -41,12 +41,146 @@
                 <span class="hero-eyebrow">{{ __('app.hero.eyebrow') }}</span>
                 <h1>{{ __('app.hero.headline') }}</h1>
                 <p class="text-lead">{{ __('app.hero.description') }}</p>
-                <a class="cta-primary" href="{{ url('/#contact') }}">{{ __('app.hero.cta') }}</a>
+                <a class="cta-primary" href="{{ route('jobs') }}">Find a Job</a>
             </div>
             <div class="hero-visual" data-aos="fade-left">
                 <img class="hero-visual__image" src="/assets/hero-sec.png"
                     alt="Ilustrasi tim Anagata Executive yang berkolaborasi"
                     loading="eager" decoding="async" fetchpriority="high">
+            </div>
+        </div>
+    </section>
+
+    <section id="job_listings" class="page-section">
+        <div class="container section-shell section-shell--stack">
+            <div class="section-heading section-heading--center" data-aos="fade-up">
+                <h2 class="section-heading__title">Grow Faster With the Right Talent</h2>
+            </div>
+            <div class="job-cards-grid">
+                @php
+                    $jobs = [
+                        [
+                            'logo' => '/assets/hero-sec.png',
+                            'title' => 'Brand Representative',
+                            'company' => 'Indomobil AION',
+                            'verified' => true,
+                            'salary' => 'IDR 25,000,000 - IDR 35,000,000',
+                            'tags' => ['WFO', 'Contract', 'Specialist/Supervisor'],
+                            'location' => 'Jakarta Timur, Indonesia',
+                            'posted' => 'about 6 hours ago',
+                            'recruiter' => ['name' => 'Wahyu P. Recruitment', 'avatar' => 'WP'],
+                        ],
+                        [
+                            'logo' => '/assets/hero-sec.png',
+                            'title' => 'Sales Supervisor - Modern Trade',
+                            'company' => 'Sukanda Djaya',
+                            'verified' => true,
+                            'salary' => 'Not Disclose',
+                            'tags' => ['WFO', 'Full Time', 'Specialist/Supervisor'],
+                            'location' => 'Jakarta, Indonesia',
+                            'posted' => 'about 6 hours ago',
+                            'recruiter' => ['name' => 'Maytri • HR', 'avatar' => 'MD'],
+                        ],
+                        [
+                            'logo' => '/assets/hero-sec.png',
+                            'title' => 'Telesales - Credit Consultant',
+                            'company' => 'Dolpheen Indonesia',
+                            'verified' => true,
+                            'salary' => 'Not Disclose',
+                            'tags' => ['WFO', 'Full Time', 'Entry'],
+                            'location' => 'Jakarta Selatan, Indonesia',
+                            'posted' => 'about 6 hours ago',
+                            'recruiter' => ['name' => 'Abraham • HR', 'avatar' => 'AB'],
+                        ],
+                        [
+                            'logo' => '/assets/hero-sec.png',
+                            'title' => 'Public Relations',
+                            'company' => 'BlueFocus',
+                            'verified' => true,
+                            'salary' => 'Not Disclose',
+                            'tags' => ['WFO', 'Full Time', 'Senior'],
+                            'location' => 'Jakarta Selatan, Indonesia',
+                            'posted' => 'about 8 hours ago',
+                            'recruiter' => ['name' => 'Chunyan • HR', 'avatar' => 'CY'],
+                        ],
+                        [
+                            'logo' => '/assets/hero-sec.png',
+                            'title' => 'Business Development',
+                            'company' => 'BlueFocus',
+                            'verified' => true,
+                            'salary' => 'Not Disclose',
+                            'tags' => ['WFO', 'Full Time', 'Senior'],
+                            'location' => 'Jakarta Selatan, Indonesia',
+                            'posted' => 'about 8 hours ago',
+                            'recruiter' => ['name' => 'Chunyan • HR', 'avatar' => 'CY'],
+                        ],
+                        [
+                            'logo' => '/assets/hero-sec.png',
+                            'title' => 'Advanced Indonesian/English Editor',
+                            'company' => 'PT Dali Foods Indonesia',
+                            'verified' => true,
+                            'salary' => 'CNY 3,000 - CNY 5,000',
+                            'tags' => ['WFO', 'Full Time', 'Entry'],
+                            'location' => 'Kabupaten Karawang, Indonesia',
+                            'posted' => 'about 8 hours ago',
+                            'recruiter' => ['name' => 'ZHENGSIKAI Human Resources', 'avatar' => 'ZH'],
+                        ],
+                    ];
+                @endphp
+                @foreach($jobs as $index => $job)
+                    <article class="job-card" data-aos="fade-up" data-aos-delay="{{ ($index % 3) * 100 }}">
+                        <div class="job-card__header">
+                            <div class="job-card__logo">
+                                <img src="{{ $job['logo'] }}" alt="{{ $job['company'] }}" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                <div class="job-card__logo-placeholder" style="display: none;">
+                                    {{ substr($job['company'], 0, 2) }}
+                                </div>
+                            </div>
+                            <button type="button" class="job-card__save" aria-label="Save job">
+                                <i class="fa-regular fa-heart" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                        <a href="{{ route('job.detail', ['id' => $index + 1]) }}" class="job-card__link">
+                        <div class="job-card__body">
+                            <h3 class="job-card__title">{{ $job['title'] }}</h3>
+                            <div class="job-card__company">
+                                <span class="job-card__company-name">{{ $job['company'] }}</span>
+                                @if($job['verified'])
+                                    <i class="fa-solid fa-circle-check job-card__verified" aria-hidden="true"></i>
+                                @endif
+                            </div>
+                            <div class="job-card__salary">{{ $job['salary'] }}</div>
+                            <div class="job-card__tags">
+                                @foreach(array_slice($job['tags'], 0, 3) as $tag)
+                                    <span class="job-card__tag">{{ $tag }}</span>
+                                @endforeach
+                                @if(count($job['tags']) > 3)
+                                    <span class="job-card__tag job-card__tag--more">+{{ count($job['tags']) - 3 }}</span>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="job-card__footer">
+                            <div class="job-card__meta">
+                                <div class="job-card__meta-item">
+                                    <i class="fa-solid fa-location-dot" aria-hidden="true"></i>
+                                    <span>{{ $job['location'] }}</span>
+                                </div>
+                                <div class="job-card__meta-item">
+                                    <i class="fa-regular fa-clock" aria-hidden="true"></i>
+                                    <span>{{ $job['posted'] }}</span>
+                                </div>
+                            </div>
+                            <div class="job-card__recruiter">
+                                <div class="job-card__recruiter-avatar">{{ $job['recruiter']['avatar'] }}</div>
+                                <span class="job-card__recruiter-name">{{ $job['recruiter']['name'] }}</span>
+                            </div>
+                        </div>
+                        </a>
+                    </article>
+                @endforeach
+            </div>
+            <div class="job-listings__cta" data-aos="fade-up" data-aos-delay="300">
+                <a href="{{ route('jobs') }}" class="cta-primary cta-primary--orange">Explore Jobs</a>
             </div>
         </div>
     </section>

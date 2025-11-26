@@ -30,4 +30,16 @@ class PageController extends Controller
     {
         return view('contact');
     }
+
+    public function jobListing()
+    {
+        return view('job_listing');
+    }
+
+    public function jobDetail($id)
+    {
+        // In real app, fetch job from database
+        // For now, return view with default job data
+        return view('job_detail');
+    }
 }

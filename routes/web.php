@@ -27,6 +27,8 @@ Route::controller(PageController::class)->group(function () {
     Route::get('/services', 'services')->name('services');
     Route::get('/why-us', 'whyUs')->name('why-us');
     Route::get('/contact', 'contact')->name('contact');
+    Route::get('/jobs', 'jobListing')->name('jobs');
+    Route::get('/jobs/{id}', 'jobDetail')->name('job.detail');
 });
 
 Route::post('/contact', [ContactController::class, 'store'])

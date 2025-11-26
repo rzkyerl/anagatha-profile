@@ -13,6 +13,7 @@
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hugeicons@latest/css/hugeicons.css" />
     <link rel="stylesheet" href="/styles/style.css">
     <link rel="icon" type="image/x-icon" href="/assets/hero-sec.png">
     @stack('head')
