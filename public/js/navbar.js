@@ -61,6 +61,58 @@
 
         initLanguageSwitcher();
 
+        // Initialize navigation dropdown
+        const initNavDropdown = () => {
+            const navDropdown = document.querySelector('[data-nav-dropdown]');
+            if (!navDropdown) {
+                return;
+            }
+
+            const dropdownButton = navDropdown.querySelector('.nav-links__link--dropdown');
+            const dropdownMenu = navDropdown.querySelector('.nav-links__dropdown-menu');
+
+            if (!dropdownButton || !dropdownMenu) {
+                return;
+            }
+
+            const toggleDropdown = (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                const isExpanded = navDropdown.getAttribute('aria-expanded') === 'true';
+                navDropdown.setAttribute('aria-expanded', !isExpanded);
+            };
+
+            const closeDropdown = () => {
+                navDropdown.setAttribute('aria-expanded', 'false');
+            };
+
+            dropdownButton.addEventListener('click', toggleDropdown);
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', (event) => {
+                if (!navDropdown.contains(event.target)) {
+                    closeDropdown();
+                }
+            });
+
+            // Close dropdown on Escape key
+            document.addEventListener('keyup', (event) => {
+                if (event.key === 'Escape' && navDropdown.getAttribute('aria-expanded') === 'true') {
+                    closeDropdown();
+                    dropdownButton.focus();
+                }
+            });
+
+            // Close dropdown when clicking on a dropdown item
+            dropdownMenu.addEventListener('click', (event) => {
+                if (event.target.matches('.nav-links__dropdown-item')) {
+                    closeDropdown();
+                }
+            });
+        };
+
+        initNavDropdown();
+
         if (!navToggle || !navLinks) {
             return;
         }

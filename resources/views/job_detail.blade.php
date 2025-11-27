@@ -59,9 +59,6 @@
             <!-- Job Header Card -->
             <div class="job-detail-header" data-aos="fade-up" data-aos-delay="50">
                 <div class="job-detail-header__actions">
-                    <button type="button" class="job-detail-header__action" aria-label="Save job">
-                        <i class="fa-regular fa-heart" aria-hidden="true"></i>
-                    </button>
                     <button type="button" class="job-detail-header__action" aria-label="Share job">
                         <i class="fa-solid fa-share-nodes" aria-hidden="true"></i>
                     </button>

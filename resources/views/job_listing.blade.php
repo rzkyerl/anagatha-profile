@@ -502,9 +502,6 @@
                                     {{ substr($job['company'], 0, 2) }}
                                 </div>
                             </div>
-                            <button type="button" class="job-card__save" aria-label="Save job">
-                                <i class="fa-regular fa-heart" aria-hidden="true"></i>
-                            </button>
                         </div>
                         <a href="{{ route('job.detail', ['id' => $index + 1]) }}" class="job-card__link">
                         <div class="job-card__body">

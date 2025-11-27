@@ -16,9 +16,28 @@
             <a href="{{ route('about') }}"
                 class="nav-links__link {{ request()->routeIs('about') ? 'is-active' : '' }}"
                 data-nav-link="about">{{ __('app.nav.about') }}</a>
-            <a href="{{ route('services') }}"
-                class="nav-links__link {{ request()->routeIs('services') ? 'is-active' : '' }}"
-                data-nav-link="services">{{ __('app.nav.services') }}</a>
+            <div class="nav-links__dropdown" data-nav-dropdown>
+                <button type="button" 
+                    class="nav-links__link nav-links__link--dropdown {{ request()->routeIs('services', 'jobs') ? 'is-active' : '' }}"
+                    data-nav-link="services"
+                    aria-expanded="false"
+                    aria-haspopup="true">
+                    {{ __('app.nav.services') }}
+                    <i class="fa-solid fa-chevron-down nav-links__dropdown-icon" aria-hidden="true"></i>
+                </button>
+                <ul class="nav-links__dropdown-menu" role="menu">
+                    <li role="none">
+                        <a href="{{ route('services') }}" 
+                           class="nav-links__dropdown-item {{ request()->routeIs('services') ? 'is-active' : '' }}"
+                           role="menuitem">{{ __('app.nav.services') }}</a>
+                    </li>
+                    <li role="none">
+                        <a href="{{ route('jobs') }}" 
+                           class="nav-links__dropdown-item {{ request()->routeIs('jobs', 'job.detail') ? 'is-active' : '' }}"
+                           role="menuitem">Job Listing</a>
+                    </li>
+                </ul>
+            </div>
             <a href="{{ route('why-us') }}"
                 class="nav-links__link {{ request()->routeIs('why-us') ? 'is-active' : '' }}"
                 data-nav-link="why-us">{{ __('app.nav.why_us') }}</a>

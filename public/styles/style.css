@@ -419,6 +419,182 @@ body.nav-open {
     }
 }
 
+/* Navigation Dropdown */
+.nav-links__dropdown {
+    position: relative;
+}
+
+.nav-links__link--dropdown {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    background: none;
+    border: none;
+    font: inherit;
+    padding: 0;
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 500;
+    color: var(--text-500);
+    position: relative;
+    padding-block: 0.35rem;
+}
+
+.nav-links__link--dropdown::after {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    bottom: 0;
+    height: 2px;
+    transform: scaleX(0);
+    transform-origin: center;
+    background: linear-gradient(120deg, var(--brand-400), var(--brand-700));
+    transition: transform var(--transition-base);
+}
+
+.nav-links__link--dropdown:hover {
+    color: var(--brand-700);
+}
+
+.nav-links__link--dropdown:hover::after {
+    transform: scaleX(1);
+}
+
+@media (min-width: 769px) {
+    .nav-links__link--dropdown.is-active {
+        color: var(--brand-700);
+        font-weight: 600;
+    }
+
+    .nav-links__link--dropdown.is-active::after {
+        transform: scaleX(1);
+        height: 3px;
+        background: linear-gradient(120deg, var(--brand-400), var(--brand-700));
+        box-shadow: 0 2px 8px rgba(210, 26, 26, 0.3);
+    }
+}
+
+.nav-links__dropdown-icon {
+    font-size: 0.7rem;
+    transition: transform var(--transition-base);
+    color: inherit;
+    flex-shrink: 0;
+}
+
+.nav-links__dropdown[aria-expanded="true"] .nav-links__dropdown-icon {
+    transform: rotate(180deg);
+}
+
+.nav-links__dropdown-menu {
+    position: absolute;
+    top: calc(100% + 0.75rem);
+    left: 0;
+    min-width: 200px;
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(20px);
+    border-radius: var(--radius-card);
+    border: 1.5px solid rgba(128, 10, 10, 0.1);
+    box-shadow: 0 20px 60px -30px rgba(128, 10, 10, 0.4), 0 0 0 1px rgba(128, 10, 10, 0.05);
+    list-style: none;
+    padding: 0.5rem;
+    margin: 0;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-12px) scale(0.96);
+    transition: opacity 300ms cubic-bezier(0.4, 0, 0.2, 1), 
+                transform 300ms cubic-bezier(0.4, 0, 0.2, 1),
+                visibility 300ms cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 100;
+    pointer-events: none;
+}
+
+.nav-links__dropdown[aria-expanded="true"] .nav-links__dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+}
+
+.nav-links__dropdown-item {
+    display: block;
+    padding: 0.75rem 1rem;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--text-500);
+    position: relative;
+    transition: color var(--transition-base);
+    text-decoration: none;
+    background: transparent;
+}
+
+.nav-links__dropdown-item::after {
+    content: "";
+    position: absolute;
+    inset-inline: 1rem;
+    bottom: 0.5rem;
+    height: 2px;
+    transform: scaleX(0);
+    transform-origin: center;
+    background: linear-gradient(120deg, var(--brand-400), var(--brand-700));
+    transition: transform var(--transition-base);
+}
+
+.nav-links__dropdown-item:hover {
+    color: var(--brand-700);
+    background: transparent;
+}
+
+.nav-links__dropdown-item:hover::after {
+    transform: scaleX(1);
+}
+
+.nav-links__dropdown-item.is-active {
+    color: var(--brand-700);
+    font-weight: 600;
+    background: transparent;
+}
+
+.nav-links__dropdown-item.is-active::after {
+    transform: scaleX(1);
+    height: 3px;
+    background: linear-gradient(120deg, var(--brand-400), var(--brand-700));
+    box-shadow: 0 2px 8px rgba(210, 26, 26, 0.3);
+}
+
+/* Mobile dropdown styles */
+@media (max-width: 768px) {
+    .nav-links__dropdown {
+        width: 100%;
+    }
+
+    .nav-links__link--dropdown {
+        width: 100%;
+        justify-content: space-between;
+        text-align: left;
+    }
+
+    .nav-links__dropdown-menu {
+        position: static;
+        width: 100%;
+        margin-top: 0.5rem;
+        transform: none;
+        box-shadow: none;
+        border: none;
+        background: rgba(128, 10, 10, 0.03);
+        padding: 0;
+        backdrop-filter: none;
+    }
+
+    .nav-links__dropdown[aria-expanded="true"] .nav-links__dropdown-menu {
+        transform: none;
+    }
+
+    .nav-links__dropdown-item {
+        padding-left: 2rem;
+    }
+}
+
 /* ==========================================================================
    Hero Section
    ========================================================================== */
@@ -4219,9 +4395,10 @@ footer .aos-animate {
     align-items: center;
     gap: 0.5rem;
     color: var(--text-700);
-    font-size: 0.95rem;
+    font-size: 1.05rem;
     font-weight: 500;
-    margin-bottom: 1.5rem;
+    margin-top: 1.5rem;
+    margin-bottom: 0.20rem;
     transition: color var(--transition-base);
 }
 
@@ -4231,7 +4408,14 @@ footer .aos-animate {
 
 .job-detail__back-link i {
     color: var(--brand-500);
-    font-size: 0.875rem;
+    font-size: 0.95rem;
+}
+
+@media (max-width: 768px) {
+    .job-detail__back-link {
+        margin-top: 1.5rem;
+        margin-bottom: 0.20rem;
+    }
 }
 
 /* Job Header Card */
