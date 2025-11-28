@@ -52,4 +52,16 @@ class PageController extends Controller
     {
         return view('form-jobs');
     }
+
+    public function profile()
+    {
+        // For frontend testing - no auth required
+        return view('profile');
+    }
+
+    public function history()
+    {
+        // For frontend testing - no auth required
+        return view('history');
+    }
 }

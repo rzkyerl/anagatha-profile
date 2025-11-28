@@ -35,6 +35,8 @@ Route::controller(PageController::class)->group(function () {
     Route::get('/jobs/{id}', 'jobDetail')->name('job.detail');
     Route::get('/jobs/{id}/apply', 'jobApplication')->name('job.apply');
     Route::get('/form-jobs', 'jobApplication')->name('form.jobs');
+    Route::get('/profile-test', 'profile')->name('profile.test'); // For frontend testing
+    Route::get('/history-test', 'history')->name('history.test'); // For frontend testing
 });
 
 Route::post('/contact', [ContactController::class, 'store'])

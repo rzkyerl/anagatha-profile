@@ -71,11 +71,15 @@
                         <i class="fa-solid fa-chevron-down user-dropdown__icon" aria-hidden="true"></i>
                     </button>
                     <div class="user-dropdown__menu" role="menu">
-                        <a href="{{ route('profile') }}" class="user-dropdown__item" role="menuitem">
+                        <a href="{{ route('profile.test') }}" class="user-dropdown__item" role="menuitem">
                             <i class="fa-solid fa-user" aria-hidden="true"></i>
                             <span>Profile</span>
                         </a>
-                        
+                        <a href="{{ route('history.test') }}" class="user-dropdown__item" role="menuitem">
+                            <i class="fa-solid fa-clock-rotate-left" aria-hidden="true"></i>
+                            <span>History</span>
+                        </a>
+
                         {{-- Language Submenu --}}
                         <div class="user-dropdown__submenu" data-language-submenu>
                             <button type="button" class="user-dropdown__item user-dropdown__item--submenu" role="menuitem">
@@ -149,9 +153,13 @@
                             <i class="fa-solid fa-chevron-down user-dropdown__icon" aria-hidden="true"></i>
                         </button>
                         <div class="user-dropdown__menu" role="menu">
-                            <a href="{{ route('profile') }}" class="user-dropdown__item" role="menuitem">
+                            <a href="{{ route('profile.test') }}" class="user-dropdown__item" role="menuitem">
                                 <i class="fa-solid fa-user" aria-hidden="true"></i>
                                 <span>Profile</span>
+                            </a>
+                            <a href="{{ route('history.test') }}" class="user-dropdown__item" role="menuitem">
+                                <i class="fa-solid fa-clock-rotate-left" aria-hidden="true"></i>
+                                <span>History</span>
                             </a>
                             
                             {{-- Language Submenu --}}
