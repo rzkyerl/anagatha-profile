@@ -12,7 +12,7 @@
             <p class="text-lead">Search and find your dream job is now easier than ever. Just browse a job and apply if you need to. Connect with top employers and discover opportunities that match your skills.</p>
             <div class="hero-cta-group">
                 <a class="cta-primary cta-primary--glow" href="{{ route('login') }}">
-                    Sign In to Get Started
+                    Login to Get Started
                 </a>
                 <a class="cta-primary cta-primary--outline" href="{{ route('register') }}">
                     Create Account
@@ -74,10 +74,10 @@
                 <p class="cta-banner__description">Join thousands of professionals who found their dream jobs through Anagata Executive</p>
                 <div class="cta-banner__actions">
                     <a class="cta-primary cta-primary--glow" href="{{ route('login') }}">
-                        Sign In Now
+                        Login Now
                     </a>
                     <a class="cta-primary cta-primary--outline" href="{{ route('register') }}">
-                        Sign Up Free
+                        Register Free
                     </a>
                 </div>
             </div>

@@ -75,13 +75,13 @@
 
                     {{-- Submit Button --}}
                     <a href="{{ route('home') }}" class="register-submit-btn" style="text-decoration: none; display: inline-block; text-align: center; width: 100%;">
-                        SIGN IN
+                        Login
                     </a>
                 </div>
 
                 {{-- Register Link --}}
                 <div class="register-footer">
-                    <p>Don't have an account? <a href="{{ route('register') }}" class="register-link">Sign up</a></p>
+                    <p>Don't have an account? <a href="{{ route('register') }}" class="register-link">Register</a></p>
                 </div>
             </div>
         </div>
@@ -89,7 +89,7 @@
         {{-- Right Section: Gradient Background with Text --}}
         <div class="register-left-section">
             <div class="register-header-row">
-                <h2 class="register-signup-label">Sign In</h2>
+                <h2 class="register-signup-label">Login</h2>
                 <div class="register-logo">
                     <img src="/assets/hero-sec.png" alt="Anagata Executive Logo" />
                 </div>

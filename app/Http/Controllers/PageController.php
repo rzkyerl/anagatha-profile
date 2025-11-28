@@ -8,60 +8,60 @@ class PageController extends Controller
 {
     public function landing()
     {
-        return view('landing-pages');
+        return view('pages.landing-pages');
     }
 
     public function home()
     {
-        return view('home');
+        return view('pages.home');
     }
 
     public function about()
     {
-        return view('about');
+        return view('pages.about');
     }
 
     public function services()
     {
-        return view('service');
+        return view('pages.service');
     }
 
     public function whyUs()
     {
-        return view('why_us');
+        return view('pages.why_us');
     }
 
     public function contact()
     {
-        return view('contact');
+        return view('pages.contact');
     }
 
     public function jobListing()
     {
-        return view('job_listing');
+        return view('jobs.job_listing');
     }
 
     public function jobDetail($id)
     {
         // In real app, fetch job from database
         // For now, return view with default job data
-        return view('job_detail');
+        return view('jobs.job_detail');
     }
 
     public function jobApplication()
     {
-        return view('form-jobs');
+        return view('jobs.form-jobs');
     }
 
     public function profile()
     {
         // For frontend testing - no auth required
-        return view('profile');
+        return view('pages.profile');
     }
 
     public function history()
     {
         // For frontend testing - no auth required
-        return view('history');
+        return view('jobs.history');
     }
 }

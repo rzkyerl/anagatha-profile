@@ -419,6 +419,64 @@
     </div>
 </div>
 
+{{-- Validation Error Modal --}}
+<div class="job-application-error-modal" id="jobApplicationErrorModal" hidden aria-hidden="true">
+    <div class="job-application-error-modal__backdrop" data-error-modal-close></div>
+    <div class="job-application-error-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="error-modal-title" tabindex="-1">
+        <div class="job-application-error-modal__content">
+            <div class="job-application-error-modal__header">
+                <div class="job-application-error-modal__icon">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                </div>
+                <h2 class="job-application-error-modal__title" id="error-modal-title">Validation Error</h2>
+                <button type="button" class="job-application-error-modal__close" aria-label="Close modal" data-error-modal-close>
+                    <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+                </button>
+            </div>
+            <div class="job-application-error-modal__body">
+                <p class="job-application-error-modal__message">Please fill in all required fields correctly.</p>
+                <ul class="job-application-error-modal__errors" id="errorModalErrorsList">
+                    <!-- Errors will be populated here -->
+                </ul>
+            </div>
+            <div class="job-application-error-modal__actions">
+                <button type="button" class="job-application-error-modal__btn job-application-error-modal__btn--primary" data-error-modal-close>
+                    OK, I'll fix it
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- Validation Error Modal --}}
+<div class="job-application-error-modal" id="jobApplicationErrorModal" hidden aria-hidden="true">
+    <div class="job-application-error-modal__backdrop" data-error-modal-close></div>
+    <div class="job-application-error-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="error-modal-title" tabindex="-1">
+        <div class="job-application-error-modal__content">
+            <div class="job-application-error-modal__header">
+                <div class="job-application-error-modal__icon">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                </div>
+                <h2 class="job-application-error-modal__title" id="error-modal-title">Validation Error</h2>
+                <button type="button" class="job-application-error-modal__close" aria-label="Close modal" data-error-modal-close>
+                    <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+                </button>
+            </div>
+            <div class="job-application-error-modal__body">
+                <p class="job-application-error-modal__message">Please fill in all required fields correctly.</p>
+                <ul class="job-application-error-modal__errors" id="errorModalErrorsList">
+                    <!-- Errors will be populated here -->
+                </ul>
+            </div>
+            <div class="job-application-error-modal__actions">
+                <button type="button" class="job-application-error-modal__btn job-application-error-modal__btn--primary" data-error-modal-close>
+                    OK, I'll fix it
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 {{-- Success Modal --}}
 <div class="job-application-success-modal" id="jobApplicationSuccessModal" hidden aria-hidden="true">
     <div class="job-application-success-modal__backdrop" data-success-modal-close></div>
@@ -433,15 +491,15 @@
             </p>
             <p class="job-application-success-modal__info">
                 <i class="fa-solid fa-info-circle"></i>
-                You can track the status and view the continuation of your application in the <strong>History</strong> page.
+                You can track the status and view the continuation of your application in the History
             </p>
             <div class="job-application-success-modal__actions">
-                <a href="{{ route('jobs') }}" class="job-application-success-modal__btn job-application-success-modal__btn--primary">
+                <a href="{{ route('history.test') }}" class="job-application-success-modal__btn job-application-success-modal__btn--primary">
                     View History
                 </a>
-                <button type="button" class="job-application-success-modal__btn job-application-success-modal__btn--secondary" data-success-modal-close>
+                <a href="{{ route('jobs') }}" class="job-application-success-modal__btn job-application-success-modal__btn--secondary">
                     Close
-                </button>
+                </a>
             </div>
         </div>
     </div>
@@ -457,6 +515,51 @@
                 return true;
             } catch (_) {
                 return false;
+            }
+        }
+
+        // Function to show error modal
+        function showErrorModal(errors) {
+            const errorModal = document.getElementById('jobApplicationErrorModal');
+            const errorsList = document.getElementById('errorModalErrorsList');
+            
+            if (errorModal && errorsList) {
+                // Clear previous errors
+                errorsList.innerHTML = '';
+                
+                // Populate errors list
+                errors.forEach(error => {
+                    const li = document.createElement('li');
+                    li.textContent = error;
+                    errorsList.appendChild(li);
+                });
+                
+                // Show modal
+                errorModal.hidden = false;
+                errorModal.setAttribute('aria-hidden', 'false');
+                errorModal.classList.add('is-active');
+                document.body.classList.add('modal-open');
+                
+                // Focus on the modal dialog for accessibility
+                const dialog = errorModal.querySelector('.job-application-error-modal__dialog');
+                if (dialog) {
+                    setTimeout(() => {
+                        dialog.focus();
+                    }, 100);
+                }
+            }
+        }
+
+        // Function to close error modal
+        function closeErrorModal() {
+            const errorModal = document.getElementById('jobApplicationErrorModal');
+            if (errorModal) {
+                errorModal.classList.remove('is-active');
+                document.body.classList.remove('modal-open');
+                setTimeout(function() {
+                    errorModal.hidden = true;
+                    errorModal.setAttribute('aria-hidden', 'true');
+                }, 300);
             }
         }
 
@@ -580,8 +683,11 @@
                         if (wrapper) {
                             wrapper.classList.add('is-invalid');
                         }
-                        const fieldLabel = field.previousElementSibling?.textContent || field.name || 'Field';
-                        errors.push(`${fieldLabel.replace(/\*$/, '').trim()} is required`);
+                        // Get label from form-group
+                        const formGroup = field.closest('.form-group');
+                        const label = formGroup ? formGroup.querySelector('.form-label') : null;
+                        const fieldLabel = label ? label.textContent.replace(/\*$/, '').trim() : 'This field';
+                        errors.push(`${fieldLabel} is required`);
                     } else {
                         field.classList.remove('is-invalid');
                         const wrapper = field.closest('.form-input-wrapper');
@@ -598,7 +704,10 @@
                     if (!value) {
                         isValid = false;
                         field.classList.add('is-invalid');
-                        errors.push('URL field is required');
+                        const formGroup = field.closest('.form-group');
+                        const label = formGroup ? formGroup.querySelector('.form-label') : null;
+                        const fieldLabel = label ? label.textContent.replace(/\*$/, '').trim() : 'This field';
+                        errors.push(`${fieldLabel} is required`);
                     }
                 });
 
@@ -615,7 +724,10 @@
                                 label.style.borderColor = '#ef4444';
                             }
                         }
-                        errors.push('CV/Resume file is required');
+                        const formGroup = input.closest('.form-group');
+                        const formLabel = formGroup ? formGroup.querySelector('.form-label') : null;
+                        const fieldLabel = formLabel ? formLabel.textContent.replace(/\*$/, '').trim() : 'File';
+                        errors.push(`${fieldLabel} is required`);
                     } else {
                         const labelWrapper = input.closest('.file-upload-wrapper');
                         if (labelWrapper) {
@@ -646,17 +758,22 @@
                         if (!isValidUrl(field.value)) {
                             isValid = false;
                             field.classList.add('is-invalid');
-                            errors.push('Please enter a valid URL');
+                            const formGroup = field.closest('.form-group');
+                            const label = formGroup ? formGroup.querySelector('.form-label') : null;
+                            const fieldLabel = label ? label.textContent.replace(/\*$/, '').trim() : 'URL';
+                            errors.push(`Please enter a valid ${fieldLabel}`);
                         }
                     }
                 });
 
                 if (!isValid) {
                     console.log('Validation errors:', errors); // Debug log
-                    alert('Please fill in all required fields correctly.\n\n' + errors.join('\n'));
+                    showErrorModal(errors);
                     const firstError = form.querySelector('.is-invalid');
                     if (firstError) {
-                        firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        setTimeout(() => {
+                            firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }, 100);
                     }
                     return false;
                 }
@@ -729,6 +846,34 @@
             document.addEventListener('keydown', function(e) {
                 if (e.key === 'Escape' && successModal.classList.contains('is-active')) {
                     closeSuccessModal();
+                }
+            });
+        }
+
+        // Error Modal Handler
+        const errorModal = document.getElementById('jobApplicationErrorModal');
+        const errorModalBackdrop = document.querySelector('[data-error-modal-close]');
+        
+        if (errorModal) {
+            // Close on backdrop click
+            if (errorModalBackdrop) {
+                errorModalBackdrop.addEventListener('click', function(e) {
+                    if (e.target === errorModalBackdrop) {
+                        closeErrorModal();
+                    }
+                });
+            }
+
+            // Close on close button click
+            const errorCloseButtons = errorModal.querySelectorAll('[data-error-modal-close]');
+            errorCloseButtons.forEach(btn => {
+                btn.addEventListener('click', closeErrorModal);
+            });
+
+            // Close on Escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && errorModal.classList.contains('is-active')) {
+                    closeErrorModal();
                 }
             });
         }

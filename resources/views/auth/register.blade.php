@@ -9,7 +9,7 @@
         {{-- Left Section: Gradient Background with Text --}}
         <div class="register-left-section">
             <div class="register-header-row">
-                <h2 class="register-signup-label">Sign Up</h2>
+                <h2 class="register-signup-label">Register</h2>
                 <div class="register-logo">
                     <img src="/assets/hero-sec.png" alt="Anagata Executive Logo" />
                 </div>
@@ -134,13 +134,13 @@
 
                     {{-- Submit Button --}}
                     <button type="submit" class="register-submit-btn">
-                        SIGN UP
+                        Register
                     </button>
                 </form>
 
                 {{-- Login Link --}}
                 <div class="register-footer">
-                    <p>Already have an account? <a href="{{ route('login') }}" class="login-link">Sign in</a></p>
+                    <p>Already have an account? <a href="{{ route('login') }}" class="login-link">Login</a></p>
                 </div>
             </div>
         </div>

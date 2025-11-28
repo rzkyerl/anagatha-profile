@@ -13,7 +13,7 @@ class ProfileController extends Controller
     public function show()
     {
         // TODO: Create profile view
-        return view('profile', [
+        return view('pages.profile', [
             'user' => Auth::user(),
         ]);
     }

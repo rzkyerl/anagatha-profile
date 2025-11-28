@@ -13,7 +13,7 @@ class AuthController extends Controller
      */
     public function showLoginForm()
     {
-        return view('login');
+        return view('auth.login');
     }
 
     /**
@@ -42,7 +42,7 @@ class AuthController extends Controller
      */
     public function showRegisterForm()
     {
-        return view('register');
+        return view('auth.register');
     }
 
     /**
@@ -85,7 +85,7 @@ class AuthController extends Controller
      */
     public function showForgotPasswordForm()
     {
-        return view('forgot-password');
+        return view('auth.forgot-password');
     }
 }
 

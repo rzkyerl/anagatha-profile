@@ -1,0 +1,560 @@
+/* ==========================================================================
+   Sections - Hero, Cards, Layouts
+   ========================================================================== */
+
+/* Hero Section */
+.hero {
+    padding-block: 5rem;
+    margin-top: -75px;
+}
+
+@media (max-width: 768px) {
+    :root {
+        --header-height: 64px;
+    }
+}
+
+.home-hero {
+    min-height: auto;
+}
+
+.hero__layout {
+    display: grid;
+    gap: 3rem;
+    align-items: center;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.hero-text {
+    display: grid;
+    gap: 1.5rem;
+    max-width: 560px;
+}
+
+.hero-cta-group {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.hero-text h1 {
+    font-size: clamp(2.6rem, 4vw, 3.6rem);
+    font-weight: 700;
+}
+
+.hero-visual {
+    position: relative;
+    justify-self: end;
+}
+
+.hero-visual::before {
+    display: none;
+}
+
+.hero-visual__image {
+    max-width: 500px;
+    width: 100%;
+    height: auto;
+    border-radius: 0;
+    box-shadow: none;
+    border: none;
+}
+
+.cta-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.85rem;
+}
+
+/* Section Layouts */
+section {
+    padding-block: 5rem;
+    opacity: 1 !important;
+    visibility: visible !important;
+    display: block !important;
+}
+
+.page-section {
+    padding-block: clamp(3.5rem, 6vw, 5rem);
+}
+
+.page-section--flush-top {
+    padding-top: clamp(2.5rem, 5vw, 3.5rem);
+    margin-top: -80px;
+}
+
+@media (max-width: 768px) {
+    .page-section {
+        padding-block: clamp(3rem, 8vw, 4rem);
+    }
+
+    .page-section--flush-top {
+        padding-top: clamp(2rem, 6vw, 3rem);
+        margin-top: -5rem;
+    }
+}
+
+#about {
+    padding-block: 3.5rem;
+}
+
+#about .section-shell--stack {
+    gap: 0;
+}
+
+.home-page section:nth-of-type(even) {
+    background: linear-gradient(180deg, rgba(245, 232, 232, 0.35), rgba(245, 232, 232, 0));
+}
+
+.home-page section:nth-of-type(even) > .container {
+    padding-block: 0;
+}
+
+.home-page section:nth-of-type(even) .card {
+    background: #ffffff;
+}
+
+section > .container:not(.hero__layout) {
+    display: grid;
+    gap: 1.75rem;
+}
+
+.section-shell {
+    display: grid;
+    gap: 1.75rem;
+}
+
+.section-shell--stack {
+    gap: 2.5rem;
+}
+
+.section-heading {
+    display: grid;
+    gap: 0.6rem;
+}
+
+.section-heading--left {
+    justify-items: start;
+}
+
+.section-heading--center {
+    justify-items: center;
+    text-align: center;
+}
+
+.section-heading__title {
+    font-size: clamp(1.8rem, 3vw, 2.4rem);
+    color: var(--brand-500);
+}
+
+.section-heading__text {
+    font-size: 1.125rem;
+    line-height: 1.8;
+    color: var(--text-700);
+    margin: 0;
+    letter-spacing: 0.01em;
+}
+
+/* Cards */
+.card {
+    background-color: var(--surface-100);
+    border-radius: var(--radius-card);
+    padding: 2.25rem;
+    box-shadow: 0 18px 45px -30px rgba(128, 10, 10, 0.4);
+    border: 1px solid rgba(128, 10, 10, 0.06);
+    transition: transform var(--transition-base), box-shadow var(--transition-base);
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 25px 55px -35px rgba(128, 10, 10, 0.55);
+}
+
+/* Vision & Mission */
+.vision-mission-container {
+    display: grid;
+    gap: 0rem;
+    padding-block: 0rem;
+    margin-top: -75px;
+}
+
+.vision-mission-container .section-heading {
+    margin-bottom: 2.5rem;
+}
+
+.vision-mission-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 2.5rem;
+}
+
+.vision-mission-card {
+    background: linear-gradient(135deg, var(--surface-100) 0%, rgba(255, 255, 255, 0.98) 100%);
+    border-radius: var(--radius-card);
+    padding: 3rem;
+    box-shadow: 0 20px 50px -30px rgba(128, 10, 10, 0.35);
+    border: 2px solid transparent;
+    background-clip: padding-box;
+    position: relative;
+    display: grid;
+    gap: 1.75rem;
+    transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+}
+
+.vision-mission-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-card);
+    padding: 2px;
+    background: linear-gradient(135deg, var(--brand-500), var(--accent-500), var(--brand-500));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 300ms ease;
+}
+
+.vision-mission-card:hover::before {
+    opacity: 1;
+}
+
+.vision-mission-card::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(128, 10, 10, 0.03) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 300ms ease;
+    pointer-events: none;
+}
+
+.vision-mission-card:hover::after {
+    opacity: 1;
+}
+
+.vision-mission-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 30px 60px -35px rgba(128, 10, 10, 0.5);
+}
+
+.vision-mission-card__header {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.5rem;
+    position: relative;
+    z-index: 1;
+}
+
+.vision-mission-card__icon {
+    width: 4.5rem;
+    height: 4.5rem;
+    border-radius: var(--radius-base);
+    background: linear-gradient(135deg, var(--brand-500) 0%, var(--accent-500) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0 12px 30px -15px rgba(128, 10, 10, 0.5);
+    position: relative;
+    transition: transform 300ms ease, box-shadow 300ms ease;
+}
+
+.vision-mission-card__icon::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: var(--radius-base);
+    background: linear-gradient(135deg, var(--brand-500), var(--accent-500));
+    opacity: 0.2;
+    filter: blur(8px);
+    z-index: -1;
+    transition: opacity 300ms ease;
+}
+
+.vision-mission-card:hover .vision-mission-card__icon {
+    transform: scale(1.05) rotate(5deg);
+    box-shadow: 0 15px 35px -15px rgba(128, 10, 10, 0.6);
+}
+
+.vision-mission-card:hover .vision-mission-card__icon::before {
+    opacity: 0.4;
+}
+
+.vision-mission-card__icon i {
+    font-size: 1.75rem;
+    color: #ffffff;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.vision-mission-card__title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--brand-500);
+    margin: 0;
+    letter-spacing: -0.02em;
+    line-height: 1.3;
+    position: relative;
+}
+
+.vision-mission-card__title::after {
+    content: '';
+    position: absolute;
+    bottom: -0.5rem;
+    left: 0;
+    width: 3rem;
+    height: 3px;
+    background: linear-gradient(90deg, var(--brand-500), var(--accent-500));
+    border-radius: var(--radius-pill);
+    transition: width 300ms ease;
+}
+
+.vision-mission-card:hover .vision-mission-card__title::after {
+    width: 4rem;
+}
+
+.vision-mission-card__text {
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: var(--text-700);
+    margin: 0;
+    position: relative;
+    z-index: 1;
+}
+
+/* Why Us */
+.why-us-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1.75rem;
+}
+
+.why-us-card {
+    background-color: var(--surface-100);
+    border-radius: var(--radius-card);
+    padding: 2rem;
+    box-shadow: 0 18px 45px -30px rgba(128, 10, 10, 0.4);
+    border: 1px solid rgba(128, 10, 10, 0.06);
+    display: grid;
+    gap: 1.25rem;
+    transition: transform var(--transition-base), box-shadow var(--transition-base);
+}
+
+.why-us-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 25px 55px -35px rgba(128, 10, 10, 0.55);
+}
+
+.why-us-card__icon {
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: var(--radius-base);
+    background: linear-gradient(135deg, var(--brand-500), var(--brand-700));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow-soft);
+    margin: 0 auto;
+}
+
+.why-us-card__icon i {
+    font-size: 1.6rem;
+    color: #ffffff;
+}
+
+.why-us-card__title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--brand-500);
+    margin: 0;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+    text-align: center;
+}
+
+.grid-cards,
+.grid-cards--wide {
+    display: grid;
+    gap: 1.8rem;
+    padding-top: 4px;
+}
+
+.grid-cards {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+.grid-cards--wide {
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+}
+
+/* ==========================================================================
+   Service Cards
+   ========================================================================== */
+
+.card.card--service {
+    background: linear-gradient(135deg, var(--brand-500) 0%, var(--brand-700) 100%);
+    border: 2px solid transparent;
+    box-shadow: 0 20px 50px -30px rgba(128, 10, 10, 0.4);
+    transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    outline: none;
+    padding: 0;
+    user-select: none;
+    position: relative;
+    overflow: hidden;
+}
+
+.card.card--service::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-card);
+    padding: 2px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.1));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 300ms ease;
+}
+
+.card.card--service:hover::before,
+.card.card--service:focus-visible::before,
+.card.card--service.service-card--hover::before {
+    opacity: 1;
+}
+
+.card.card--service:hover,
+.card.card--service:focus-visible,
+.card.card--service.service-card--hover {
+    transform: translateY(-6px);
+    box-shadow: 0 30px 60px -35px rgba(128, 10, 10, 0.6);
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+.card.card--service:active,
+.card.card--service.service-card--active {
+    transform: translateY(-2px);
+    box-shadow: 0 20px 45px -30px rgba(128, 10, 10, 0.5);
+}
+
+.card--service__content {
+    display: grid;
+    grid-template-columns: 1fr 1px 1fr;
+    align-items: stretch;
+    height: 100%;
+    min-height: 200px;
+    gap: 0;
+}
+
+.card--service__text {
+    padding: 2.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 1.5rem;
+    order: 3;
+}
+
+.card--service__text h3 {
+    font-size: 1.65rem;
+    color: #ffffff;
+    margin: 0;
+    line-height: 1.3;
+    text-align: left;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+}
+
+.card--service__button {
+    background-color: #ffffff;
+    color: var(--brand-500);
+    border: none;
+    border-radius: var(--radius-pill);
+    padding: 0.75rem 1.75rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 200ms ease;
+    white-space: nowrap;
+    font-family: inherit;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.card--service__button:hover {
+    background-color: rgba(255, 255, 255, 0.95);
+    color: var(--brand-700);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.card--service__button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card--service__divider {
+    width: 2px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.2));
+    margin: 2rem 0;
+    opacity: 1;
+    order: 2;
+    box-shadow: 0 0 4px rgba(255, 255, 255, 0.4);
+}
+
+.card--service__icon {
+    padding: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+    order: 1;
+}
+
+.card--service__icon::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at center, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 300ms ease;
+}
+
+.card.card--service:hover .card--service__icon::before {
+    opacity: 1;
+}
+
+.card--service__icon img {
+    filter: brightness(0) invert(1);
+    max-width: 130px;
+    max-height: 130px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    transition: transform 300ms ease;
+    position: relative;
+    z-index: 1;
+}
+
+.card.card--service:hover .card--service__icon img {
+    transform: scale(1.1);
+}
+
+.card.card--service p {
+    color: rgba(255, 255, 255, 0.9);
+    margin: 0;
+}
+
