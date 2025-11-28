@@ -141,7 +141,7 @@
             messageEl.className = 'no-results-message';
             messageEl.innerHTML = `
                 <div class="no-results-message__content">
-                    <i class="fa-solid fa-search" aria-hidden="true"></i>
+                    <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
                     <h3>No jobs found</h3>
                     <p>Try adjusting your search or filter criteria</p>
                 </div>

@@ -588,6 +588,38 @@
         // File upload preview functionality
         const fileInputs = document.querySelectorAll('.file-upload-input');
         
+        // Function to get file icon based on type
+        function getFileIcon(fileType) {
+            const type = fileType.toLowerCase();
+            if (type === 'application/pdf') {
+                return 'fa-file-pdf';
+            } else if (type === 'application/msword' || type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+                return 'fa-file-word';
+            } else if (type === 'application/zip' || type === 'application/x-rar-compressed' || type === 'application/vnd.rar') {
+                return 'fa-file-zipper';
+            }
+            return 'fa-file';
+        }
+        
+        // Function to get file type label
+        function getFileTypeLabel(fileType, fileName) {
+            const type = fileType.toLowerCase();
+            const ext = fileName.split('.').pop().toLowerCase();
+            
+            if (type === 'application/pdf' || ext === 'pdf') {
+                return 'PDF Document';
+            } else if (type === 'application/msword' || ext === 'doc') {
+                return 'Word Document (DOC)';
+            } else if (type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || ext === 'docx') {
+                return 'Word Document (DOCX)';
+            } else if (type === 'application/zip' || ext === 'zip') {
+                return 'ZIP Archive';
+            } else if (type === 'application/x-rar-compressed' || type === 'application/vnd.rar' || ext === 'rar') {
+                return 'RAR Archive';
+            }
+            return 'File';
+        }
+        
         fileInputs.forEach(input => {
             const preview = input.nextElementSibling.querySelector('.file-upload-preview');
             const label = input.nextElementSibling;
@@ -597,31 +629,44 @@
                 if (file) {
                     const fileName = file.name;
                     const fileSize = (file.size / 1024 / 1024).toFixed(2);
+                    const fileType = file.type || '';
+                    const fileIcon = getFileIcon(fileType);
+                    const fileTypeLabel = getFileTypeLabel(fileType, fileName);
                     
-                    if (!preview.innerHTML) {
-                        preview.innerHTML = `
-                            <div class="file-preview-item">
-                                <i class="fa-solid fa-file"></i>
-                                <div class="file-preview-info">
-                                    <span class="file-preview-name">${fileName}</span>
+                    // Clear previous preview
+                    preview.innerHTML = '';
+                    
+                    preview.innerHTML = `
+                        <div class="file-preview-item">
+                            <div class="file-preview-icon">
+                                <i class="fa-solid ${fileIcon}"></i>
+                            </div>
+                            <div class="file-preview-info">
+                                <span class="file-preview-name" title="${fileName}">${fileName}</span>
+                                <div class="file-preview-meta">
+                                    <span class="file-preview-type">${fileTypeLabel}</span>
+                                    <span class="file-preview-separator">•</span>
                                     <span class="file-preview-size">${fileSize} MB</span>
                                 </div>
-                                <button type="button" class="file-preview-remove" aria-label="Remove file">
-                                    <i class="fa-solid fa-xmark"></i>
-                                </button>
                             </div>
-                        `;
-                        
-                        // Remove file functionality
-                        const removeBtn = preview.querySelector('.file-preview-remove');
-                        removeBtn.addEventListener('click', function() {
-                            input.value = '';
-                            preview.innerHTML = '';
-                            label.classList.remove('has-file');
-                        });
-                        
-                        label.classList.add('has-file');
-                    }
+                            <button type="button" class="file-preview-remove" aria-label="Remove file">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+                    `;
+                    
+                    // Remove file functionality
+                    const removeBtn = preview.querySelector('.file-preview-remove');
+                    removeBtn.addEventListener('click', function() {
+                        input.value = '';
+                        preview.innerHTML = '';
+                        label.classList.remove('has-file');
+                    });
+                    
+                    label.classList.add('has-file');
+                } else {
+                    preview.innerHTML = '';
+                    label.classList.remove('has-file');
                 }
             });
 

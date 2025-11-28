@@ -89,7 +89,7 @@ section {
     }
 
     .page-section--flush-top {
-        padding-top: clamp(2rem, 6vw, 3rem);
+        padding-top: clamp(4rem, 8vw, 5rem);
         margin-top: -5rem;
     }
 }
@@ -447,7 +447,7 @@ section > .container:not(.hero__layout) {
 
 .card--service__content {
     display: grid;
-    grid-template-columns: 1fr 1px 1fr;
+    grid-template-columns: auto 2px 1fr;
     align-items: stretch;
     height: 100%;
     min-height: 200px;
@@ -461,7 +461,6 @@ section > .container:not(.hero__layout) {
     align-items: flex-start;
     justify-content: center;
     gap: 1.5rem;
-    order: 3;
 }
 
 .card--service__text h3 {
@@ -505,12 +504,12 @@ section > .container:not(.hero__layout) {
 }
 
 .card--service__divider {
-    width: 2px;
+    width: 100%;
+    height: 100%;
     background: linear-gradient(180deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.2));
-    margin: 2rem 0;
     opacity: 1;
-    order: 2;
     box-shadow: 0 0 4px rgba(255, 255, 255, 0.4);
+    align-self: stretch;
 }
 
 .card--service__icon {
@@ -521,7 +520,7 @@ section > .container:not(.hero__layout) {
     height: 100%;
     overflow: hidden;
     position: relative;
-    order: 1;
+    min-width: 150px;
 }
 
 .card--service__icon::before {

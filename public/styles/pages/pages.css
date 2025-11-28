@@ -1082,7 +1082,7 @@
 
 .service-modal__title {
     color: var(--text-900) !important;
-    font-size: clamp(1.75rem, 2.2rem, 2.4rem);
+    font-size: clamp(1.2rem, 1.6rem, 1.8rem);
     margin: 0;
     line-height: 1.3;
     word-wrap: break-word;
@@ -1851,6 +1851,22 @@
 
     .application-detail__info-grid {
         grid-template-columns: 1fr;
+    }
+
+    /* Fix input font-size untuk mencegah auto-zoom di mobile */
+    .card.card--form input,
+    .card.card--form textarea,
+    .profile-form-input,
+    .profile-about-textarea,
+    input[type="email"],
+    input[type="text"],
+    input[type="password"],
+    input[type="tel"],
+    input[type="number"],
+    input[type="search"],
+    textarea,
+    select {
+        font-size: 16px !important;
     }
 }
 

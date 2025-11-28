@@ -9,45 +9,45 @@
             <article class="card card--service" data-service-card data-service-key="executive" role="button" tabindex="0"
                 aria-haspopup="dialog" aria-controls="service-modal" data-aos="fade-up" data-aos-delay="50">
                 <div class="card--service__content">
+                    <div class="card--service__icon">
+                        <img src="/assets/scope.svg" alt="Executive Search & Leadership Placement" srcset="">
+                    </div>
+                    <div class="card--service__divider"></div>
                     <div class="card--service__text">
                         <h3>{{ __('app.services.cards.executive') }}</h3>
                         <button type="button" class="card--service__button" data-service-card-trigger>
                             {{ __('app.services.cards.view_details') }}
                         </button>
                     </div>
-                    <div class="card--service__divider"></div>
-                    <div class="card--service__icon">
-                        <img src="/assets/scope.svg" alt="Executive Search & Leadership Placement" srcset="">
-                    </div>
                 </div>
             </article>
             <article class="card card--service" data-service-card data-service-key="culture_fit" role="button" tabindex="0"
                 aria-haspopup="dialog" aria-controls="service-modal" data-aos="fade-up" data-aos-delay="150">
                 <div class="card--service__content">
+                    <div class="card--service__icon">
+                        <img src="/assets/data-up.svg" alt="Culture Fit Recruitment for Growing Startups" srcset="">
+                    </div>
+                    <div class="card--service__divider"></div>
                     <div class="card--service__text">
                         <h3>{{ __('app.services.cards.culture_fit') }}</h3>
                         <button type="button" class="card--service__button" data-service-card-trigger>
                             {{ __('app.services.cards.view_details') }}
                         </button>
                     </div>
-                    <div class="card--service__divider"></div>
-                    <div class="card--service__icon">
-                        <img src="/assets/data-up.svg" alt="Culture Fit Recruitment for Growing Startups" srcset="">
-                    </div>
                 </div>
             </article>
             <article class="card card--service" data-service-card data-service-key="pipeline" role="button" tabindex="0"
                 aria-haspopup="dialog" aria-controls="service-modal" data-aos="fade-up" data-aos-delay="250">
                 <div class="card--service__content">
+                    <div class="card--service__icon">
+                        <img src="/assets/analytic-chart.svg" alt="Talent Pipeline Development for Specialized Roles" srcset="">
+                    </div>
+                    <div class="card--service__divider"></div>
                     <div class="card--service__text">
                         <h3>{{ __('app.services.cards.pipeline') }}</h3>
                         <button type="button" class="card--service__button" data-service-card-trigger>
                             {{ __('app.services.cards.view_details') }}
                         </button>
-                    </div>
-                    <div class="card--service__divider"></div>
-                    <div class="card--service__icon">
-                        <img src="/assets/analytic-chart.svg" alt="Talent Pipeline Development for Specialized Roles" srcset="">
                     </div>
                 </div>
             </article>

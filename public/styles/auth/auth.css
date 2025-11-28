@@ -910,4 +910,43 @@ body.register-page {
         height: 44px;
         font-size: 0.85rem;
     }
+
+    /* Fix input font-size untuk mencegah auto-zoom di mobile */
+    .form-input,
+    .register-form .form-input {
+        font-size: 16px !important;
+    }
+}
+
+/* Fix untuk semua ukuran mobile - mencegah zoom dan unwanted scrolling */
+@media (max-width: 768px) {
+    /* Pastikan semua input minimal 16px untuk mencegah auto-zoom iOS */
+    .form-input,
+    .register-form .form-input,
+    input[type="email"],
+    input[type="text"],
+    input[type="password"],
+    input[type="tel"],
+    input[type="number"],
+    input[type="search"],
+    textarea,
+    select {
+        font-size: 16px !important;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+    }
+
+    /* Prevent unwanted touch scrolling/dragging */
+    body {
+        touch-action: pan-y;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Prevent content from being dragged around */
+    input,
+    textarea,
+    select {
+        touch-action: manipulation;
+    }
 }
