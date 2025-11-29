@@ -1,0 +1,71 @@
+@php
+    $modalId = $modalId ?? 'forceDeleteModal';
+    $entityName = $entityName ?? 'item';
+    $itemData = $itemData ?? [];
+    $title = $title ?? "Confirm Permanent Delete";
+    $message = $message ?? "Are you sure you want to permanently delete this {$entityName}?";
+    $deleteButtonText = $deleteButtonText ?? "Permanently Delete " . ucfirst($entityName);
+    $showButton = $showButton ?? true;
+    $buttonClass = $buttonClass ?? 'btn btn-sm btn-danger';
+    $buttonIcon = $buttonIcon ?? 'ri-delete-bin-7-line';
+@endphp
+
+@if($showButton)
+<button type="button" 
+        class="{{ $buttonClass }}" 
+        data-bs-toggle="modal" 
+        data-bs-target="#{{ $modalId }}"
+        title="Permanently Delete">
+    <i class="{{ $buttonIcon }}"></i>
+</button>
+@endif
+
+<div class="modal fade" id="{{ $modalId }}" tabindex="-1" aria-labelledby="{{ $modalId }}Label" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="{{ $modalId }}Label">
+                    <i class="ri-error-warning-line me-2"></i>{{ $title }}
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-danger mb-3">
+                    <i class="ri-alert-line me-2"></i>
+                    <strong>Warning!</strong> This action cannot be undone.
+                </div>
+                <p>{{ $message }}</p>
+                @if(!empty($itemData))
+                    <div class="alert alert-warning mb-0">
+                        <strong>Item Details:</strong><br>
+                        @foreach($itemData as $label => $value)
+                            <strong>{{ $label }}:</strong> {{ $value }}@if(!$loop->last)<br>@endif
+                        @endforeach
+                    </div>
+                @endif
+                <p class="mt-3 mb-0 text-danger">
+                    <i class="ri-information-line me-1"></i>
+                    <strong>This will permanently remove:</strong>
+                    <ul class="mt-2 mb-0">
+                        <li>All associated data</li>
+                        <li>All related files (if any)</li>
+                        <li>All database records</li>
+                    </ul>
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="ri-close-line me-1"></i> Cancel
+                </button>
+                <form action="{{ route($route, $itemId) }}" method="POST" class="d-inline">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-danger">
+                        <i class="ri-delete-bin-7-line align-middle me-1"></i> {{ $deleteButtonText }}
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
