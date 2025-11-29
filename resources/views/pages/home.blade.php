@@ -58,76 +58,10 @@
             </div>
             <div class="job-cards-grid">
                 @php
-                    $jobs = [
-                        [
-                            'logo' => '/assets/hero-sec.png',
-                            'title' => 'Brand Representative',
-                            'company' => 'Indomobil AION',
-                            'verified' => true,
-                            'salary' => 'IDR 25,000,000 - IDR 35,000,000',
-                            'tags' => ['WFO', 'Contract', 'Specialist/Supervisor'],
-                            'location' => 'Jakarta Timur, Indonesia',
-                            'posted' => 'about 6 hours ago',
-                            'recruiter' => ['name' => 'Wahyu P. Recruitment', 'avatar' => 'WP'],
-                        ],
-                        [
-                            'logo' => '/assets/hero-sec.png',
-                            'title' => 'Sales Supervisor - Modern Trade',
-                            'company' => 'Sukanda Djaya',
-                            'verified' => true,
-                            'salary' => 'Not Disclose',
-                            'tags' => ['WFO', 'Full Time', 'Specialist/Supervisor'],
-                            'location' => 'Jakarta, Indonesia',
-                            'posted' => 'about 6 hours ago',
-                            'recruiter' => ['name' => 'Maytri • HR', 'avatar' => 'MD'],
-                        ],
-                        [
-                            'logo' => '/assets/hero-sec.png',
-                            'title' => 'Telesales - Credit Consultant',
-                            'company' => 'Dolpheen Indonesia',
-                            'verified' => true,
-                            'salary' => 'Not Disclose',
-                            'tags' => ['WFO', 'Full Time', 'Entry'],
-                            'location' => 'Jakarta Selatan, Indonesia',
-                            'posted' => 'about 6 hours ago',
-                            'recruiter' => ['name' => 'Abraham • HR', 'avatar' => 'AB'],
-                        ],
-                        [
-                            'logo' => '/assets/hero-sec.png',
-                            'title' => 'Public Relations',
-                            'company' => 'BlueFocus',
-                            'verified' => true,
-                            'salary' => 'Not Disclose',
-                            'tags' => ['WFO', 'Full Time', 'Senior'],
-                            'location' => 'Jakarta Selatan, Indonesia',
-                            'posted' => 'about 8 hours ago',
-                            'recruiter' => ['name' => 'Chunyan • HR', 'avatar' => 'CY'],
-                        ],
-                        [
-                            'logo' => '/assets/hero-sec.png',
-                            'title' => 'Business Development',
-                            'company' => 'BlueFocus',
-                            'verified' => true,
-                            'salary' => 'Not Disclose',
-                            'tags' => ['WFO', 'Full Time', 'Senior'],
-                            'location' => 'Jakarta Selatan, Indonesia',
-                            'posted' => 'about 8 hours ago',
-                            'recruiter' => ['name' => 'Chunyan • HR', 'avatar' => 'CY'],
-                        ],
-                        [
-                            'logo' => '/assets/hero-sec.png',
-                            'title' => 'Advanced Indonesian/English Editor',
-                            'company' => 'PT Dali Foods Indonesia',
-                            'verified' => true,
-                            'salary' => 'CNY 3,000 - CNY 5,000',
-                            'tags' => ['WFO', 'Full Time', 'Entry'],
-                            'location' => 'Kabupaten Karawang, Indonesia',
-                            'posted' => 'about 8 hours ago',
-                            'recruiter' => ['name' => 'ZHENGSIKAI Human Resources', 'avatar' => 'ZH'],
-                        ],
-                    ];
+                    // Use jobs from controller, fallback to empty array if not provided
+                    $jobs = $jobs ?? [];
                 @endphp
-                @foreach($jobs as $index => $job)
+                @forelse($jobs as $index => $job)
                     <article class="job-card" data-aos="fade-up" data-aos-delay="{{ ($index % 3) * 100 }}">
                         <div class="job-card__header">
                             <div class="job-card__logo">
@@ -137,7 +71,7 @@
                                 </div>
                             </div>
                         </div>
-                        <a href="{{ route('job.detail', ['id' => $index + 1]) }}" class="job-card__link">
+                        <a href="{{ route('job.detail', ['id' => $job['id'] ?? ($index + 1)]) }}" class="job-card__link">
                         <div class="job-card__body">
                             <h3 class="job-card__title">{{ $job['title'] }}</h3>
                             <div class="job-card__company">
@@ -174,7 +108,11 @@
                         </div>
                         </a>
                     </article>
-                @endforeach
+                @empty
+                    <div class="col-12 text-center py-5">
+                        <p class="text-muted">No job listings available at the moment. Please check back later.</p>
+                    </div>
+                @endforelse
             </div>
             <div class="job-listings__cta" data-aos="fade-up" data-aos-delay="300">
                 <a href="{{ route('jobs') }}" class="cta-primary cta-primary--orange">Explore Jobs</a>

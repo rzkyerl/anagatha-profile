@@ -61,21 +61,26 @@
                         aria-haspopup="true"
                         data-user-dropdown-toggle>
                         <div class="user-dropdown__avatar">
-                            @if($user->avatar ?? null)
-                                <img src="{{ $user->avatar }}" alt="{{ $user->name }}" />
+                            @if($user && $user->avatar)
+                                <img src="{{ route('profile.avatar', $user->avatar) }}" alt="{{ $user->name ?? 'User' }}" />
                             @else
-                                <span>{{ strtoupper(substr($user->name ?? 'U', 0, 1)) }}</span>
+                                @php
+                                    $firstInitial = $user && $user->first_name ? strtoupper(substr($user->first_name, 0, 1)) : '';
+                                    $lastInitial = $user && $user->last_name ? strtoupper(substr($user->last_name, 0, 1)) : '';
+                                    $initials = trim($firstInitial . $lastInitial) ?: 'U';
+                                @endphp
+                                <span>{{ $initials }}</span>
                             @endif
                         </div>
-                        <span class="user-dropdown__name">{{ $user->name ?? 'User' }}</span>
+                        <span class="user-dropdown__name">{{ $user->name ?? ($user && ($user->first_name || $user->last_name) ? trim($user->first_name . ' ' . $user->last_name) : 'User') }}</span>
                         <i class="fa-solid fa-chevron-down user-dropdown__icon" aria-hidden="true"></i>
                     </button>
                     <div class="user-dropdown__menu" role="menu">
-                        <a href="{{ route('profile.test') }}" class="user-dropdown__item" role="menuitem">
+                        <a href="{{ route('profile') }}" class="user-dropdown__item" role="menuitem">
                             <i class="fa-solid fa-user" aria-hidden="true"></i>
                             <span>Profile</span>
                         </a>
-                        <a href="{{ route('history.test') }}" class="user-dropdown__item" role="menuitem">
+                        <a href="{{ route('history') }}" class="user-dropdown__item" role="menuitem">
                             <i class="fa-solid fa-clock-rotate-left" aria-hidden="true"></i>
                             <span>History</span>
                         </a>
@@ -139,62 +144,14 @@
                         </a>
                     </div>
                 @else
-                    {{-- Testing User Dropdown (for non-landing pages) --}}
-                    <div class="user-dropdown" data-user-dropdown>
-                        <button type="button" 
-                            class="user-dropdown__trigger"
-                            aria-expanded="false"
-                            aria-haspopup="true"
-                            data-user-dropdown-toggle>
-                            <div class="user-dropdown__avatar">
-                                <i class="fa-solid fa-user" aria-hidden="true"></i>
-                            </div>
-                            <span class="user-dropdown__name">Testing Web</span>
-                            <i class="fa-solid fa-chevron-down user-dropdown__icon" aria-hidden="true"></i>
-                        </button>
-                        <div class="user-dropdown__menu" role="menu">
-                            <a href="{{ route('profile.test') }}" class="user-dropdown__item" role="menuitem">
-                                <i class="fa-solid fa-user" aria-hidden="true"></i>
-                                <span>Profile</span>
-                            </a>
-                            <a href="{{ route('history.test') }}" class="user-dropdown__item" role="menuitem">
-                                <i class="fa-solid fa-clock-rotate-left" aria-hidden="true"></i>
-                                <span>History</span>
-                            </a>
-                            
-                            {{-- Language Submenu --}}
-                            <div class="user-dropdown__submenu" data-language-submenu>
-                                <button type="button" class="user-dropdown__item user-dropdown__item--submenu" role="menuitem">
-                                    <i class="fa-solid fa-language" aria-hidden="true"></i>
-                                    <span>Language</span>
-                                    <i class="fa-solid fa-chevron-right user-dropdown__submenu-icon" aria-hidden="true"></i>
-                                </button>
-                                <div class="user-dropdown__submenu-menu" role="menu">
-                                    <button type="button"
-                                        class="user-dropdown__submenu-item {{ $currentLocale === 'en' ? 'is-active' : '' }}"
-                                        data-language="en" 
-                                        data-language-url="{{ route('lang.switch', 'en') }}"
-                                        role="menuitem">
-                                        English
-                                    </button>
-                                    <button type="button"
-                                        class="user-dropdown__submenu-item {{ $currentLocale === 'id' ? 'is-active' : '' }}"
-                                        data-language="id" 
-                                        data-language-url="{{ route('lang.switch', 'id') }}"
-                                        role="menuitem">
-                                        Bahasa Indonesia
-                                    </button>
-                                </div>
-                            </div>
-
-                            <form method="POST" action="{{ route('logout') }}" class="user-dropdown__logout-form">
-                                @csrf
-                                <button type="submit" class="user-dropdown__item user-dropdown__item--logout" role="menuitem">
-                                    <i class="fa-solid fa-sign-out-alt" aria-hidden="true"></i>
-                                    <span>Logout</span>
-                                </button>
-                            </form>
-                        </div>
+                    {{-- Login & Register Buttons (for non-landing pages) --}}
+                    <div class="auth-buttons">
+                        <a href="{{ route('login') }}" class="btn-login">
+                            <span>Login</span>
+                        </a>
+                        <a href="{{ route('register') }}" class="btn-register">
+                            <span>Register</span>
+                        </a>
                     </div>
 
                     {{-- Mobile Menu Toggle --}}

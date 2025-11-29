@@ -4,6 +4,7 @@
 @section('body_class', 'page job-application-page')
 
 @section('content')
+
 <div class="job-application-container">
     <div class="job-application-card">
         {{-- Header Section --}}
@@ -12,11 +13,60 @@
                 <img src="/assets/hero-sec.png" alt="Anagata Executive Logo" />
             </div>
             <h1 class="job-application-title">Job Application Form</h1>
+            @if(isset($job) && isset($job['title']))
+                <div class="job-application-job-info">
+                    <p class="job-application-job-title">Applying for: <strong>{{ $job['title'] }}</strong></p>
+                    @if(isset($job['company']))
+                        <p class="job-application-job-company">at {{ $job['company'] }}</p>
+                    @endif
+                </div>
+            @endif
             <p class="job-application-subtitle">Please fill out all required fields to complete your application</p>
         </div>
 
-        <form method="POST" action="#" class="job-application-form" id="jobApplicationForm" enctype="multipart/form-data">
+        {{-- Already Applied Warning --}}
+        @if(isset($hasApplied) && $hasApplied)
+            <div class="job-application-already-applied" style="padding: 20px; margin: 20px; background-color: #fef3c7; border: 2px solid #f59e0b; border-radius: 8px; text-align: center;">
+                <div style="font-size: 48px; color: #f59e0b; margin-bottom: 10px;">
+                    <i class="fa-solid fa-circle-check"></i>
+                </div>
+                <h2 style="color: #92400e; margin-bottom: 10px; font-size: 24px;">You Have Already Applied!</h2>
+                <p style="color: #78350f; margin-bottom: 15px; font-size: 16px;">
+                    You have already submitted an application for this job position. Please check your application history to view the status.
+                </p>
+                @if(isset($existingApplication))
+                    <p style="color: #78350f; margin-bottom: 15px; font-size: 14px;">
+                        <strong>Application Status:</strong> 
+                        <span style="text-transform: capitalize;">{{ $existingApplication->status }}</span>
+                    </p>
+                    <p style="color: #78350f; margin-bottom: 20px; font-size: 14px;">
+                        <strong>Applied Date:</strong> 
+                        {{ $existingApplication->applied_at ? \Carbon\Carbon::parse($existingApplication->applied_at)->format('F d, Y') : 'N/A' }}
+                    </p>
+                @endif
+                <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                    <a href="{{ route('history') }}" style="display: inline-block; padding: 12px 24px; background-color: #f59e0b; color: white; text-decoration: none; border-radius: 6px; font-weight: 600; transition: background-color 0.3s;">
+                        <i class="fa-solid fa-history"></i> View Application History
+                    </a>
+                    <a href="{{ route('jobs') }}" style="display: inline-block; padding: 12px 24px; background-color: #6b7280; color: white; text-decoration: none; border-radius: 6px; font-weight: 600; transition: background-color 0.3s;">
+                        <i class="fa-solid fa-briefcase"></i> Browse Other Jobs
+                    </a>
+                </div>
+            </div>
+        @endif
+
+        <form method="POST" action="{{ route('job.application.store') }}" class="job-application-form" id="jobApplicationForm" enctype="multipart/form-data" @if(isset($hasApplied) && $hasApplied) style="pointer-events: none; opacity: 0.6;" @endif>
             @csrf
+            
+            {{-- Hidden field for job listing ID (required) --}}
+            @if(isset($job) && isset($job['id']))
+                <input type="hidden" name="job_listing_id" value="{{ $job['id'] }}" required>
+            @elseif(request()->has('job_id'))
+                <input type="hidden" name="job_listing_id" value="{{ request()->input('job_id') }}" required>
+            @else
+                {{-- If no job ID, redirect will happen in controller --}}
+                <input type="hidden" name="job_listing_id" value="" required>
+            @endif
 
             {{-- Personal Information Section --}}
             <div class="form-section">
@@ -406,6 +456,16 @@
 
             {{-- Submit Button --}}
             <div class="form-actions">
+                @if(isset($hasApplied) && $hasApplied)
+                    <button type="button" class="job-application-submit-btn" id="submitBtn" disabled style="opacity: 0.5; cursor: not-allowed;">
+                        <i class="fa-solid fa-check-circle"></i>
+                        Already Applied
+                    </button>
+                    <p class="form-note" style="color: #f59e0b;">
+                        <i class="fa-solid fa-info-circle"></i>
+                        You have already submitted an application for this job. Check your application history for status updates.
+                    </p>
+                @else
                 <button type="submit" class="job-application-submit-btn" id="submitBtn">
                     <i class="fa-solid fa-paper-plane"></i>
                     Submit Application
@@ -414,6 +474,7 @@
                     <i class="fa-solid fa-info-circle"></i>
                     By submitting this form, you agree to our terms and conditions. All fields marked with <span class="required">*</span> are required.
                 </p>
+                @endif
             </div>
         </form>
     </div>
@@ -437,35 +498,11 @@
                 <p class="job-application-error-modal__message">Please fill in all required fields correctly.</p>
                 <ul class="job-application-error-modal__errors" id="errorModalErrorsList">
                     <!-- Errors will be populated here -->
-                </ul>
-            </div>
-            <div class="job-application-error-modal__actions">
-                <button type="button" class="job-application-error-modal__btn job-application-error-modal__btn--primary" data-error-modal-close>
-                    OK, I'll fix it
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-
-{{-- Validation Error Modal --}}
-<div class="job-application-error-modal" id="jobApplicationErrorModal" hidden aria-hidden="true">
-    <div class="job-application-error-modal__backdrop" data-error-modal-close></div>
-    <div class="job-application-error-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="error-modal-title" tabindex="-1">
-        <div class="job-application-error-modal__content">
-            <div class="job-application-error-modal__header">
-                <div class="job-application-error-modal__icon">
-                    <i class="fa-solid fa-circle-exclamation"></i>
-                </div>
-                <h2 class="job-application-error-modal__title" id="error-modal-title">Validation Error</h2>
-                <button type="button" class="job-application-error-modal__close" aria-label="Close modal" data-error-modal-close>
-                    <i class="fa-solid fa-xmark" aria-hidden="true"></i>
-                </button>
-            </div>
-            <div class="job-application-error-modal__body">
-                <p class="job-application-error-modal__message">Please fill in all required fields correctly.</p>
-                <ul class="job-application-error-modal__errors" id="errorModalErrorsList">
-                    <!-- Errors will be populated here -->
+                    @if($errors->any())
+                        @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    @endif
                 </ul>
             </div>
             <div class="job-application-error-modal__actions">
@@ -494,7 +531,7 @@
                 You can track the status and view the continuation of your application in the History
             </p>
             <div class="job-application-success-modal__actions">
-                <a href="{{ route('history.test') }}" class="job-application-success-modal__btn job-application-success-modal__btn--primary">
+                <a href="{{ route('history') }}" class="job-application-success-modal__btn job-application-success-modal__btn--primary">
                     View History
                 </a>
                 <a href="{{ route('jobs') }}" class="job-application-success-modal__btn job-application-success-modal__btn--secondary">
@@ -508,6 +545,29 @@
 @push('scripts')
 <script nonce="{{ $cspNonce ?? '' }}">
     document.addEventListener('DOMContentLoaded', function() {
+        // Check if user has already applied
+        const hasApplied = @json(isset($hasApplied) && $hasApplied);
+        
+        if (hasApplied) {
+            // Disable all form inputs
+            const form = document.getElementById('jobApplicationForm');
+            if (form) {
+                const inputs = form.querySelectorAll('input, textarea, select, button[type="submit"]');
+                inputs.forEach(input => {
+                    input.disabled = true;
+                });
+            }
+            
+            // Prevent form submission
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    alert('You have already applied for this job position. Please check your application history.');
+                    return false;
+                });
+            }
+        }
+        
         // Helper function for URL validation
         function isValidUrl(string) {
             try {
@@ -704,13 +764,27 @@
         if (form) {
             console.log('Form found, adding submit listener'); // Debug log
             
-            // Handle form submission
-            function processFormSubmission(e) {
-                if (e) {
+            // Check if user has already applied - if so, prevent all form submissions
+            if (hasApplied) {
+                form.addEventListener('submit', function(e) {
                     e.preventDefault();
+                    e.stopPropagation();
+                    alert('You have already applied for this job position. Please check your application history.');
+                    return false;
+                });
+                return; // Exit early, don't process form validation
                 }
                 
+            // Handle form submission
+            function processFormSubmission(e) {
                 console.log('Form submit event triggered'); // Debug log
+                
+                // Double check - prevent if already applied
+                if (hasApplied) {
+                    e.preventDefault();
+                    alert('You have already applied for this job position. Please check your application history.');
+                    return false;
+                }
                 
                 let isValid = true;
                 let errors = [];
@@ -820,29 +894,37 @@
                             firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
                         }, 100);
                     }
+                    // Re-enable submit button if validation fails
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Submit Application';
+                    }
                     return false;
                 }
 
-                console.log('All validations passed, showing success modal'); // Debug log
+                console.log('All validations passed, submitting form to server'); // Debug log
                 
-                // Show success modal
-                setTimeout(function() {
-                    showSuccessModal();
-                }, 100);
+                // Disable submit button to prevent double submission
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Submitting...';
+                }
                 
-                return false;
+                // Allow form to submit normally to backend
+                // Don't prevent default, let Laravel handle the submission
+                return true;
             }
             
             // Add submit event listener to form
-            form.addEventListener('submit', processFormSubmission);
-            
-            // Also add click handler to submit button as backup
-            if (submitBtn) {
-                submitBtn.addEventListener('click', function(e) {
-                    console.log('Submit button clicked directly'); // Debug log
-                    processFormSubmission(e);
-                });
-            }
+            form.addEventListener('submit', function(e) {
+                // Only prevent default if validation fails
+                const isValid = processFormSubmission(e);
+                if (!isValid) {
+                    e.preventDefault();
+                    return false;
+                }
+                // If validation passes, let form submit normally (don't prevent default)
+            });
         } else {
             console.error('Form element not found!'); // Debug log
         }
@@ -857,6 +939,33 @@
                 // Show modal after a short delay for better UX
                 setTimeout(function() {
                     showSuccessModal();
+                }, 300);
+            }
+        @endif
+        
+        // Check if there are validation errors from backend
+        @if($errors->any())
+            const backendErrors = [];
+            @foreach($errors->all() as $error)
+                backendErrors.push('{{ $error }}');
+            @endforeach
+            
+            if (backendErrors.length > 0) {
+                // Re-enable submit button if there are backend errors
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Submit Application';
+                }
+                
+                setTimeout(function() {
+                    showErrorModal(backendErrors);
+                    // Scroll to first error field if exists
+                    const firstErrorField = form.querySelector('.is-invalid, .form-input.is-invalid, .file-upload-label.is-invalid');
+                    if (firstErrorField) {
+                        setTimeout(() => {
+                            firstErrorField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }, 300);
+                    }
                 }, 300);
             }
         @endif

@@ -20,123 +20,63 @@
                         <i class="fa-solid fa-file-lines history-section-icon"></i>
                         My Applications
                     </h2>
-                    <span class="history-section-count" id="applicationsCount">3</span>
+                    <span class="history-section-count" id="applicationsCount">{{ count($applications ?? []) }}</span>
                 </div>
 
                 <div class="history-list" id="applicationsList">
-                    {{-- Application Item 1 --}}
-                    <div class="history-item history-item--application" data-aos="fade-up">
+                    @forelse($applications ?? [] as $index => $application)
+                    <div class="history-item history-item--application" data-aos="fade-up" data-aos-delay="{{ $index * 50 }}">
                         <div class="history-item__header">
                             <div class="history-item__logo">
-                                <img src="/assets/hero-sec.png" alt="Company Logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                                <div class="history-item__logo-placeholder" style="display: none;">AE</div>
+                                <img src="{{ $application['companyLogo'] }}" alt="{{ $application['company'] }} Logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                <div class="history-item__logo-placeholder" style="display: none;">{{ $application['companyLogoPlaceholder'] }}</div>
                             </div>
-                            <div class="history-item__status history-item__status--pending">
-                                <i class="fa-solid fa-clock"></i>
-                                <span>Pending</span>
+                            <div class="history-item__status history-item__status--{{ $application['status'] }}">
+                                <i class="fa-solid {{ $application['statusIcon'] }}"></i>
+                                <span>{{ $application['statusText'] }}</span>
                             </div>
                         </div>
                         <div class="history-item__body">
-                            <h3 class="history-item__title">Senior Data Analyst</h3>
+                            <h3 class="history-item__title">{{ $application['jobTitle'] }}</h3>
                             <div class="history-item__company">
                                 <i class="fa-solid fa-building"></i>
-                                <span>Anagata Executive</span>
+                                <span>{{ $application['company'] }}</span>
                             </div>
                             <div class="history-item__meta">
                                 <div class="history-item__meta-item">
                                     <i class="fa-solid fa-calendar"></i>
-                                    <span>Applied on: January 15, 2024</span>
+                                    <span>Applied on: {{ $application['appliedDate'] }}</span>
                                 </div>
                                 <div class="history-item__meta-item">
                                     <i class="fa-solid fa-location-dot"></i>
-                                    <span>Jakarta, Indonesia</span>
+                                    <span>{{ $application['location'] }}</span>
                                 </div>
                             </div>
                         </div>
                         <div class="history-item__footer">
-                            <button type="button" class="history-item__link" data-application-modal-open data-application-id="1">
-                                View Details
-                                <i class="fa-solid fa-arrow-right"></i>
-                            </button>
-                        </div>
-                    </div>  
-
-                    {{-- Application Item 2 --}}
-                    <div class="history-item history-item--application" data-aos="fade-up" data-aos-delay="50">
-                        <div class="history-item__header">
-                            <div class="history-item__logo">
-                                <img src="/assets/hero-sec.png" alt="Company Logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                                <div class="history-item__logo-placeholder" style="display: none;">ID</div>
-                            </div>
-                            <div class="history-item__status history-item__status--review">
-                                <i class="fa-solid fa-eye"></i>
-                                <span>Under Review</span>
-                            </div>
-                        </div>
-                        <div class="history-item__body">
-                            <h3 class="history-item__title">Brand Representative</h3>
-                            <div class="history-item__company">
-                                <i class="fa-solid fa-building"></i>
-                                <span>Indomobil AION</span>
-                            </div>
-                            <div class="history-item__meta">
-                                <div class="history-item__meta-item">
-                                    <i class="fa-solid fa-calendar"></i>
-                                    <span>Applied on: January 10, 2024</span>
-                                </div>
-                                <div class="history-item__meta-item">
-                                    <i class="fa-solid fa-location-dot"></i>
-                                    <span>Jakarta Timur, Indonesia</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="history-item__footer">
-                            <button type="button" class="history-item__link" data-application-modal-open data-application-id="2">
+                            <button type="button" class="history-item__link" data-application-modal-open data-application-id="{{ $application['id'] }}">
                                 View Details
                                 <i class="fa-solid fa-arrow-right"></i>
                             </button>
                         </div>
                     </div>
-
-                    {{-- Application Item 3 --}}
-                    <div class="history-item history-item--application" data-aos="fade-up" data-aos-delay="100">
-                        <div class="history-item__header">
-                            <div class="history-item__logo">
-                                <img src="/assets/hero-sec.png" alt="Company Logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                                <div class="history-item__logo-placeholder" style="display: none;">TC</div>
-                            </div>
-                            <div class="history-item__status history-item__status--accepted">
-                                <i class="fa-solid fa-check-circle"></i>
-                                <span>Accepted</span>
-                            </div>
-                        </div>
-                        <div class="history-item__body">
-                            <h3 class="history-item__title">Full Stack Developer</h3>
-                            <div class="history-item__company">
-                                <i class="fa-solid fa-building"></i>
-                                <span>Tech Company</span>
-                            </div>
-                            <div class="history-item__meta">
-                                <div class="history-item__meta-item">
-                                    <i class="fa-solid fa-calendar"></i>
-                                    <span>Applied on: December 28, 2023</span>
-                                </div>
-                                <div class="history-item__meta-item">
-                                    <i class="fa-solid fa-location-dot"></i>
-                                    <span>Remote</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="history-item__footer">
-                            <button type="button" class="history-item__link" data-application-modal-open data-application-id="3">
-                                View Details
-                                <i class="fa-solid fa-arrow-right"></i>
-                            </button>
-                        </div>
-                    </div>
+                    @empty
+                    @endforelse
                 </div>
 
                 {{-- Empty State for Applications --}}
+                @if(empty($applications) || count($applications) === 0)
+                <div class="history-empty" id="applicationsEmpty" style="display: block;">
+                    <div class="history-empty__icon">
+                        <i class="fa-solid fa-file-lines"></i>
+                    </div>
+                    <h3 class="history-empty__title">No Applications Yet</h3>
+                    <p class="history-empty__message">You haven't applied to any jobs yet. Start exploring available positions!</p>
+                    <a href="{{ route('jobs') }}" class="history-empty__action cta-primary cta-primary--brand">
+                        Browse Jobs
+                    </a>
+                </div>
+                @else
                 <div class="history-empty" id="applicationsEmpty" style="display: none;">
                     <div class="history-empty__icon">
                         <i class="fa-solid fa-file-lines"></i>
@@ -147,6 +87,7 @@
                         Browse Jobs
                     </a>
                 </div>
+                @endif
             </div>
         </div>
     </div>
@@ -273,48 +214,8 @@
         const closeButtons = document.querySelectorAll('[data-application-modal-close]');
         const backdrop = modal?.querySelector('.application-detail-modal__backdrop');
 
-        // Application data (in real app, this would come from backend)
-        const applicationsData = {
-            1: {
-                jobTitle: 'Senior Data Analyst',
-                company: 'Anagata Executive',
-                companyLogo: '/assets/hero-sec.png',
-                companyLogoPlaceholder: 'AE',
-                status: 'pending',
-                statusText: 'Pending',
-                statusIcon: 'fa-clock',
-                statusMessage: 'Your application is currently being reviewed by the hiring team. We will notify you once there\'s an update.',
-                appliedDate: 'January 15, 2024',
-                location: 'Jakarta, Indonesia',
-                jobLink: '{{ route("job.detail", ["id" => 1]) }}'
-            },
-            2: {
-                jobTitle: 'Brand Representative',
-                company: 'Indomobil AION',
-                companyLogo: '/assets/hero-sec.png',
-                companyLogoPlaceholder: 'ID',
-                status: 'review',
-                statusText: 'Under Review',
-                statusIcon: 'fa-eye',
-                statusMessage: 'Your application has been reviewed and is currently in the selection process. We will contact you soon.',
-                appliedDate: 'January 10, 2024',
-                location: 'Jakarta Timur, Indonesia',
-                jobLink: '{{ route("job.detail", ["id" => 2]) }}'
-            },
-            3: {
-                jobTitle: 'Full Stack Developer',
-                company: 'Tech Company',
-                companyLogo: '/assets/hero-sec.png',
-                companyLogoPlaceholder: 'TC',
-                status: 'accepted',
-                statusText: 'Accepted',
-                statusIcon: 'fa-check-circle',
-                statusMessage: 'Congratulations! Your application has been accepted. The company will contact you for the next steps.',
-                appliedDate: 'December 28, 2023',
-                location: 'Remote',
-                jobLink: '{{ route("job.detail", ["id" => 3]) }}'
-            }
-        };
+        // Application data from backend
+        const applicationsData = @json(collect($applications ?? [])->keyBy('id')->toArray());
 
         function openModal(applicationId) {
             const data = applicationsData[applicationId];
