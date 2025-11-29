@@ -4,6 +4,37 @@
 @section('body_class', 'page profile-page')
 
 @section('content')
+    @if (session('status'))
+        <div class="toast-stack" data-toast>
+            <div class="toast toast--{{ session('toast_type', 'success') }}" role="status" aria-live="polite">
+                <div class="toast__icon">
+                    @if (session('toast_type', 'success') === 'success')
+                        <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
+                    @elseif (session('toast_type') === 'warning')
+                        <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
+                    @else
+                        <i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i>
+                    @endif
+                </div>
+                <div class="toast__body">
+                    <p class="toast__title">
+                        @if (session('toast_type', 'success') === 'success')
+                            {{ __('app.toast.success') }}
+                        @elseif (session('toast_type') === 'warning')
+                            {{ __('app.toast.warning') }}
+                        @else
+                            {{ __('app.toast.error') }}
+                        @endif
+                    </p>
+                    <p class="toast__message">{{ session('status') }}</p>
+                </div>
+                <button type="button" class="toast__close" aria-label="{{ __('app.aria.close_toast') }}">
+                    <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+                </button>
+            </div>
+        </div>
+    @endif
+
 <div class="profile-container">
     <div class="profile-card">
         {{-- Header Section --}}
@@ -30,12 +61,16 @@
                                 accept="image/*"
                             />
                             <label for="avatar" class="avatar-preview">
-                                <div class="avatar-placeholder">
+                                <div class="avatar-placeholder" id="avatarPlaceholder" @if(auth()->user()?->avatar) style="display: none;" @endif>
                                     <i class="fa-solid fa-user"></i>
                                 </div>
-                                <span class="avatar-upload-text">Upload Picture</span>
+                                <span class="avatar-upload-text">{{ auth()->user()?->avatar ? 'Change Picture' : 'Upload Picture' }}</span>
                             </label>
-                            <div class="avatar-preview-image" id="avatarPreview"></div>
+                            <div class="avatar-preview-image" id="avatarPreview" @if(auth()->user()?->avatar) style="display: block;" @endif>
+                                @if(auth()->user()?->avatar)
+                                    <img src="{{ route('profile.avatar', auth()->user()->avatar) }}" alt="Avatar" />
+                                @endif
+                            </div>
                         </div>
                     </div>
 
@@ -114,22 +149,43 @@
                 <div class="profile-right">
                     <div class="profile-form-fields">
                         <div class="profile-form-group">
-                            <label for="name" class="profile-form-label">
-                                Name:
+                            <label for="first_name" class="profile-form-label">
+                                First Name:
                             </label>
                             <div class="profile-form-input-wrapper">
                                 <input 
                                     type="text" 
-                                    id="name" 
-                                    name="name" 
-                                    class="profile-form-input @error('name') is-invalid @enderror" 
-                                    placeholder="Enter your name"
-                                    value="{{ old('name', auth()->user()?->name ?? '') }}"
+                                    id="first_name" 
+                                    name="first_name" 
+                                    class="profile-form-input @error('first_name') is-invalid @enderror" 
+                                    placeholder="Enter your first name"
+                                    value="{{ old('first_name', auth()->user()?->first_name ?? '') }}"
                                     required
                                 />
                                 <i class="fa-solid fa-circle-info profile-form-info-icon"></i>
                             </div>
-                            @error('name')
+                            @error('first_name')
+                                <span class="profile-form-error">{{ $message }}</span>
+                            @enderror
+                        </div>
+
+                        <div class="profile-form-group">
+                            <label for="last_name" class="profile-form-label">
+                                Last Name:
+                            </label>
+                            <div class="profile-form-input-wrapper">
+                                <input 
+                                    type="text" 
+                                    id="last_name" 
+                                    name="last_name" 
+                                    class="profile-form-input @error('last_name') is-invalid @enderror" 
+                                    placeholder="Enter your last name"
+                                    value="{{ old('last_name', auth()->user()?->last_name ?? '') }}"
+                                    required
+                                />
+                                <i class="fa-solid fa-circle-info profile-form-info-icon"></i>
+                            </div>
+                            @error('last_name')
                                 <span class="profile-form-error">{{ $message }}</span>
                             @enderror
                         </div>
@@ -167,7 +223,6 @@
                                     class="profile-form-input @error('phone') is-invalid @enderror" 
                                     placeholder="+62 812-3456-7890"
                                     value="{{ old('phone', auth()->user()?->phone ?? '') }}"
-                                    required
                                 />
                                 <i class="fa-solid fa-circle-info profile-form-info-icon"></i>
                             </div>
@@ -228,12 +283,13 @@
 </div>
 
 @push('scripts')
+<script src="/js/contact-form.js"></script>
 <script nonce="{{ $cspNonce ?? '' }}">
     document.addEventListener('DOMContentLoaded', function() {
         // Avatar preview functionality
         const avatarInput = document.getElementById('avatar');
         const avatarPreview = document.getElementById('avatarPreview');
-        const avatarPlaceholder = document.querySelector('.avatar-placeholder');
+        const avatarPlaceholder = document.getElementById('avatarPlaceholder');
         const avatarUploadText = document.querySelector('.avatar-upload-text');
 
         if (avatarInput) {
@@ -242,10 +298,16 @@
                 if (file) {
                     const reader = new FileReader();
                     reader.onload = function(e) {
+                        if (avatarPreview) {
                         avatarPreview.innerHTML = `<img src="${e.target.result}" alt="Avatar Preview" />`;
                         avatarPreview.style.display = 'block';
+                        }
+                        if (avatarPlaceholder) {
                         avatarPlaceholder.style.display = 'none';
+                        }
+                        if (avatarUploadText) {
                         avatarUploadText.textContent = 'Change Picture';
+                        }
                     };
                     reader.readAsDataURL(file);
                 }
@@ -270,11 +332,27 @@
                     if (!value) {
                         isValid = false;
                         field.classList.add('is-invalid');
-                        errors.push(`${field.previousElementSibling?.textContent || field.name} is required`);
+                        const label = form.querySelector(`label[for="${field.id}"]`);
+                        const fieldName = label ? label.textContent.replace(':', '').trim() : field.name;
+                        errors.push(`${fieldName} is required`);
                     } else {
                         field.classList.remove('is-invalid');
                     }
                 });
+                
+                // Validate first_name and last_name
+                const firstName = document.getElementById('first_name');
+                const lastName = document.getElementById('last_name');
+                if (firstName && !firstName.value.trim()) {
+                    isValid = false;
+                    firstName.classList.add('is-invalid');
+                    errors.push('First name is required');
+                }
+                if (lastName && !lastName.value.trim()) {
+                    isValid = false;
+                    lastName.classList.add('is-invalid');
+                    errors.push('Last name is required');
+                }
 
                 // Validate password match
                 const password = document.getElementById('password');
