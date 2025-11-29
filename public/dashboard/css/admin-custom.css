@@ -1,0 +1,369 @@
+/* 
+ * Admin Custom Color Override
+ * Override Bootstrap colors to match brand colors from style.css
+ */
+
+:root {
+  /* Brand Colors from style.css */
+  --brand-900: #800A0A;
+  --brand-700: #800A0A;
+  --brand-500: #800A0A;
+  --brand-400: #D21A1A;
+  --brand-200: #f5e8e8;
+  --accent-500: #D21A1A;
+  --text-900: #101728;
+  --text-700: #2f3b52;
+  --text-500: #53617c;
+  --surface-100: #ffffff;
+  --surface-200: #f5f7fb;
+  --surface-300: #e8edf5;
+  --border-200: #D9D9D9;
+  
+  /* Override Bootstrap Primary Colors */
+  --bs-primary: var(--brand-900) !important;
+  --bs-primary-rgb: 128, 10, 10 !important;
+  
+  /* Override Bootstrap Danger Colors */
+  --bs-danger: var(--brand-400) !important;
+  --bs-danger-rgb: 210, 26, 26 !important;
+  --bs-red: var(--brand-400) !important;
+  
+  /* Override Bootstrap Purple/Info for consistency */
+  --bs-purple: var(--brand-400) !important;
+  
+  /* Override Body Colors */
+  --bs-body-color: var(--text-700) !important;
+  --bs-body-color-rgb: 47, 59, 82 !important;
+  --bs-body-bg: var(--surface-200) !important;
+  --bs-body-bg-rgb: 245, 247, 251 !important;
+  
+  /* Override Gray Colors */
+  --bs-gray-700: var(--text-700) !important;
+  --bs-gray-800: var(--text-900) !important;
+  --bs-gray-900: var(--text-900) !important;
+  --bs-gray-200: var(--surface-200) !important;
+  --bs-gray-300: var(--surface-300) !important;
+  --bs-light: var(--surface-200) !important;
+  --bs-dark: var(--text-900) !important;
+  --bs-dark-rgb: 16, 23, 40 !important;
+  
+  /* Override Gradient */
+  --bs-gradient: linear-gradient(180deg, rgba(128, 10, 10, 0.15), rgba(128, 10, 10, 0)) !important;
+}
+
+/* Override button primary colors */
+.btn-primary {
+  background-color: var(--brand-900) !important;
+  border-color: var(--brand-900) !important;
+  color: #fff !important;
+}
+
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active,
+.btn-primary.active {
+  background-color: var(--brand-400) !important;
+  border-color: var(--brand-400) !important;
+  color: #fff !important;
+}
+
+.btn-primary:focus {
+  box-shadow: 0 0 0 0.2rem rgba(128, 10, 10, 0.25) !important;
+}
+
+/* Override danger button */
+.btn-danger {
+  background-color: var(--brand-400) !important;
+  border-color: var(--brand-400) !important;
+}
+
+.btn-danger:hover,
+.btn-danger:focus,
+.btn-danger:active {
+  background-color: var(--brand-900) !important;
+  border-color: var(--brand-900) !important;
+}
+
+/* Override link colors */
+a {
+  color: var(--brand-400);
+}
+
+a:hover {
+  color: var(--brand-900);
+}
+
+/* Override navbar/sidebar primary colors */
+.navbar-brand,
+.sidebar-brand {
+  color: var(--brand-900) !important;
+}
+
+/* Override badge primary */
+.badge.bg-primary {
+  background-color: var(--brand-900) !important;
+}
+
+.badge.bg-danger {
+  background-color: var(--brand-400) !important;
+}
+
+/* Override text-primary */
+.text-primary {
+  color: var(--brand-900) !important;
+}
+
+.text-danger {
+  color: var(--brand-400) !important;
+}
+
+/* Override border-primary */
+.border-primary {
+  border-color: var(--brand-900) !important;
+}
+
+/* Override sidebar active states */
+.sidebar-menu .menu-item.active > a,
+.sidebar-menu .menu-item > a:hover {
+  color: var(--brand-400) !important;
+}
+
+/* Override MetisMenu active states */
+.mm-active,
+.mm-active > a,
+.mm-active > a i,
+.mm-active > i,
+.mm-active .active,
+.mm-active .active i {
+  color: var(--brand-900) !important;
+}
+
+/* Override sidebar menu hover */
+#sidebar-menu ul li a:hover,
+#sidebar-menu ul li a:hover i {
+  color: var(--brand-400) !important;
+}
+
+/* Override topbar/navbar colors */
+.topbar,
+.navbar,
+#page-topbar {
+  background-color: var(--brand-900) !important;
+}
+
+/* Override header/topbar dark mode */
+body[data-topbar="dark"] #page-topbar {
+  background-color: var(--brand-900) !important;
+}
+
+/* Override navbar brand box */
+.navbar-brand-box {
+  background-color: transparent !important;
+}
+
+body[data-topbar="dark"] .navbar-brand-box {
+  background-color: transparent !important;
+}
+
+/* Override notification dot */
+.noti-dot::after {
+  background-color: var(--brand-400) !important;
+}
+
+/* Override topnav hover and active states */
+.topnav .navbar-nav .nav-link:focus,
+.topnav .navbar-nav .nav-link:hover,
+.topnav .navbar-nav .dropdown-item.active,
+.topnav .navbar-nav .dropdown-item:hover,
+.topnav .navbar-nav .nav-item .nav-link.active,
+.topnav .navbar-nav .dropdown.active > a {
+  color: var(--brand-400) !important;
+}
+
+/* Override colored sidebar background */
+body[data-sidebar="colored"] .vertical-menu,
+body[data-sidebar="colored"] .navbar-brand-box {
+  background: var(--brand-900) !important;
+}
+
+body[data-sidebar="colored"] .mm-active,
+body[data-sidebar="colored"] .mm-active > a,
+body[data-sidebar="colored"] .mm-active > a i,
+body[data-sidebar="colored"] .mm-active > i,
+body[data-sidebar="colored"] .mm-active .active,
+body[data-sidebar="colored"] .mm-active .active i {
+  color: #fff !important;
+}
+
+body[data-sidebar="colored"].vertical-collpsed .vertical-menu #sidebar-menu > ul > li:hover > a {
+  background-color: var(--brand-400) !important;
+  color: #fff !important;
+}
+
+body[data-sidebar="colored"].vertical-collpsed .vertical-menu #sidebar-menu ul li li.mm-active > a,
+body[data-sidebar="colored"].vertical-collpsed .vertical-menu #sidebar-menu ul li li.active > a,
+body[data-sidebar="colored"].vertical-collpsed .vertical-menu #sidebar-menu ul li li a.mm-active,
+body[data-sidebar="colored"].vertical-collpsed .vertical-menu #sidebar-menu ul li li a.active {
+  color: var(--brand-400) !important;
+}
+
+/* Override card header if it uses primary */
+.card-header.bg-primary {
+  background-color: var(--brand-900) !important;
+}
+
+/* Override progress bar primary */
+.progress-bar.bg-primary {
+  background-color: var(--brand-900) !important;
+}
+
+/* Override alert primary */
+.alert-primary {
+  background-color: var(--brand-200);
+  border-color: var(--brand-400);
+  color: var(--brand-900);
+}
+
+/* Override table primary */
+.table-primary {
+  background-color: var(--brand-200);
+  color: var(--brand-900);
+}
+
+.table-primary th,
+.table-primary td {
+  border-color: var(--brand-400);
+}
+
+/* Override avatar with primary background */
+.avatar-title.bg-primary {
+  background-color: var(--brand-900) !important;
+}
+
+.avatar-xs .avatar-title.bg-primary {
+  background-color: var(--brand-900) !important;
+}
+
+/* Override pagination active */
+.page-item.active .page-link {
+  background-color: var(--brand-900) !important;
+  border-color: var(--brand-900) !important;
+}
+
+.page-link:hover {
+  color: var(--brand-900);
+}
+
+/* Override dropdown menu active */
+.dropdown-item.active,
+.dropdown-item:active {
+  background-color: var(--brand-900) !important;
+}
+
+.dropdown-item:hover {
+  color: var(--brand-900);
+}
+
+/* Override breadcrumb active */
+.breadcrumb-item.active {
+  color: var(--brand-900);
+}
+
+/* Override form control focus */
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--brand-900) !important;
+  box-shadow: 0 0 0 0.2rem rgba(128, 10, 10, 0.25) !important;
+}
+
+/* Override checkbox and radio */
+.form-check-input:checked {
+  background-color: var(--brand-900) !important;
+  border-color: var(--brand-900) !important;
+}
+
+.form-check-input:focus {
+  border-color: var(--brand-900);
+  box-shadow: 0 0 0 0.2rem rgba(128, 10, 10, 0.25);
+}
+
+/* Override switch */
+.form-switch .form-check-input:checked {
+  background-color: var(--brand-900) !important;
+}
+
+/* Override range input */
+.form-range::-webkit-slider-thumb {
+  background-color: var(--brand-900);
+}
+
+.form-range::-moz-range-thumb {
+  background-color: var(--brand-900);
+}
+
+/* Override spinner */
+.spinner-border-primary {
+  border-color: var(--brand-900) !important;
+}
+
+/* Override toast */
+.toast-header {
+  border-bottom-color: var(--brand-200);
+}
+
+/* Override modal header if it uses primary */
+.modal-header.bg-primary {
+  background-color: var(--brand-900) !important;
+}
+
+/* Override list group active */
+.list-group-item.active {
+  background-color: var(--brand-900) !important;
+  border-color: var(--brand-900) !important;
+}
+
+/* Override nav tabs active */
+.nav-tabs .nav-link.active {
+  color: var(--brand-900);
+  border-color: var(--brand-900) var(--brand-900) #fff;
+}
+
+.nav-tabs .nav-link:hover {
+  border-color: var(--brand-200) var(--brand-200) var(--brand-900);
+  color: var(--brand-900);
+}
+
+/* Override nav pills active */
+.nav-pills .nav-link.active {
+  background-color: var(--brand-900) !important;
+}
+
+/* Override tooltip */
+.tooltip-inner {
+  background-color: var(--brand-900);
+}
+
+.tooltip.bs-tooltip-top .tooltip-arrow::before,
+.tooltip.bs-tooltip-auto[data-popper-placement^="top"] .tooltip-arrow::before {
+  border-top-color: var(--brand-900);
+}
+
+/* Override popover */
+.popover-header {
+  background-color: var(--brand-200);
+  border-bottom-color: var(--brand-400);
+  color: var(--brand-900);
+}
+
+/* Override close button on hover */
+.btn-close:focus {
+  box-shadow: 0 0 0 0.2rem rgba(128, 10, 10, 0.25);
+}
+
+/* Override pagination link hover */
+.pagination .page-link:hover {
+  color: var(--brand-900);
+  background-color: var(--brand-200);
+  border-color: var(--brand-200);
+}
+
