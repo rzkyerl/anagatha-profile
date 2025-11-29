@@ -67,34 +67,78 @@
         }
 
         // Salary range filter
-        if (state.salaryRange && salary !== state.salaryRange) {
+        if (state.salaryRange) {
+            const salaryRange = card.dataset.salaryRange || '';
+            const salaryMin = parseFloat(card.dataset.salaryMin || 0);
+            const salaryMax = parseFloat(card.dataset.salaryMax || 0);
+            
+            // If job has no salary data, exclude it when filter is active
+            if (salaryMin === 0 && salaryMax === 0) {
             return false;
+            }
+            
+            // Define job's actual salary range in millions
+            const jobMin = salaryMin;
+            const jobMax = salaryMax > 0 ? salaryMax : 999999; // Use large number if no max (for "X+" format)
+            
+            // Define selected filter range boundaries
+            let filterMin = 0;
+            let filterMax = 0;
+            
+            switch(state.salaryRange) {
+                case '0-5':
+                    filterMin = 0;
+                    filterMax = 5;
+                    break;
+                case '5-10':
+                    filterMin = 5;
+                    filterMax = 10;
+                    break;
+                case '10-20':
+                    filterMin = 10;
+                    filterMax = 20;
+                    break;
+                case '20+':
+                    filterMin = 20;
+                    filterMax = 999999; // No upper limit
+                    break;
+            }
+            
+            // Check if job salary range overlaps with filter range
+            // Two ranges overlap if: jobMin < filterMax AND jobMax > filterMin
+            const overlaps = jobMin < filterMax && jobMax > filterMin;
+            
+            if (!overlaps) {
+                return false;
+            }
         }
 
         // Experience level filter
         if (state.experience) {
             if (state.experience === 'entry' && experience !== 'entry') {
                 return false;
-            } else if (state.experience === '1-3' && !['1-3'].includes(experience)) {
+            } else if (state.experience === '1-3' && experience !== '1-3') {
                 return false;
-            } else if (state.experience === '3-5' && !['3-5'].includes(experience)) {
+            } else if (state.experience === '3-5' && experience !== '3-5') {
                 return false;
             } else if (state.experience === '5+' && experience !== '5+') {
                 return false;
             }
         }
 
-        // Industry filter (not implemented in data yet, but ready for future)
+        // Industry filter
         if (state.industry) {
-            // Can be extended when industry data is available
+            const cardIndustry = card.dataset.industry || '';
+            if (!cardIndustry || cardIndustry !== state.industry) {
+                return false;
+            }
         }
 
-        // Degree filter (not implemented in data yet, but ready for future)
+        // Degree filter
         if (state.degree) {
-            // Can be extended when degree data is available
-            // For now, we'll check if job card has degree data attribute
-            const degree = card.dataset.degree || '';
-            if (degree && degree !== state.degree) {
+            const cardDegree = card.dataset.degree || '';
+            // If filter is set, only show cards that match (ignore cards without degree data)
+            if (!cardDegree || cardDegree !== state.degree) {
                 return false;
             }
         }
@@ -136,17 +180,145 @@
         let messageEl = document.getElementById('noResultsMessage');
         
         if (show && !messageEl) {
+            // Build active filters list
+            const activeFilters = [];
+            if (searchState.jobQuery) {
+                activeFilters.push(`Job: "${searchState.jobQuery}"`);
+            }
+            if (searchState.locationQuery) {
+                activeFilters.push(`Location: "${searchState.locationQuery}"`);
+            }
+            if (searchState.workPreference) {
+                const workPrefLabels = {
+                    'wfo': 'WFO',
+                    'wfh': 'WFH',
+                    'hybrid': 'Hybrid'
+                };
+                activeFilters.push(`Work: ${workPrefLabels[searchState.workPreference] || searchState.workPreference}`);
+            }
+            if (searchState.salaryRange) {
+                const salaryLabels = {
+                    '0-5': 'IDR 0 - 5M',
+                    '5-10': 'IDR 5M - 10M',
+                    '10-20': 'IDR 10M - 20M',
+                    '20+': 'IDR 20M+'
+                };
+                activeFilters.push(`Salary: ${salaryLabels[searchState.salaryRange] || searchState.salaryRange}`);
+            }
+            if (searchState.industry) {
+                const industryLabels = {
+                    'tech': 'Technology',
+                    'finance': 'Finance',
+                    'retail': 'Retail',
+                    'manufacturing': 'Manufacturing'
+                };
+                activeFilters.push(`Industry: ${industryLabels[searchState.industry] || searchState.industry}`);
+            }
+            if (searchState.experience) {
+                const expLabels = {
+                    'entry': 'Entry Level',
+                    '1-3': '1-3 Years',
+                    '3-5': '3-5 Years',
+                    '5+': '5+ Years'
+                };
+                activeFilters.push(`Experience: ${expLabels[searchState.experience] || searchState.experience}`);
+            }
+            if (searchState.degree) {
+                activeFilters.push(`Degree: ${searchState.degree}`);
+            }
+
+            const filtersText = activeFilters.length > 0 
+                ? `<div class="no-results-message__filters">
+                    <p class="no-results-message__filters-label">Active filters:</p>
+                    <div class="no-results-message__filters-list">${activeFilters.join(', ')}</div>
+                   </div>` 
+                : '';
+
             messageEl = document.createElement('div');
             messageEl.id = 'noResultsMessage';
             messageEl.className = 'no-results-message';
             messageEl.innerHTML = `
                 <div class="no-results-message__content">
+                    <div class="no-results-message__icon">
                     <i class="fa-solid fa-search" aria-hidden="true"></i>
-                    <h3>No jobs found</h3>
-                    <p>Try adjusting your search or filter criteria</p>
+                    </div>
+                    <h3 class="no-results-message__title">No jobs found</h3>
+                    <p class="no-results-message__text">We couldn't find any jobs matching your search criteria.</p>
+                    ${filtersText}
+                    <div class="no-results-message__actions">
+                        <button type="button" class="no-results-message__button" id="clearFiltersFromNoResults">
+                            <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+                            Clear All Filters
+                        </button>
+                    </div>
                 </div>
             `;
+            
+            // Insert after job cards grid
             jobCardsGrid.parentNode.insertBefore(messageEl, jobCardsGrid.nextSibling);
+            
+            // Add event listener to clear button
+            const clearButton = messageEl.querySelector('#clearFiltersFromNoResults');
+            if (clearButton && window.clearAllJobFilters) {
+                clearButton.addEventListener('click', () => {
+                    window.clearAllJobFilters();
+                });
+            }
+        } else if (show && messageEl) {
+            // Update existing message with current filters
+            const activeFilters = [];
+            if (searchState.jobQuery) activeFilters.push(`Job: "${searchState.jobQuery}"`);
+            if (searchState.locationQuery) activeFilters.push(`Location: "${searchState.locationQuery}"`);
+            if (searchState.workPreference) {
+                const workPrefLabels = { 'wfo': 'WFO', 'wfh': 'WFH', 'hybrid': 'Hybrid' };
+                activeFilters.push(`Work: ${workPrefLabels[searchState.workPreference] || searchState.workPreference}`);
+            }
+            if (searchState.salaryRange) {
+                const salaryLabels = { '0-5': 'IDR 0 - 5M', '5-10': 'IDR 5M - 10M', '10-20': 'IDR 10M - 20M', '20+': 'IDR 20M+' };
+                activeFilters.push(`Salary: ${salaryLabels[searchState.salaryRange] || searchState.salaryRange}`);
+            }
+            if (searchState.industry) {
+                const industryLabels = { 'tech': 'Technology', 'finance': 'Finance', 'retail': 'Retail', 'manufacturing': 'Manufacturing' };
+                activeFilters.push(`Industry: ${industryLabels[searchState.industry] || searchState.industry}`);
+            }
+            if (searchState.experience) {
+                const expLabels = { 'entry': 'Entry Level', '1-3': '1-3 Years', '3-5': '3-5 Years', '5+': '5+ Years' };
+                activeFilters.push(`Experience: ${expLabels[searchState.experience] || searchState.experience}`);
+            }
+            if (searchState.degree) activeFilters.push(`Degree: ${searchState.degree}`);
+
+            const filtersText = activeFilters.length > 0 
+                ? `<div class="no-results-message__filters">
+                    <p class="no-results-message__filters-label">Active filters:</p>
+                    <div class="no-results-message__filters-list">${activeFilters.join(', ')}</div>
+                   </div>` 
+                : '';
+
+            const contentEl = messageEl.querySelector('.no-results-message__content');
+            if (contentEl) {
+                contentEl.innerHTML = `
+                    <div class="no-results-message__icon">
+                        <i class="fa-solid fa-search" aria-hidden="true"></i>
+                    </div>
+                    <h3 class="no-results-message__title">No jobs found</h3>
+                    <p class="no-results-message__text">We couldn't find any jobs matching your search criteria.</p>
+                    ${filtersText}
+                    <div class="no-results-message__actions">
+                        <button type="button" class="no-results-message__button" id="clearFiltersFromNoResults">
+                            <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+                            Clear All Filters
+                        </button>
+                    </div>
+                `;
+                
+                // Reattach event listener
+                const clearButton = contentEl.querySelector('#clearFiltersFromNoResults');
+                if (clearButton && window.clearAllJobFilters) {
+                    clearButton.addEventListener('click', () => {
+                        window.clearAllJobFilters();
+                    });
+                }
+            }
         } else if (!show && messageEl) {
             messageEl.remove();
         }

@@ -85,405 +85,170 @@
             </div>
             <div class="job-cards-grid job-cards-grid--listing" id="jobCardsGrid">
                 @php
-                    $jobs = [
-                        [
-                            'logo' => '/assets/hero-sec.png',
-                            'title' => 'Brand Representative',
-                            'company' => 'Indomobil AION',
-                            'verified' => true,
-                            'salary' => 'IDR 25,000,000 - IDR 35,000,000',
-                            'tags' => ['WFO', 'Contract', 'Specialist/Supervisor'],
-                            'location' => 'Jakarta Timur, Indonesia',
-                            'posted' => 'about 6 hours ago',
-                            'recruiter' => ['name' => 'Wahyu P • Recruitment', 'avatar' => 'WP'],
-                        ],
-                        [
-                            'logo' => '/assets/hero-sec.png',
-                            'title' => 'Sales Supervisor - Modern Trade',
-                            'company' => 'Sukanda Djaya',
-                            'verified' => true,
-                            'salary' => 'Not Disclose',
-                            'tags' => ['WFO', 'Full Time', 'Specialist/Supervisor'],
-                            'location' => 'Jakarta, Indonesia',
-                            'posted' => 'about 6 hours ago',
-                            'recruiter' => ['name' => 'Maytri • HR', 'avatar' => 'MD'],
-                        ],
-                        [
-                            'logo' => '/assets/hero-sec.png',
-                            'title' => 'Telesales - Credit Consultant',
-                            'company' => 'Dolpheen Indonesia',
-                            'verified' => true,
-                            'salary' => 'Not Disclose',
-                            'tags' => ['WFO', 'Full Time', 'Entry'],
-                            'location' => 'Jakarta Selatan, Indonesia',
-                            'posted' => 'about 6 hours ago',
-                            'recruiter' => ['name' => 'Abraham • HR', 'avatar' => 'AB'],
-                        ],
-                        [
-                            'logo' => '/assets/hero-sec.png',
-                            'title' => 'Public Relations',
-                            'company' => 'BlueFocus',
-                            'verified' => true,
-                            'salary' => 'Not Disclose',
-                            'tags' => ['WFO', 'Full Time', 'Senior'],
-                            'location' => 'Jakarta Selatan, Indonesia',
-                            'posted' => 'about 8 hours ago',
-                            'recruiter' => ['name' => 'Chunyan • HR', 'avatar' => 'CY'],
-                        ],
-                        [
-                            'logo' => '/assets/hero-sec.png',
-                            'title' => 'Business Development',
-                            'company' => 'BlueFocus',
-                            'verified' => true,
-                            'salary' => 'Not Disclose',
-                            'tags' => ['WFO', 'Full Time', 'Senior'],
-                            'location' => 'Jakarta Selatan, Indonesia',
-                            'posted' => 'about 8 hours ago',
-                            'recruiter' => ['name' => 'Chunyan • HR', 'avatar' => 'CY'],
-                        ],
-                        [
-                            'logo' => '/assets/hero-sec.png',
-                            'title' => 'Advanced Indonesian/English Editor',
-                            'company' => 'PT Dali Foods Indonesia',
-                            'verified' => true,
-                            'salary' => 'CNY 3,000 - CNY 5,000',
-                            'tags' => ['WFO', 'Full Time', 'Entry'],
-                            'location' => 'Kabupaten Karawang, Indonesia',
-                            'posted' => 'about 8 hours ago',
-                            'recruiter' => ['name' => 'ZHENGSIKAI Human Resources', 'avatar' => 'ZH'],
-                        ],
-                        [
-                            'logo' => '/assets/hero-sec.png',
-                            'title' => 'Marketing Manager',
-                            'company' => 'Tech Solutions Inc',
-                            'verified' => true,
-                            'salary' => 'IDR 15,000,000 - IDR 25,000,000',
-                            'tags' => ['WFO', 'Full Time', 'Senior'],
-                            'location' => 'Jakarta Pusat, Indonesia',
-                            'posted' => 'about 12 hours ago',
-                            'recruiter' => ['name' => 'Sarah • HR', 'avatar' => 'SA'],
-                        ],
-                        [
-                            'logo' => '/assets/hero-sec.png',
-                            'title' => 'Software Engineer',
-                            'company' => 'Digital Innovations',
-                            'verified' => true,
-                            'salary' => 'IDR 20,000,000 - IDR 35,000,000',
-                            'tags' => ['Hybrid', 'Full Time', 'Mid Level'],
-                            'location' => 'Bandung, Indonesia',
-                            'posted' => 'about 1 day ago',
-                            'recruiter' => ['name' => 'Ahmad • HR', 'avatar' => 'AH'],
-                        ],
-                        [
-                            'logo' => '/assets/hero-sec.png',
-                            'title' => 'HR Specialist',
-                            'company' => 'People First Co',
-                            'verified' => true,
-                            'salary' => 'IDR 12,000,000 - IDR 18,000,000',
-                            'tags' => ['WFO', 'Full Time', 'Mid Level'],
-                            'location' => 'Surabaya, Indonesia',
-                            'posted' => 'about 2 days ago',
-                            'recruiter' => ['name' => 'Lisa • HR', 'avatar' => 'LI'],
-                        ],
-                        [
-                            'logo' => '/assets/hero-sec.png',
-                            'title' => 'Product Manager',
-                            'company' => 'Innovate Tech',
-                            'verified' => true,
-                            'salary' => 'IDR 30,000,000 - IDR 45,000,000',
-                            'tags' => ['Hybrid', 'Full Time', 'Senior'],
-                            'location' => 'Jakarta Selatan, Indonesia',
-                            'posted' => 'about 2 days ago',
-                            'recruiter' => ['name' => 'David • HR', 'avatar' => 'DA'],
-                        ],
-                        [
-                            'logo' => '/assets/hero-sec.png',
-                            'title' => 'Data Analyst',
-                            'company' => 'Data Insights Co',
-                            'verified' => true,
-                            'salary' => 'IDR 18,000,000 - IDR 28,000,000',
-                            'tags' => ['WFO', 'Full Time', 'Mid Level'],
-                            'location' => 'Jakarta Pusat, Indonesia',
-                            'posted' => 'about 3 days ago',
-                            'recruiter' => ['name' => 'Rina • HR', 'avatar' => 'RI'],
-                        ],
-                        [
-                            'logo' => '/assets/hero-sec.png',
-                            'title' => 'UX Designer',
-                            'company' => 'Creative Studio',
-                            'verified' => true,
-                            'salary' => 'IDR 22,000,000 - IDR 32,000,000',
-                            'tags' => ['WFO', 'Full Time', 'Mid Level'],
-                            'location' => 'Jakarta Barat, Indonesia',
-                            'posted' => 'about 3 days ago',
-                            'recruiter' => ['name' => 'Budi • HR', 'avatar' => 'BU'],
-                        ],
-                        [
-                            'logo' => '/assets/hero-sec.png',
-                            'title' => 'Account Executive',
-                            'company' => 'Sales Force Inc',
-                            'verified' => true,
-                            'salary' => 'IDR 20,000,000 - IDR 30,000,000',
-                            'tags' => ['WFO', 'Full Time', 'Mid Level'],
-                            'location' => 'Jakarta Utara, Indonesia',
-                            'posted' => 'about 4 days ago',
-                            'recruiter' => ['name' => 'Sari • HR', 'avatar' => 'SR'],
-                        ],
-                        [
-                            'logo' => '/assets/hero-sec.png',
-                            'title' => 'Operations Manager',
-                            'company' => 'Logistics Pro',
-                            'verified' => true,
-                            'salary' => 'IDR 28,000,000 - IDR 40,000,000',
-                            'tags' => ['WFO', 'Full Time', 'Senior'],
-                            'location' => 'Tangerang, Indonesia',
-                            'posted' => 'about 4 days ago',
-                            'recruiter' => ['name' => 'Andi • HR', 'avatar' => 'AN'],
-                        ],
-                        [
-                            'logo' => '/assets/hero-sec.png',
-                            'title' => 'Content Writer',
-                            'company' => 'Media Group',
-                            'verified' => true,
-                            'salary' => 'IDR 10,000,000 - IDR 15,000,000',
-                            'tags' => ['WFH', 'Full Time', 'Entry'],
-                            'location' => 'Jakarta Selatan, Indonesia',
-                            'posted' => 'about 5 days ago',
-                            'recruiter' => ['name' => 'Maya • HR', 'avatar' => 'MY'],
-                        ],
-                        [
-                            'logo' => '/assets/hero-sec.png',
-                            'title' => 'Financial Analyst',
-                            'company' => 'Finance Corp',
-                            'verified' => true,
-                            'salary' => 'IDR 25,000,000 - IDR 35,000,000',
-                            'tags' => ['WFO', 'Full Time', 'Mid Level'],
-                            'location' => 'Jakarta Pusat, Indonesia',
-                            'posted' => 'about 5 days ago',
-                            'recruiter' => ['name' => 'Eko • HR', 'avatar' => 'EK'],
-                        ],
-                        [
-                            'logo' => '/assets/hero-sec.png',
-                            'title' => 'Customer Success Manager',
-                            'company' => 'Service Excellence',
-                            'verified' => true,
-                            'salary' => 'IDR 23,000,000 - IDR 33,000,000',
-                            'tags' => ['Hybrid', 'Full Time', 'Mid Level'],
-                            'location' => 'Jakarta Timur, Indonesia',
-                            'posted' => 'about 6 days ago',
-                            'recruiter' => ['name' => 'Dewi • HR', 'avatar' => 'DW'],
-                        ],
-                        [
-                            'logo' => '/assets/hero-sec.png',
-                            'title' => 'Quality Assurance Engineer',
-                            'company' => 'Tech Quality',
-                            'verified' => true,
-                            'salary' => 'IDR 19,000,000 - IDR 27,000,000',
-                            'tags' => ['WFO', 'Full Time', 'Mid Level'],
-                            'location' => 'Bandung, Indonesia',
-                            'posted' => 'about 6 days ago',
-                            'recruiter' => ['name' => 'Fajar • HR', 'avatar' => 'FJ'],
-                        ],
-                        [
-                            'logo' => '/assets/hero-sec.png',
-                            'title' => 'Business Analyst',
-                            'company' => 'Strategy Consulting',
-                            'verified' => true,
-                            'salary' => 'IDR 27,000,000 - IDR 38,000,000',
-                            'tags' => ['WFO', 'Full Time', 'Senior'],
-                            'location' => 'Jakarta Selatan, Indonesia',
-                            'posted' => 'about 1 week ago',
-                            'recruiter' => ['name' => 'Gita • HR', 'avatar' => 'GI'],
-                        ],
-                        [
-                            'logo' => '/assets/hero-sec.png',
-                            'title' => 'Graphic Designer',
-                            'company' => 'Design Studio',
-                            'verified' => true,
-                            'salary' => 'IDR 14,000,000 - IDR 22,000,000',
-                            'tags' => ['WFO', 'Full Time', 'Mid Level'],
-                            'location' => 'Jakarta Barat, Indonesia',
-                            'posted' => 'about 1 week ago',
-                            'recruiter' => ['name' => 'Hadi • HR', 'avatar' => 'HD'],
-                        ],
-                        [
-                            'logo' => '/assets/hero-sec.png',
-                            'title' => 'Supply Chain Manager',
-                            'company' => 'Supply Chain Solutions',
-                            'verified' => true,
-                            'salary' => 'IDR 32,000,000 - IDR 45,000,000',
-                            'tags' => ['WFO', 'Full Time', 'Senior'],
-                            'location' => 'Jakarta Utara, Indonesia',
-                            'posted' => 'about 1 week ago',
-                            'recruiter' => ['name' => 'Indra • HR', 'avatar' => 'IN'],
-                        ],
-                        [
-                            'logo' => '/assets/hero-sec.png',
-                            'title' => 'Frontend Developer',
-                            'company' => 'Web Solutions',
-                            'verified' => true,
-                            'salary' => 'IDR 21,000,000 - IDR 31,000,000',
-                            'tags' => ['Hybrid', 'Full Time', 'Mid Level'],
-                            'location' => 'Jakarta Pusat, Indonesia',
-                            'posted' => 'about 1 week ago',
-                            'recruiter' => ['name' => 'Joko • HR', 'avatar' => 'JK'],
-                        ],
-                        [
-                            'logo' => '/assets/hero-sec.png',
-                            'title' => 'Backend Developer',
-                            'company' => 'Server Tech',
-                            'verified' => true,
-                            'salary' => 'IDR 24,000,000 - IDR 34,000,000',
-                            'tags' => ['WFO', 'Full Time', 'Mid Level'],
-                            'location' => 'Jakarta Selatan, Indonesia',
-                            'posted' => 'about 1 week ago',
-                            'recruiter' => ['name' => 'Kiki • HR', 'avatar' => 'KI'],
-                        ],
-                        [
-                            'logo' => '/assets/hero-sec.png',
-                            'title' => 'DevOps Engineer',
-                            'company' => 'Cloud Infrastructure',
-                            'verified' => true,
-                            'salary' => 'IDR 26,000,000 - IDR 36,000,000',
-                            'tags' => ['Hybrid', 'Full Time', 'Senior'],
-                            'location' => 'Jakarta Timur, Indonesia',
-                            'posted' => 'about 1 week ago',
-                            'recruiter' => ['name' => 'Lina • HR', 'avatar' => 'LN'],
-                        ],
-                        [
-                            'logo' => '/assets/hero-sec.png',
-                            'title' => 'Sales Manager',
-                            'company' => 'Sales Pro',
-                            'verified' => true,
-                            'salary' => 'IDR 29,000,000 - IDR 42,000,000',
-                            'tags' => ['WFO', 'Full Time', 'Senior'],
-                            'location' => 'Jakarta Pusat, Indonesia',
-                            'posted' => 'about 1 week ago',
-                            'recruiter' => ['name' => 'Mario • HR', 'avatar' => 'MR'],
-                        ],
-                        [
-                            'logo' => '/assets/hero-sec.png',
-                            'title' => 'Project Coordinator',
-                            'company' => 'Project Management Co',
-                            'verified' => true,
-                            'salary' => 'IDR 16,000,000 - IDR 24,000,000',
-                            'tags' => ['WFO', 'Full Time', 'Mid Level'],
-                            'location' => 'Jakarta Barat, Indonesia',
-                            'posted' => 'about 1 week ago',
-                            'recruiter' => ['name' => 'Nina • HR', 'avatar' => 'NN'],
-                        ],
-                        [
-                            'logo' => '/assets/hero-sec.png',
-                            'title' => 'IT Support Specialist',
-                            'company' => 'IT Services',
-                            'verified' => true,
-                            'salary' => 'IDR 13,000,000 - IDR 20,000,000',
-                            'tags' => ['WFO', 'Full Time', 'Entry'],
-                            'location' => 'Jakarta Selatan, Indonesia',
-                            'posted' => 'about 1 week ago',
-                            'recruiter' => ['name' => 'Omar • HR', 'avatar' => 'OM'],
-                        ],
-                        [
-                            'logo' => '/assets/hero-sec.png',
-                            'title' => 'Social Media Manager',
-                            'company' => 'Digital Marketing',
-                            'verified' => true,
-                            'salary' => 'IDR 17,000,000 - IDR 25,000,000',
-                            'tags' => ['WFH', 'Full Time', 'Mid Level'],
-                            'location' => 'Jakarta Pusat, Indonesia',
-                            'posted' => 'about 1 week ago',
-                            'recruiter' => ['name' => 'Putri • HR', 'avatar' => 'PT'],
-                        ],
-                        [
-                            'logo' => '/assets/hero-sec.png',
-                            'title' => 'Legal Counsel',
-                            'company' => 'Legal Services',
-                            'verified' => true,
-                            'salary' => 'IDR 35,000,000 - IDR 50,000,000',
-                            'tags' => ['WFO', 'Full Time', 'Senior'],
-                            'location' => 'Jakarta Selatan, Indonesia',
-                            'posted' => 'about 2 weeks ago',
-                            'recruiter' => ['name' => 'Qori • HR', 'avatar' => 'QR'],
-                        ],
-                        [
-                            'logo' => '/assets/hero-sec.png',
-                            'title' => 'Research Analyst',
-                            'company' => 'Research Institute',
-                            'verified' => true,
-                            'salary' => 'IDR 15,000,000 - IDR 23,000,000',
-                            'tags' => ['WFO', 'Full Time', 'Mid Level'],
-                            'location' => 'Jakarta Timur, Indonesia',
-                            'posted' => 'about 2 weeks ago',
-                            'recruiter' => ['name' => 'Rudi • HR', 'avatar' => 'RU'],
-                        ],
-                        [
-                            'logo' => '/assets/hero-sec.png',
-                            'title' => 'Training Specialist',
-                            'company' => 'Learning Academy',
-                            'verified' => true,
-                            'salary' => 'IDR 18,000,000 - IDR 26,000,000',
-                            'tags' => ['WFO', 'Full Time', 'Mid Level'],
-                            'location' => 'Jakarta Utara, Indonesia',
-                            'posted' => 'about 2 weeks ago',
-                            'recruiter' => ['name' => 'Sinta • HR', 'avatar' => 'ST'],
-                        ],
-                        [
-                            'logo' => '/assets/hero-sec.png',
-                            'title' => 'Warehouse Manager',
-                            'company' => 'Logistics Hub',
-                            'verified' => true,
-                            'salary' => 'IDR 20,000,000 - IDR 30,000,000',
-                            'tags' => ['WFO', 'Full Time', 'Mid Level'],
-                            'location' => 'Tangerang, Indonesia',
-                            'posted' => 'about 2 weeks ago',
-                            'recruiter' => ['name' => 'Tono • HR', 'avatar' => 'TN'],
-                        ],
-                        [
-                            'logo' => '/assets/hero-sec.png',
-                            'title' => 'Event Coordinator',
-                            'company' => 'Event Management',
-                            'verified' => true,
-                            'salary' => 'IDR 12,000,000 - IDR 18,000,000',
-                            'tags' => ['WFO', 'Full Time', 'Entry'],
-                            'location' => 'Jakarta Pusat, Indonesia',
-                            'posted' => 'about 2 weeks ago',
-                            'recruiter' => ['name' => 'Umi • HR', 'avatar' => 'UM'],
-                        ],
-                    ];
+                    $jobs = [];
+                    if (isset($jobListings) && $jobListings->count() > 0) {
+                        foreach ($jobListings as $listing) {
+                            // Build tags array
+                            $tags = [];
+                            if ($listing->work_preference) {
+                                $tags[] = strtoupper($listing->work_preference);
+                            }
+                            if ($listing->contract_type) {
+                                $tags[] = $listing->contract_type;
+                            }
+                            if ($listing->experience_level) {
+                                $tags[] = $listing->experience_level;
+                            }
+                            
+                            // Format salary
+                            $salary = $listing->salary_display ?? 'Not Disclose';
+                            if ($listing->salary_min && $listing->salary_max) {
+                                $salary = 'IDR ' . number_format($listing->salary_min, 0, ',', ',') . ' - IDR ' . number_format($listing->salary_max, 0, ',', ',');
+                            } elseif ($listing->salary_min) {
+                                $salary = 'IDR ' . number_format($listing->salary_min, 0, ',', ',') . '+';
+                            }
+                            
+                            // Format posted date
+                            $posted = 'Just now';
+                            if ($listing->posted_at) {
+                                $posted = $listing->posted_at->setTimezone('Asia/Jakarta')->diffForHumans();
+                            } elseif ($listing->created_at) {
+                                $posted = $listing->created_at->setTimezone('Asia/Jakarta')->diffForHumans();
+                            }
+                            
+                            // Recruiter info
+                            $recruiterName = 'Admin';
+                            $recruiterAvatar = 'AD';
+                            if ($listing->recruiter) {
+                                $recruiterName = $listing->recruiter->first_name . ' ' . $listing->recruiter->last_name;
+                                $recruiterAvatar = strtoupper(substr($listing->recruiter->first_name, 0, 1) . substr($listing->recruiter->last_name, 0, 1));
+                            }
+                            
+                            $jobs[] = [
+                                'id' => $listing->id,
+                                'logo' => $listing->company_logo ?? '/assets/hero-sec.png',
+                                'title' => $listing->title,
+                                'company' => $listing->company,
+                                'verified' => $listing->verified ?? false,
+                                'salary' => $salary,
+                                'tags' => $tags,
+                                'location' => $listing->location,
+                                'posted' => $posted,
+                                'recruiter' => [
+                                    'name' => $recruiterName,
+                                    'avatar' => $recruiterAvatar
+                                ],
+                                'work_preference' => $listing->work_preference,
+                                'experience_level' => $listing->experience_level,
+                                'salary_min' => $listing->salary_min,
+                                'salary_max' => $listing->salary_max,
+                                'industry' => $listing->industry,
+                                'minimum_degree' => $listing->minimum_degree,
+                            ];
+                        }
+                    }
+                    
+                    // Fallback to empty array if no jobs in database
+                    if (empty($jobs)) {
+                        $jobs = [];
+                    }
                 @endphp
                 @foreach($jobs as $index => $job)
                     @php
-                        $workPreference = '';
-                        $experienceLevel = '';
-                        foreach($job['tags'] as $tag) {
+                        // Get work preference from job data or extract from tags
+                        $workPreference = $job['work_preference'] ?? '';
+                        if (empty($workPreference)) {
+                            foreach($job['tags'] ?? [] as $tag) {
                             if (in_array(strtolower($tag), ['wfo', 'wfh', 'hybrid'])) {
                                 $workPreference = strtolower($tag);
-                            }
-                            if (stripos($tag, 'entry') !== false) {
-                                $experienceLevel = 'entry';
-                            } elseif (stripos($tag, 'senior') !== false) {
-                                $experienceLevel = '5+';
-                            } elseif (preg_match('/\d+-\d+/', $tag)) {
-                                $experienceLevel = preg_match('/1-3/', $tag) ? '1-3' : '3-5';
+                                    break;
+                                }
                             }
                         }
-                        // Extract salary range for filtering
-                        $salaryValue = 0;
-                        if (preg_match('/IDR\s*([\d,]+)/', $job['salary'], $matches)) {
-                            $salaryValue = (int)str_replace(',', '', $matches[1]);
+                        
+                        // Get experience level from job data and normalize it for filtering
+                        $experienceLevel = $job['experience_level'] ?? '';
+                        $experienceLevelFilter = '';
+                        
+                        if (!empty($experienceLevel)) {
+                            // Normalize experience level to match filter values
+                            $expLower = strtolower($experienceLevel);
+                            if (stripos($expLower, 'entry') !== false) {
+                                $experienceLevelFilter = 'entry';
+                            } elseif (preg_match('/\b(1|2|3)\s*(years?|year)\b/i', $expLower) || preg_match('/^1-3/i', $expLower)) {
+                                $experienceLevelFilter = '1-3';
+                            } elseif (preg_match('/\b(4|5)\s*(years?|year)\b/i', $expLower) || preg_match('/^3-5/i', $expLower) || preg_match('/^4-5/i', $expLower)) {
+                                $experienceLevelFilter = '3-5';
+                            } elseif (preg_match('/\b(6|7|8|9|\d{2,})\s*(years?|year|plus|\+)\b/i', $expLower) || stripos($expLower, 'senior') !== false || preg_match('/^5\+/i', $expLower)) {
+                                $experienceLevelFilter = '5+';
+                            }
                         }
+                        
+                        // If still empty, try to extract from tags
+                        if (empty($experienceLevelFilter)) {
+                            foreach($job['tags'] ?? [] as $tag) {
+                                $tagLower = strtolower($tag);
+                                if (stripos($tagLower, 'entry') !== false) {
+                                    $experienceLevelFilter = 'entry';
+                                    break;
+                                } elseif (stripos($tagLower, 'senior') !== false) {
+                                    $experienceLevelFilter = '5+';
+                                    break;
+                                } elseif (preg_match('/1-3/i', $tag)) {
+                                    $experienceLevelFilter = '1-3';
+                                    break;
+                                } elseif (preg_match('/3-5|4-5/i', $tag)) {
+                                    $experienceLevelFilter = '3-5';
+                                    break;
+                                }
+                            }
+                        }
+                        
+                        // Use normalized value for filtering
+                        $experienceLevel = $experienceLevelFilter;
+                        
+                        // Extract salary range for filtering - use actual min/max values
+                        $salaryMin = $job['salary_min'] ?? null;
+                        $salaryMax = $job['salary_max'] ?? null;
+                        
+                        // Convert to millions for easier comparison
+                        $salaryMinM = $salaryMin ? ($salaryMin / 1000000) : 0;
+                        $salaryMaxM = $salaryMax ? ($salaryMax / 1000000) : 0;
+                        
+                        // Determine primary salary range based on min (or average if both exist)
                         $salaryRange = '';
-                        if ($salaryValue > 0) {
-                            if ($salaryValue < 5000000) {
+                        if ($salaryMinM > 0) {
+                            // Use average if both min and max exist, otherwise use min
+                            $avgSalary = $salaryMaxM > 0 ? (($salaryMinM + $salaryMaxM) / 2) : $salaryMinM;
+                            
+                            if ($avgSalary < 5) {
                                 $salaryRange = '0-5';
-                            } elseif ($salaryValue < 10000000) {
+                            } elseif ($avgSalary < 10) {
                                 $salaryRange = '5-10';
-                            } elseif ($salaryValue < 20000000) {
+                            } elseif ($avgSalary < 20) {
                                 $salaryRange = '10-20';
                             } else {
                                 $salaryRange = '20+';
                             }
                         }
+                        // Map industry to filter values (normalize industry names)
+                        $industryFilter = '';
+                        $industry = strtolower($job['industry'] ?? '');
+                        if (!empty($industry)) {
+                            // Map database industry values to filter dropdown values
+                            if (stripos($industry, 'technology') !== false || stripos($industry, 'tech') !== false) {
+                                $industryFilter = 'tech';
+                            } elseif (stripos($industry, 'finance') !== false || stripos($industry, 'financial') !== false) {
+                                $industryFilter = 'finance';
+                            } elseif (stripos($industry, 'retail') !== false) {
+                                $industryFilter = 'retail';
+                            } elseif (stripos($industry, 'manufacturing') !== false || stripos($industry, 'automotive') !== false) {
+                                $industryFilter = 'manufacturing';
+                            }
+                        }
+                        
+                        // Get minimum degree for filtering
+                        $minimumDegree = strtolower($job['minimum_degree'] ?? '');
                     @endphp
                     <article class="job-card" 
                         data-job-index="{{ $index }}" 
@@ -492,7 +257,11 @@
                         data-job-location="{{ strtolower($job['location']) }}"
                         data-work-preference="{{ $workPreference }}"
                         data-salary-range="{{ $salaryRange }}"
+                        data-salary-min="{{ $salaryMinM }}"
+                        data-salary-max="{{ $salaryMaxM }}"
                         data-experience-level="{{ $experienceLevel }}"
+                        data-industry="{{ $industryFilter }}"
+                        data-degree="{{ $minimumDegree }}"
                         data-aos="fade-up" 
                         data-aos-delay="{{ ($index % 3) * 100 }}">
                         <div class="job-card__header">
@@ -503,7 +272,7 @@
                                 </div>
                             </div>
                         </div>
-                        <a href="{{ route('job.detail', ['id' => $index + 1]) }}" class="job-card__link">
+                        <a href="{{ route('job.detail', ['id' => $job['id'] ?? ($index + 1)]) }}" class="job-card__link">
                         <div class="job-card__body">
                             <h3 class="job-card__title">{{ $job['title'] }}</h3>
                             <div class="job-card__company">
@@ -550,6 +319,12 @@
                         </a>
                     </article>
                 @endforeach
+                
+                @if(empty($jobs))
+                    <div class="col-12 text-center py-5">
+                        <p class="text-muted">No job listings available at the moment. Please check back later.</p>
+                    </div>
+                @endif
             </div>
             
             <!-- Pagination -->

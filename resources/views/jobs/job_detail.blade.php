@@ -5,46 +5,27 @@
 
 @section('content')
     @php
-        // Default job data - in real app, this would come from database
+        // Use job data from controller, or fallback to empty structure
         $job = $job ?? [
-            'id' => 1,
+            'id' => null,
             'logo' => '/assets/hero-sec.png',
-            'title' => 'Brand Representative',
-            'company' => 'Indomobil AION',
-            'verified' => true,
-            'salary' => 'IDR 25,000,000 - IDR 35,000,000',
-            'tags' => [
-                ['text' => 'WFO', 'icon' => 'fa-building'],
-                ['text' => 'Contract', 'icon' => 'fa-file-contract'],
-                ['text' => 'Specialist/Supervisor', 'icon' => 'fa-rocket'],
-                ['text' => '4-5 years', 'icon' => 'fa-briefcase'],
-                ['text' => 'Diploma', 'icon' => 'fa-graduation-cap'],
-            ],
-            'location' => 'Jakarta Timur, Indonesia',
-            'posted' => 'about 9 hours ago',
-            'recruiter' => ['name' => 'Wahyu P', 'role' => 'Recruitment', 'avatar' => 'WP'],
-            'responsibilities' => [
-                'Promote and represent our brand to customers and retail partners',
-                'Achieve sales targets through active selling and product introduction',
-                'Build strong relationships with clients and maintain regular follow-ups',
-                'Ensure product visibility, availability, and good merchandising in stores',
-                'Provide product knowledge, handle inquiries, and deliver excellent service',
-                'Gather market insights and report competitor activities',
-            ],
-            'requirements' => [
-                'Strong communication and persuasion skills',
-                'Strong networking skills',
-                'Passion for sales and customer engagement',
-                'Willing to work in the field and visit clients daily',
-                'Target-oriented, energetic, and proactive',
-            ],
-            'key_skills' => ['Business Communications', 'Business Representation'],
-            'benefits' => ['Transport allowance', 'Meal Allowance', 'Medical Benefit'],
+            'title' => 'Job Not Found',
+            'company' => 'Unknown',
+            'verified' => false,
+            'salary' => 'Not Disclose',
+            'tags' => [],
+            'location' => 'Location not specified',
+            'posted' => 'Unknown',
+            'recruiter' => ['name' => 'Admin', 'role' => 'Recruitment', 'avatar' => 'AD'],
+            'responsibilities' => [],
+            'requirements' => [],
+            'key_skills' => [],
+            'benefits' => [],
             'company_info' => [
-                'industry' => 'Automotive Industries',
-                'employees' => '11 to 50 employees',
-                'description' => 'Anak perusahaan dari Indomobil Group, yang bergerak di bidang impor, distribusi mobil dan suku cadang di bawah manajemen Indomobil Group.',
-                'address' => 'Indomobil Tower Lantai 15, Jl. MT Haryono Kav.11 Bidara Cina, Jatinegara',
+                'industry' => 'Not specified',
+                'employees' => 'Not specified',
+                'description' => 'No description available.',
+                'address' => 'Address not specified',
             ],
         ];
     @endphp
@@ -216,10 +197,30 @@
                             Jobs from this Company
                         </h3>
                         <div class="job-detail-other-jobs">
+                            @if(isset($otherJobs) && $otherJobs->count() > 0)
+                                @foreach($otherJobs as $otherJob)
+                                    <a href="{{ route('job.detail', $otherJob->id) }}" class="job-detail-other-job">
+                                        <div class="job-detail-other-job__content">
+                                            <h4 class="job-detail-other-job__title">{{ $otherJob->title }}</h4>
+                                            <div class="job-detail-other-job__meta">
+                                                <span class="job-detail-other-job__location">
+                                                    <i class="fa-solid fa-location-dot" aria-hidden="true"></i>
+                                                    {{ $otherJob->location }}
+                                                </span>
+                                                @if($otherJob->salary_display)
+                                                    <span class="job-detail-other-job__salary">{{ $otherJob->salary_display }}</span>
+                                                @endif
+                                            </div>
+                                        </div>
+                                        <i class="fa-solid fa-chevron-right job-detail-other-job__arrow" aria-hidden="true"></i>
+                                    </a>
+                                @endforeach
+                            @else
                             <div class="job-detail-other-jobs__empty">
                                 <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
                                 <span>There is no other job</span>
                             </div>
+                            @endif
                         </div>
                     </div>
                 </aside>
