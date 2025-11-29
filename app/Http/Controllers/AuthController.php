@@ -13,6 +13,11 @@ class AuthController extends Controller
      */
     public function showLoginForm()
     {
+        // If user is already authenticated, redirect to home
+        if (Auth::check()) {
+            return redirect()->route('home');
+        }
+
         return view('auth.login');
     }
 
@@ -29,7 +34,11 @@ class AuthController extends Controller
         if (Auth::attempt($request->only('email', 'password'), $request->boolean('remember'))) {
             $request->session()->regenerate();
 
-            return redirect()->intended('/');
+            $user = Auth::user();
+
+            return redirect()->intended(route('home'))
+                ->with('status', 'Welcome back, ' . ($user->first_name ?? '') . ($user->last_name ?? '' ? ' ' . $user->last_name : '') . '!')
+                ->with('toast_type', 'success');
         }
 
         throw ValidationException::withMessages([
@@ -51,20 +60,34 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'nullable|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
+        ], [
+            'first_name.required' => 'First name is required.',
+            'email.required' => 'Email is required.',
+            'email.email' => 'Please enter a valid email address.',
+            'email.unique' => 'This email is already registered.',
+            'password.required' => 'Password is required.',
+            'password.min' => 'Password must be at least 8 characters.',
+            'password.confirmed' => 'Password confirmation does not match.',
         ]);
 
         $user = \App\Models\User::create([
-            'name' => $validated['name'],
+            'first_name' => $validated['first_name'],
+            'last_name' => $validated['last_name'] ?? null,
             'email' => $validated['email'],
             'password' => bcrypt($validated['password']),
+            'role' => 'user',
+            'email_verified_at' => now(),
         ]);
 
         Auth::login($user);
 
-        return redirect('/');
+        return redirect()->route('home')
+            ->with('status', 'Registration successful! Welcome to Anagata Executive.')
+            ->with('toast_type', 'success');
     }
 
     /**
