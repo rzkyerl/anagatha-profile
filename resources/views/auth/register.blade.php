@@ -54,22 +54,41 @@
                 <form method="POST" action="{{ route('register') }}" class="register-form">
                     @csrf
 
-                    {{-- Name Field --}}
+                    {{-- First Name Field --}}
                     <div class="form-group">
                         <div class="form-input-wrapper">
                             <i class="form-input-icon fa-solid fa-user"></i>
                             <input 
                                 type="text" 
-                                id="name" 
-                                name="name" 
-                                class="form-input @error('name') is-invalid @enderror" 
-                                placeholder="Name"
-                                value="{{ old('name') }}"
+                                id="first_name" 
+                                name="first_name" 
+                                class="form-input @error('first_name') is-invalid @enderror" 
+                                placeholder="First Name"
+                                value="{{ old('first_name') }}"
                                 required 
                                 autofocus
                             />
                         </div>
-                        @error('name')
+                        @error('first_name')
+                            <span class="form-error">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    {{-- Last Name Field --}}
+                    <div class="form-group">
+                        <div class="form-input-wrapper">
+                            <i class="form-input-icon fa-solid fa-user"></i>
+                            <input 
+                                type="text" 
+                                id="last_name" 
+                                name="last_name" 
+                                class="form-input @error('last_name') is-invalid @enderror" 
+                                placeholder="Last Name (Optional)"
+                                value="{{ old('last_name') }}"
+                                @optional
+                            />
+                        </div>
+                        @error('last_name')
                             <span class="form-error">{{ $message }}</span>
                         @enderror
                     </div>
