@@ -11,7 +11,14 @@
                 <h4 class="font-size-16 mb-1">{{ auth()->user() ? auth()->user()->first_name . ' ' . auth()->user()->last_name : 'Admin' }}</h4>
                 <h6 class="text-muted mb-1">{{ auth()->user() ? auth()->user()->email : 'Admin' }}</h6>
                 <span class="text-muted"><i class="ri-record-circle-line align-middle font-size-14 text-success"></i>
-                    {{ auth()->user()->role == 'admin' ? 'Admin' : 'User' }}</span>
+                    @if(auth()->user()->role == 'admin')
+                        Admin
+                    @elseif(auth()->user()->role == 'recruiter')
+                        Recruiter
+                    @else
+                        User
+                    @endif
+                </span>
             </div>
         </div>
 

@@ -15,7 +15,15 @@ class LoginController extends Controller
     public function showLoginForm()
     {
         if (Auth::check()) {
-            return redirect()->route('admin.dashboard');
+            $user = Auth::user();
+            // If user is recruiter or admin, redirect to admin dashboard
+            if (in_array($user->role, ['recruiter', 'admin'])) {
+                return redirect()->route('admin.dashboard');
+            }
+            // If user is regular user, redirect to home
+            return redirect()->route('home')
+                ->with('status', 'You do not have permission to access the admin panel.')
+                ->with('toast_type', 'warning');
         }
 
         return view('admin.auth.auth-admin-login', [

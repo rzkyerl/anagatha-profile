@@ -106,20 +106,6 @@
                         </div>
                     </div>
 
-                    {{-- Remember Me --}}
-                    <div class="form-group" style="margin-bottom: 1.5rem;">
-                        <label style="display: flex; align-items: center; cursor: pointer; font-size: 0.875rem; color: #666;">
-                            <input 
-                                type="checkbox" 
-                                name="remember" 
-                                id="remember"
-                                style="margin-right: 0.5rem; width: 1rem; height: 1rem; cursor: pointer;"
-                                {{ old('remember') ? 'checked' : '' }}
-                            />
-                            <span>Remember me</span>
-                        </label>
-                    </div>
-
                     {{-- Submit Button --}}
                     <button type="submit" class="register-submit-btn">
                         Login
@@ -128,7 +114,7 @@
 
                 {{-- Register Link --}}
                 <div class="register-footer">
-                    <p>Don't have an account? <a href="{{ route('register') }}" class="register-link">Register</a></p>
+                    <p>Don't have an account? <a href="{{ route('register.role') }}" class="register-link">Register</a></p>
                 </div>
             </div>
         </div>
@@ -151,90 +137,151 @@
 
 @push('scripts')
 <script nonce="{{ $cspNonce ?? '' }}">
-    // Password toggle functionality
-    document.addEventListener('DOMContentLoaded', function() {
-        const passwordToggles = document.querySelectorAll('.password-toggle');
+    // Password toggle functionality with auto-hide
+    (function() {
+        'use strict';
         
-        passwordToggles.forEach(toggle => {
-            toggle.addEventListener('click', function() {
-                const input = this.parentElement.querySelector('input');
-                const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
-                input.setAttribute('type', type);
+        function initPasswordToggle() {
+            const passwordToggles = document.querySelectorAll('.password-toggle');
+            const AUTO_HIDE_DURATION = 3000; // 3 seconds
+            
+            if (passwordToggles.length === 0) {
+                return;
+            }
+            
+            passwordToggles.forEach(function(toggle) {
+                let hideTimer = null;
                 
-                const icon = this.querySelector('i');
-                if (type === 'password') {
-                    icon.classList.remove('fa-eye-slash');
-                    icon.classList.add('fa-eye');
-                } else {
-                    icon.classList.remove('fa-eye');
-                    icon.classList.add('fa-eye-slash');
-                }
+                toggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    // Find the input field - look for input in the same form-input-wrapper
+                    const inputWrapper = this.closest('.form-input-wrapper');
+                    if (!inputWrapper) {
+                        return;
+                    }
+                    
+                    // Find the input field - get the first input that is not a button
+                    const input = inputWrapper.querySelector('input[type="password"], input[type="text"]');
+                    
+                    if (!input || input.tagName.toLowerCase() !== 'input') {
+                        return;
+                    }
+                    
+                    // Clear any existing timer
+                    if (hideTimer) {
+                        clearTimeout(hideTimer);
+                        hideTimer = null;
+                    }
+                    
+                    // Toggle password visibility
+                    const isPassword = input.type === 'password';
+                    const icon = this.querySelector('i');
+                    
+                    if (isPassword) {
+                        // Show password
+                        input.type = 'text';
+                        if (icon) {
+                            icon.classList.remove('fa-eye');
+                            icon.classList.add('fa-eye-slash');
+                        }
+                        
+                        // Auto-hide after duration
+                        const self = this;
+                        const inputRef = input;
+                        hideTimer = setTimeout(function() {
+                            inputRef.type = 'password';
+                            const currentIcon = self.querySelector('i');
+                            if (currentIcon) {
+                                currentIcon.classList.remove('fa-eye-slash');
+                                currentIcon.classList.add('fa-eye');
+                            }
+                            hideTimer = null;
+                        }, AUTO_HIDE_DURATION);
+                    } else {
+                        // Hide password immediately
+                        input.type = 'password';
+                        if (icon) {
+                            icon.classList.remove('fa-eye-slash');
+                            icon.classList.add('fa-eye');
+                        }
+                    }
+                });
             });
-        });
+        }
+        
+        // Initialize when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initPasswordToggle);
+        } else {
+            // DOM is already ready
+            initPasswordToggle();
+        }
+    })();
 
-        // Form validation
-        const loginForm = document.getElementById('loginForm');
-        if (loginForm) {
-            loginForm.addEventListener('submit', function(e) {
-                const email = document.getElementById('email').value.trim();
-                const password = document.getElementById('password').value;
+    // Form validation
+    const loginForm = document.getElementById('loginForm');
+    if (loginForm) {
+        loginForm.addEventListener('submit', function(e) {
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
 
-                // Clear previous invalid states
-                loginForm.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
-                loginForm.querySelectorAll('.form-error').forEach(el => el.remove());
+            // Clear previous invalid states
+            loginForm.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+            loginForm.querySelectorAll('.form-error').forEach(el => el.remove());
 
-                let isValid = true;
+            let isValid = true;
 
-                // Validate email
-                if (!email) {
+            // Validate email
+            if (!email) {
+                isValid = false;
+                const emailInput = document.getElementById('email');
+                emailInput.classList.add('is-invalid');
+                const errorSpan = document.createElement('span');
+                errorSpan.classList.add('form-error');
+                errorSpan.style.cssText = 'display: block; margin-top: 0.5rem; color: #c33; font-size: 0.875rem;';
+                errorSpan.textContent = 'Email is required.';
+                emailInput.closest('.form-group').appendChild(errorSpan);
+            } else {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(email)) {
                     isValid = false;
                     const emailInput = document.getElementById('email');
                     emailInput.classList.add('is-invalid');
                     const errorSpan = document.createElement('span');
                     errorSpan.classList.add('form-error');
                     errorSpan.style.cssText = 'display: block; margin-top: 0.5rem; color: #c33; font-size: 0.875rem;';
-                    errorSpan.textContent = 'Email is required.';
+                    errorSpan.textContent = 'Please enter a valid email address.';
                     emailInput.closest('.form-group').appendChild(errorSpan);
-                } else {
-                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                    if (!emailRegex.test(email)) {
-                        isValid = false;
-                        const emailInput = document.getElementById('email');
-                        emailInput.classList.add('is-invalid');
-                        const errorSpan = document.createElement('span');
-                        errorSpan.classList.add('form-error');
-                        errorSpan.style.cssText = 'display: block; margin-top: 0.5rem; color: #c33; font-size: 0.875rem;';
-                        errorSpan.textContent = 'Please enter a valid email address.';
-                        emailInput.closest('.form-group').appendChild(errorSpan);
-                    }
                 }
+            }
 
-                // Validate password
-                if (!password) {
-                    isValid = false;
-                    const passwordInput = document.getElementById('password');
-                    passwordInput.classList.add('is-invalid');
-                    const errorSpan = document.createElement('span');
-                    errorSpan.classList.add('form-error');
-                    errorSpan.style.cssText = 'display: block; margin-top: 0.5rem; color: #c33; font-size: 0.875rem;';
-                    errorSpan.textContent = 'Password is required.';
-                    passwordInput.closest('.form-group').appendChild(errorSpan);
+            // Validate password
+            if (!password) {
+                isValid = false;
+                const passwordInput = document.getElementById('password');
+                passwordInput.classList.add('is-invalid');
+                const errorSpan = document.createElement('span');
+                errorSpan.classList.add('form-error');
+                errorSpan.style.cssText = 'display: block; margin-top: 0.5rem; color: #c33; font-size: 0.875rem;';
+                errorSpan.textContent = 'Password is required.';
+                passwordInput.closest('.form-group').appendChild(errorSpan);
+            }
+
+            if (!isValid) {
+                e.preventDefault();
+                const firstError = loginForm.querySelector('.is-invalid');
+                if (firstError) {
+                    firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    firstError.focus();
                 }
+                return false;
+            }
 
-                if (!isValid) {
-                    e.preventDefault();
-                    const firstError = loginForm.querySelector('.is-invalid');
-                    if (firstError) {
-                        firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                        firstError.focus();
-                    }
-                    return false;
-                }
-
-                // If validation passes, form will submit naturally
-            });
-        }
-    });
+            // If validation passes, form will submit naturally
+        });
+    }
 </script>
 @endpush
 @endsection

@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'Register - Anagata Executive')
-@section('body_class', 'page register-page register-employee-page')
+@section('title', 'Register as Recruiter - Anagata Executive')
+@section('body_class', 'page register-page register-recruiter-page')
 
 @section('content')
     {{-- Toast Notifications --}}
@@ -49,8 +49,14 @@
                             This email is already registered. Please use a different email or try logging in.
                         @elseif ($errors->has('password'))
                             {{ $errors->first('password') }}
-                        @elseif ($errors->has('first_name'))
-                            {{ $errors->first('first_name') }}
+                        @elseif ($errors->has('full_name'))
+                            {{ $errors->first('full_name') }}
+                        @elseif ($errors->has('company_name'))
+                            {{ $errors->first('company_name') }}
+                        @elseif ($errors->has('job_title'))
+                            {{ $errors->first('job_title') }}
+                        @elseif ($errors->has('phone'))
+                            {{ $errors->first('phone') }}
                         @else
                             Please check the form and correct the errors below.
                         @endif
@@ -74,16 +80,16 @@
                 </div>
             </div>
             <div class="register-text-content">
-                <p class="register-text-small">You can easily</p>
-                <h2 class="register-text-large">Search and find your dream job is now easier than ever. Just browse a job and apply if you need to.</h2>
+                <p class="register-text-small">For Recruiters</p>
+                <h2 class="register-text-large">Find the best talent for your company. Post job listings and connect with qualified candidates.</h2>
             </div>
         </div>
 
         {{-- Right Section: Register Form --}}
         <div class="register-right-section">
             <div class="register-form-wrapper">
-                <h1 class="register-title">Create Account</h1>
-                <p class="register-subtitle">Start your journey to a better career</p>
+                <h1 class="register-title">Create Recruiter Account</h1>
+                <p class="register-subtitle">Start hiring the best talent</p>
 
                 {{-- Social Login --}}
                 <div class="social-login social-login-top">
@@ -113,46 +119,27 @@
                 <form method="POST" action="{{ route('register') }}" class="register-form">
                     @csrf
 
-                    {{-- First Name Field --}}
+                    {{-- Full Name Field --}}
                     <div class="form-group">
                         <div class="form-input-wrapper">
                             <i class="form-input-icon fa-solid fa-user"></i>
                             <input 
                                 type="text" 
-                                id="first_name" 
-                                name="first_name" 
-                                class="form-input @error('first_name') is-invalid @enderror" 
-                                placeholder="First Name"
-                                value="{{ session('toast_type') === 'success' ? '' : old('first_name') }}"
+                                id="full_name" 
+                                name="full_name" 
+                                class="form-input @error('full_name') is-invalid @enderror" 
+                                placeholder="Full Name"
+                                value="{{ session('toast_type') === 'success' ? '' : old('full_name') }}"
                                 required 
                                 autofocus
                             />
                         </div>
-                        @error('first_name')
+                        @error('full_name')
                             <span class="form-error">{{ $message }}</span>
                         @enderror
                     </div>
 
-                    {{-- Last Name Field --}}
-                    <div class="form-group">
-                        <div class="form-input-wrapper">
-                            <i class="form-input-icon fa-solid fa-user"></i>
-                            <input 
-                                type="text" 
-                                id="last_name" 
-                                name="last_name" 
-                                class="form-input @error('last_name') is-invalid @enderror" 
-                                placeholder="Last Name (Optional)"
-                                value="{{ session('toast_type') === 'success' ? '' : old('last_name') }}"
-                                @optional
-                            />
-                        </div>
-                        @error('last_name')
-                            <span class="form-error">{{ $message }}</span>
-                        @enderror
-                    </div>
-
-                    {{-- Email Field --}}
+                    {{-- Work Email Field --}}
                     <div class="form-group">
                         <div class="form-input-wrapper">
                             <i class="form-input-icon fa-solid fa-envelope"></i>
@@ -161,12 +148,69 @@
                                 id="email" 
                                 name="email" 
                                 class="form-input @error('email') is-invalid @enderror" 
-                                placeholder="Email"
+                                placeholder="Work Email"
                                 value="{{ session('toast_type') === 'success' ? '' : old('email') }}"
                                 required
                             />
                         </div>
                         @error('email')
+                            <span class="form-error">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    {{-- Phone / WhatsApp Field --}}
+                    <div class="form-group">
+                        <div class="form-input-wrapper">
+                            <i class="form-input-icon fa-solid fa-phone"></i>
+                            <input 
+                                type="tel" 
+                                id="phone" 
+                                name="phone" 
+                                class="form-input @error('phone') is-invalid @enderror" 
+                                placeholder="Phone / WhatsApp"
+                                value="{{ session('toast_type') === 'success' ? '' : old('phone') }}"
+                                required
+                            />
+                        </div>
+                        @error('phone')
+                            <span class="form-error">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    {{-- Job Title / Position Field --}}
+                    <div class="form-group">
+                        <div class="form-input-wrapper">
+                            <i class="form-input-icon fa-solid fa-briefcase"></i>
+                            <input 
+                                type="text" 
+                                id="job_title" 
+                                name="job_title" 
+                                class="form-input @error('job_title') is-invalid @enderror" 
+                                placeholder="Job Title / Position"
+                                value="{{ session('toast_type') === 'success' ? '' : old('job_title') }}"
+                                required
+                            />
+                        </div>
+                        @error('job_title')
+                            <span class="form-error">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    {{-- Company Name Field --}}
+                    <div class="form-group">
+                        <div class="form-input-wrapper">
+                            <i class="form-input-icon fa-solid fa-building"></i>
+                            <input 
+                                type="text" 
+                                id="company_name" 
+                                name="company_name" 
+                                class="form-input @error('company_name') is-invalid @enderror" 
+                                placeholder="Company Name"
+                                value="{{ session('toast_type') === 'success' ? '' : old('company_name') }}"
+                                required
+                            />
+                        </div>
+                        @error('company_name')
                             <span class="form-error">{{ $message }}</span>
                         @enderror
                     </div>

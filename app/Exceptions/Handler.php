@@ -27,4 +27,20 @@ class Handler extends ExceptionHandler
             //
         });
     }
+
+    /**
+     * Render an exception into an HTTP response.
+     */
+    public function render($request, Throwable $e)
+    {
+        // Handle CSRF token mismatch (419 error)
+        if ($e instanceof \Illuminate\Session\TokenMismatchException) {
+            return redirect()->back()
+                ->withInput()
+                ->with('status', 'Your session has expired. Please try again.')
+                ->with('toast_type', 'error');
+        }
+
+        return parent::render($request, $e);
+    }
 }

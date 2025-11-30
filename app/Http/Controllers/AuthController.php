@@ -13,8 +13,12 @@ class AuthController extends Controller
      */
     public function showLoginForm()
     {
-        // If user is already authenticated, redirect to home
+        // If user is already authenticated, redirect based on role
         if (Auth::check()) {
+            $user = Auth::user();
+            if (in_array($user->role, ['recruiter', 'admin'])) {
+                return redirect()->route('admin.dashboard');
+            }
             return redirect()->route('home');
         }
 
@@ -36,7 +40,13 @@ class AuthController extends Controller
 
             $user = Auth::user();
 
-            return redirect()->intended(route('home'))
+            // Redirect based on user role
+            $redirectRoute = 'home';
+            if (in_array($user->role, ['recruiter', 'admin'])) {
+                $redirectRoute = 'admin.dashboard';
+            }
+
+            return redirect()->intended(route($redirectRoute))
                 ->with('status', 'Welcome back, ' . ($user->first_name ?? '') . ($user->last_name ?? '' ? ' ' . $user->last_name : '') . '!')
                 ->with('toast_type', 'success');
         }
@@ -47,10 +57,32 @@ class AuthController extends Controller
     }
 
     /**
+     * Show the role selection form.
+     */
+    public function showRegisterRoleForm()
+    {
+        return view('auth.register-role');
+    }
+
+    /**
      * Show the registration form.
      */
-    public function showRegisterForm()
+    public function showRegisterForm(Request $request)
     {
+        $role = $request->get('role', session('register_role', 'employee'));
+        
+        // If no role is set, redirect to role selection
+        if (!$role || !in_array($role, ['employee', 'recruiter'])) {
+            return redirect()->route('register.role');
+        }
+
+        // Store role in session for form submission
+        session(['register_role' => $role]);
+
+        if ($role === 'recruiter') {
+            return view('auth.register-recruiter');
+        }
+
         return view('auth.register');
     }
 
@@ -59,35 +91,96 @@ class AuthController extends Controller
      */
     public function register(Request $request)
     {
-        $validated = $request->validate([
-            'first_name' => 'required|string|max:255',
-            'last_name' => 'nullable|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
-        ], [
-            'first_name.required' => 'First name is required.',
-            'email.required' => 'Email is required.',
-            'email.email' => 'Please enter a valid email address.',
-            'email.unique' => 'This email is already registered.',
-            'password.required' => 'Password is required.',
-            'password.min' => 'Password must be at least 8 characters.',
-            'password.confirmed' => 'Password confirmation does not match.',
-        ]);
+        try {
+            $role = session('register_role', 'employee');
+            
+            if ($role === 'recruiter') {
+                // Recruiter registration validation
+                $validated = $request->validate([
+                    'full_name' => 'required|string|max:255',
+                    'email' => 'required|string|email|max:255|unique:users',
+                    'phone' => 'required|string|max:20',
+                    'job_title' => 'required|string|max:255',
+                    'company_name' => 'required|string|max:255',
+                    'password' => 'required|string|min:8|confirmed',
+                ], [
+                    'full_name.required' => 'Full name is required.',
+                    'email.required' => 'Work email is required.',
+                    'email.email' => 'Please enter a valid email address.',
+                    'email.unique' => 'This email is already registered.',
+                    'phone.required' => 'Phone / WhatsApp is required.',
+                    'job_title.required' => 'Job Title / Position is required.',
+                    'company_name.required' => 'Company Name is required.',
+                    'password.required' => 'Password is required.',
+                    'password.min' => 'Password must be at least 8 characters.',
+                    'password.confirmed' => 'Password confirmation does not match.',
+                ]);
 
-        $user = \App\Models\User::create([
-            'first_name' => $validated['first_name'],
-            'last_name' => $validated['last_name'] ?? null,
-            'email' => $validated['email'],
-            'password' => bcrypt($validated['password']),
-            'role' => 'user',
-            'email_verified_at' => now(),
-        ]);
+                // Split full name into first_name and last_name
+                $nameParts = explode(' ', $validated['full_name'], 2);
+                $firstName = $nameParts[0];
+                $lastName = isset($nameParts[1]) ? $nameParts[1] : null;
 
-        Auth::login($user);
+                $user = \App\Models\User::create([
+                    'first_name' => $firstName,
+                    'last_name' => $lastName,
+                    'email' => $validated['email'],
+                    'password' => bcrypt($validated['password']),
+                    'phone' => $validated['phone'],
+                    'job_title' => $validated['job_title'],
+                    'company_name' => $validated['company_name'],
+                    'role' => 'recruiter',
+                    'email_verified_at' => now(),
+                ]);
+            } else {
+                // Employee registration validation
+                $validated = $request->validate([
+                    'first_name' => 'required|string|max:255',
+                    'last_name' => 'nullable|string|max:255',
+                    'email' => 'required|string|email|max:255|unique:users',
+                    'password' => 'required|string|min:8|confirmed',
+                ], [
+                    'first_name.required' => 'First name is required.',
+                    'email.required' => 'Email is required.',
+                    'email.email' => 'Please enter a valid email address.',
+                    'email.unique' => 'This email is already registered.',
+                    'password.required' => 'Password is required.',
+                    'password.min' => 'Password must be at least 8 characters.',
+                    'password.confirmed' => 'Password confirmation does not match.',
+                ]);
 
-        return redirect()->route('home')
-            ->with('status', 'Registration successful! Welcome to Anagata Executive.')
-            ->with('toast_type', 'success');
+                $user = \App\Models\User::create([
+                    'first_name' => $validated['first_name'],
+                    'last_name' => $validated['last_name'] ?? null,
+                    'email' => $validated['email'],
+                    'password' => bcrypt($validated['password']),
+                    'role' => 'user',
+                    'email_verified_at' => now(),
+                ]);
+            }
+
+            // Clear the role from session
+            $request->session()->forget('register_role');
+
+            // Don't auto-login user after registration
+            // User needs to login manually after registration
+
+            // Redirect to login page with success message
+            return redirect()->route('login')
+                ->with('status', 'Registration successful! Please login to continue.')
+                ->with('toast_type', 'success');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            // Validation errors will be shown via toast in the view
+            return redirect()->back()
+                ->withErrors($e->validator)
+                ->withInput();
+        } catch (\Exception $e) {
+            // Handle any other errors
+            return redirect()->back()
+                ->with('status', 'Registration failed. Please try again later.')
+                ->with('toast_type', 'error')
+                ->withInput();
+        }
     }
 
     /**

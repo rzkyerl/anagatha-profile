@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>@yield('title', __('app.meta.title'))</title>
     <meta name="description" content="{{ __('app.meta.description') }}">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preload" as="image" href="/assets/hero-sec.png" fetchpriority="high">
@@ -21,7 +22,7 @@
 
 <body class="@yield('body_class', 'page')">
     @php
-        $isAuthPage = request()->routeIs('login', 'register');
+    $isAuthPage = request()->routeIs('login', 'register', 'register.role', 'register.recruiter');
     @endphp
     
     @unless($isAuthPage)

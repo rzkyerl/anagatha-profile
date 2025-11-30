@@ -21,10 +21,32 @@ class RedirectIfAuthenticated
 
         foreach ($guards as $guard) {
             if (Auth::guard($guard)->check()) {
-                // If accessing admin login, redirect to admin dashboard
+                $user = Auth::guard($guard)->user();
+                
+                // If accessing admin login, redirect to admin dashboard (for recruiters/admins)
                 if ($request->is('admin/login')) {
+                    if (in_array($user->role, ['recruiter', 'admin'])) {
+                        return redirect()->route('admin.dashboard');
+                    } else {
+                        // Regular users should not access admin login
+                        return redirect()->route('home');
+                    }
+                }
+                
+                // For regular login page, redirect based on role
+                if ($request->is('login')) {
+                    if (in_array($user->role, ['recruiter', 'admin'])) {
+                        return redirect()->route('admin.dashboard');
+                    } else {
+                        return redirect()->route('home');
+                    }
+                }
+                
+                // Default redirect based on role
+                if (in_array($user->role, ['recruiter', 'admin'])) {
                     return redirect()->route('admin.dashboard');
                 }
+                
                 return redirect(RouteServiceProvider::HOME);
             }
         }

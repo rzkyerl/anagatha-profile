@@ -19,6 +19,7 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
+.switch-env.ps1
 
 # Node.js files
 package-lock.json

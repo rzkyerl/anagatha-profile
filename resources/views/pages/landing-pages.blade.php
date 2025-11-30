@@ -12,10 +12,7 @@
             <p class="text-lead">Search and find your dream job is now easier than ever. Just browse a job and apply if you need to. Connect with top employers and discover opportunities that match your skills.</p>
             <div class="hero-cta-group">
                 <a class="cta-primary cta-primary--glow" href="{{ route('login') }}">
-                    Login to Get Started
-                </a>
-                <a class="cta-primary cta-primary--outline" href="{{ route('register') }}">
-                    Create Account
+                    Get Started
                 </a>
             </div>
         </div>
@@ -76,7 +73,7 @@
                     <a class="cta-primary cta-primary--glow" href="{{ route('login') }}">
                         Login Now
                     </a>
-                    <a class="cta-primary cta-primary--outline" href="{{ route('register') }}">
+                    <a class="cta-primary cta-primary--outline" href="{{ route('register.role') }}">
                         Register Free
                     </a>
                 </div>

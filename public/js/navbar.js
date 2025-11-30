@@ -90,6 +90,11 @@
                         dropdown.setAttribute('aria-expanded', 'false');
                     }
                 });
+                
+                // Prevent closing mobile menu when toggling dropdown
+                if (navLinks && navLinks.classList.contains('is-open')) {
+                    event.stopPropagation();
+                }
             };
 
             const closeDropdown = () => {
@@ -115,8 +120,13 @@
 
             // Close dropdown when clicking on a dropdown item
             dropdownMenu.addEventListener('click', (event) => {
-                if (event.target.closest('.nav-links__dropdown-item')) {
-                    closeDropdown();
+                const clickedItem = event.target.closest('.nav-links__dropdown-item');
+                if (clickedItem) {
+                    // Don't prevent default - allow navigation
+                    // Close dropdown after a short delay to allow navigation
+                    setTimeout(() => {
+                        closeDropdown();
+                    }, 100);
                 }
             });
         };
@@ -295,4 +305,3 @@
         initNavbar();
     }
 })();
-

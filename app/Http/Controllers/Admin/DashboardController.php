@@ -16,6 +16,20 @@ class DashboardController extends Controller
      */
     public function index()
     {
+        // Check if user has the correct role (middleware should handle this, but double-check for safety)
+        $user = auth()->user();
+        if (!$user || !in_array($user->role, ['recruiter', 'admin'])) {
+            // If user is regular user, redirect to home
+            if ($user && $user->role === 'user') {
+                return redirect()->route('home')
+                    ->with('status', 'You do not have permission to access the admin panel.')
+                    ->with('toast_type', 'warning');
+            }
+            // If not authenticated, redirect to admin login
+            return redirect()->route('admin.login')
+                ->with('error', 'Please login to access the admin panel.');
+        }
+
         // Get statistics
         $totalUsers = User::count();
         $totalJobListings = JobListing::count();

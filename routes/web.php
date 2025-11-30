@@ -33,7 +33,7 @@ Route::get('/lang/{locale}', function ($locale) {
 // Public Pages
 Route::controller(PageController::class)->group(function () {
     Route::get('/', 'landing')->name('landing');
-    Route::get('/home', 'home')->name('home');
+    Route::get('/home', 'home')->middleware(['auth', 'role.user'])->name('home');
     Route::get('/about', 'about')->name('about');
     Route::get('/services', 'services')->name('services');
     Route::get('/why-us', 'whyUs')->name('why-us');
@@ -74,6 +74,7 @@ Route::post('/contact', [ContactController::class, 'store'])
 Route::controller(AuthController::class)->group(function () {
     Route::get('/login', 'showLoginForm')->name('login');
     Route::post('/login', 'login');
+    Route::get('/register/role', 'showRegisterRoleForm')->name('register.role');
     Route::get('/register', 'showRegisterForm')->name('register');
     Route::post('/register', 'register');
     Route::get('/forgot-password', 'showForgotPasswordForm')->name('password.request');
@@ -95,7 +96,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 });
 
 // Admin Routes (Protected)
-Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'role.recruiter.admin'])->group(function () {
     // Logout
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
     

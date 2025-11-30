@@ -26,6 +26,8 @@ class User extends Authenticatable
         'password',
         'role',
         'phone',
+        'company_name',
+        'job_title',
         'avatar',
         'github',
         'linkedin',

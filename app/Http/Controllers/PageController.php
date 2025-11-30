@@ -17,6 +17,20 @@ class PageController extends Controller
 
     public function home()
     {
+        // Check if user is authenticated and has the correct role
+        if (!Auth::check() || Auth::user()->role !== 'user') {
+            // If user is recruiter or admin, redirect to admin dashboard
+            if (Auth::check() && in_array(Auth::user()->role, ['recruiter', 'admin'])) {
+                return redirect()->route('admin.dashboard')
+                    ->with('status', 'You do not have permission to access this page.')
+                    ->with('toast_type', 'warning');
+            }
+            // If not authenticated, redirect to login
+            return redirect()->route('login')
+                ->with('status', 'Please login to access this page.')
+                ->with('toast_type', 'info');
+        }
+
         // Get latest 6 active job listings for homepage
         $jobListings = JobListing::with('recruiter')
             ->where('status', 'active')

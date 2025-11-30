@@ -45,10 +45,36 @@
     function checkForToast() {
         setTimeout(function () {
             const toastStack = document.querySelector('[data-toast]');
-            if (toastStack && !toastStack.querySelector('.toast--visible')) {
-                initToast();
+            if (toastStack) {
+                const toast = toastStack.querySelector('.toast');
+                if (toast && !toast.classList.contains('toast--visible')) {
+                    initToast();
+                }
             }
         }, 100);
+    }
+    
+    // Additional check after page load (for redirects from form submission)
+    function checkForToastOnLoad() {
+        // Check immediately
+        const toastStack = document.querySelector('[data-toast]');
+        if (toastStack) {
+            const toast = toastStack.querySelector('.toast');
+            if (toast && !toast.classList.contains('toast--visible')) {
+                initToast();
+            }
+        }
+        
+        // Also check after a delay to handle slow redirects
+        setTimeout(function () {
+            const toastStack = document.querySelector('[data-toast]');
+            if (toastStack) {
+                const toast = toastStack.querySelector('.toast');
+                if (toast && !toast.classList.contains('toast--visible')) {
+                    initToast();
+                }
+            }
+        }, 300);
     }
 
     function initFormGuard() {
@@ -520,22 +546,31 @@
     // Initialize when DOM is ready
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', function() {
-            initToast();
+            checkForToastOnLoad();
             checkForToast();
             initFormGuard();
             initAutoHideAlerts();
         });
     } else {
         // DOM is already ready
-        initToast();
+        checkForToastOnLoad();
         checkForToast();
         initFormGuard();
         initAutoHideAlerts();
     }
 
-    // Also check on page show (for back/forward navigation)
+    // Also check on page show (for back/forward navigation and redirects)
     window.addEventListener('pageshow', function() {
-        initToast();
+        checkForToastOnLoad();
+    });
+    
+    // Check when page becomes visible (for tab switching)
+    document.addEventListener('visibilitychange', function() {
+        if (!document.hidden) {
+            setTimeout(function() {
+                checkForToastOnLoad();
+            }, 100);
+        }
     });
 })();
 
