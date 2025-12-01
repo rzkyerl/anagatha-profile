@@ -3,6 +3,9 @@
 
 <head>
     <meta charset="utf-8" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
     <title>@yield('title', 'Dashboard') | Anagata Executive Dashboard</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
@@ -10,26 +13,34 @@
     <!-- App favicon -->
     <link rel="shortcut icon" href="{{ asset('assets/hero-sec.png') }}" />
 
+    @php
+        // Use app version if available, otherwise use a timestamp for cache busting
+        $cssVersion = config('app.version', '1.0.0');
+        if (app()->environment('local')) {
+            $cssVersion = $cssVersion . '.' . time();
+        }
+    @endphp
+
     <!-- Bootstrap Css -->
-    <link href="{{ asset('dashboard/css/bootstrap.min.css') }}" id="bootstrap-style" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('dashboard/css/bootstrap.min.css') }}?v={{ $cssVersion }}" id="bootstrap-style" rel="stylesheet" type="text/css" />
 
     <!-- DataTables -->
-    <link href="{{ asset('dashboard/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css') }}" rel="stylesheet"
+    <link href="{{ asset('dashboard/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css') }}?v={{ $cssVersion }}" rel="stylesheet"
         type="text/css" />
 
         <!-- Datatables Buttons CSS -->
-<link href="{{ asset('dashboard/libs/datatables.net-buttons-bs4/css/buttons.bootstrap4.min.css') }}" rel="stylesheet">
+<link href="{{ asset('dashboard/libs/datatables.net-buttons-bs4/css/buttons.bootstrap4.min.css') }}?v={{ $cssVersion }}" rel="stylesheet">
 
 
     <!-- Responsive datatable examples -->
-    <link href="{{ asset('dashboard/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css') }}"
+    <link href="{{ asset('dashboard/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css') }}?v={{ $cssVersion }}"
         rel="stylesheet" type="text/css" />
     <!-- Icons Css -->
-    <link href="{{ asset('dashboard/css/icons.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('dashboard/css/icons.min.css') }}?v={{ $cssVersion }}" rel="stylesheet" type="text/css" />
     <!-- App Css-->
-    <link href="{{ asset('dashboard/css/app.min.css') }}" id="app-style" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('dashboard/css/app.min.css') }}?v={{ $cssVersion }}" id="app-style" rel="stylesheet" type="text/css" />
     <!-- Admin Custom Color Override -->
-    <link href="{{ asset('dashboard/css/admin-custom.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('dashboard/css/admin-custom.css') }}?v={{ $cssVersion }}" rel="stylesheet" type="text/css" />
 
     @stack('styles')
 </head>

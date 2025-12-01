@@ -47,7 +47,12 @@
 
 # Set cache-control headers for static assets
 <IfModule mod_headers.c>
-    <FilesMatch "\.(png|jpg|jpeg|gif|svg|webp|ico|css|js)$">
+    # CSS and JS files - allow revalidation (no immutable flag)
+    <FilesMatch "\.(css|js)$">
+        Header set Cache-Control "public, max-age=31536000"
+    </FilesMatch>
+    # Images and other static assets - use immutable for better performance
+    <FilesMatch "\.(png|jpg|jpeg|gif|svg|webp|ico)$">
         Header set Cache-Control "public, max-age=31536000, immutable"
     </FilesMatch>
 </IfModule>
