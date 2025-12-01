@@ -109,8 +109,11 @@
                         </a>
                     </article>
                 @empty
-                    <div class="col-12 text-center py-5">
-                        <p class="text-muted">No job listings available at the moment. Please check back later.</p>
+                    <div class="empty-state" data-aos="fade-up">
+                        <div class="empty-state__icon">
+                            <i class="fa-solid fa-briefcase" aria-hidden="true"></i>
+                        </div>
+                        <p class="empty-state__message">No job listings available at the moment. Please check back later.</p>
                     </div>
                 @endforelse
             </div>

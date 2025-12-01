@@ -874,11 +874,11 @@
     }
 
     .profile-left {
-        order: 2;
+        order: 1;
     }
 
     .profile-right {
-        order: 1;
+        order: 2;
     }
 }
 
