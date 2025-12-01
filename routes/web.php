@@ -18,6 +18,16 @@ Route::get('/health', function () {
     return response()->json(['status' => 'ok', 'timestamp' => now()], 200);
 });
 
+// Ensure dashboard assets are accessible (fallback for static files)
+// This helps ensure CSS and JS files from dashboard directory can be served
+Route::get('/dashboard/{path}', function ($path) {
+    $filePath = public_path('dashboard/' . $path);
+    if (file_exists($filePath) && is_file($filePath)) {
+        return response()->file($filePath);
+    }
+    abort(404);
+})->where('path', '.*')->name('dashboard.asset');
+
 Route::get('/lang/{locale}', function ($locale) {
     $availableLocales = config('app.supported_locales', []);
 
