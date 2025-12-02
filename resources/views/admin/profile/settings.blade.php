@@ -1,0 +1,226 @@
+@extends('admin.admin_layouts.app')
+
+@section('title', 'Profile Settings')
+
+@section('breadcrumb')
+    <li class="breadcrumb-item">
+        <a href="javascript: void(0);">Anagata Executive</a>
+    </li>
+    <li class="breadcrumb-item active">Profile Settings</li>
+@endsection
+
+@section('content')
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Profile Settings</h6>
+                </div>
+                <div class="card-body">
+                    @if (session('success'))
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="ri-checkbox-circle-line me-2"></i>{{ session('success') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    @endif
+
+                    @if (session('error'))
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="ri-error-warning-line me-2"></i>{{ session('error') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    @endif
+
+                    @if ($errors->any())
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="ri-error-warning-line me-2"></i>
+                            <ul class="mb-0">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    @endif
+
+                    <form method="POST" action="{{ route('admin.profile.update') }}" enctype="multipart/form-data">
+                        @csrf
+                        @method('PUT')
+
+                        <div class="row">
+                            {{-- Avatar Section --}}
+                            <div class="col-md-4 mb-4">
+                                <div class="text-center">
+                                    <div class="mb-3">
+                                        @if($user->avatar)
+                                            <img src="{{ route('admin.profile.avatar', $user->avatar) }}" 
+                                                 alt="Avatar" 
+                                                 class="img-thumbnail rounded-circle" 
+                                                 style="width: 150px; height: 150px; object-fit: cover;">
+                                        @else
+                                            <img src="{{ asset('dashboard/images/users/profile-default.jpg') }}" 
+                                                 alt="Avatar" 
+                                                 class="img-thumbnail rounded-circle" 
+                                                 style="width: 150px; height: 150px; object-fit: cover;">
+                                        @endif
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="avatar" class="form-label">Change Avatar</label>
+                                        <input type="file" 
+                                               class="form-control @error('avatar') is-invalid @enderror" 
+                                               id="avatar" 
+                                               name="avatar" 
+                                               accept="image/*">
+                                        @error('avatar')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                        <small class="form-text text-muted">Max size: 2MB. Supported formats: JPG, PNG, GIF</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- Profile Information --}}
+                            <div class="col-md-8">
+                                <h5 class="mb-3">Personal Information</h5>
+                                
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="first_name" class="form-label">First Name <span class="text-danger">*</span></label>
+                                        <input type="text" 
+                                               class="form-control @error('first_name') is-invalid @enderror" 
+                                               id="first_name" 
+                                               name="first_name" 
+                                               value="{{ old('first_name', $user->first_name) }}" 
+                                               required>
+                                        @error('first_name')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="last_name" class="form-label">Last Name</label>
+                                        <input type="text" 
+                                               class="form-control @error('last_name') is-invalid @enderror" 
+                                               id="last_name" 
+                                               name="last_name" 
+                                               value="{{ old('last_name', $user->last_name) }}">
+                                        @error('last_name')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
+                                        <input type="email" 
+                                               class="form-control @error('email') is-invalid @enderror" 
+                                               id="email" 
+                                               name="email" 
+                                               value="{{ old('email', $user->email) }}" 
+                                               required>
+                                        @error('email')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="phone" class="form-label">Phone</label>
+                                        <input type="text" 
+                                               class="form-control @error('phone') is-invalid @enderror" 
+                                               id="phone" 
+                                               name="phone" 
+                                               value="{{ old('phone', $user->phone) }}">
+                                        @error('phone')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+
+                                {{-- Recruiter Specific Fields --}}
+                                @if($user->role === 'recruiter')
+                                    <hr class="my-4">
+                                    <h5 class="mb-3">Company Information</h5>
+                                    
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <label for="company_name" class="form-label">Company Name</label>
+                                            <input type="text" 
+                                                   class="form-control @error('company_name') is-invalid @enderror" 
+                                                   id="company_name" 
+                                                   name="company_name" 
+                                                   value="{{ old('company_name', $user->company_name) }}">
+                                            @error('company_name')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="job_title" class="form-label">Job Title</label>
+                                            <input type="text" 
+                                                   class="form-control @error('job_title') is-invalid @enderror" 
+                                                   id="job_title" 
+                                                   name="job_title" 
+                                                   value="{{ old('job_title', $user->job_title) }}">
+                                            @error('job_title')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                @endif
+
+                                <hr class="my-4">
+                                <h5 class="mb-3">Change Password</h5>
+                                <p class="text-muted small">Leave blank if you don't want to change your password.</p>
+                                
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="password" class="form-label">New Password</label>
+                                        <input type="password" 
+                                               class="form-control @error('password') is-invalid @enderror" 
+                                               id="password" 
+                                               name="password">
+                                        @error('password')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="password_confirmation" class="form-label">Confirm New Password</label>
+                                        <input type="password" 
+                                               class="form-control" 
+                                               id="password_confirmation" 
+                                               name="password_confirmation">
+                                    </div>
+                                </div>
+
+                                <div class="mt-4">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="ri-save-line me-1"></i> Update Profile
+                                    </button>
+                                    <a href="{{ route('admin.dashboard') }}" class="btn btn-secondary">
+                                        <i class="ri-close-line me-1"></i> Cancel
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Preview avatar before upload
+        document.getElementById('avatar').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.querySelector('.img-thumbnail');
+                    if (img) {
+                        img.src = e.target.result;
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    </script>
+@endsection
+

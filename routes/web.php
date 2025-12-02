@@ -1,10 +1,13 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\Admin\CompanyController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\JobApplyController;
 use App\Http\Controllers\Admin\JobListingController;
 use App\Http\Controllers\Admin\LoginController;
+use App\Http\Controllers\Admin\ProfileController as AdminProfileController;
+use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\JobApplicationController;
 use App\Http\Controllers\PageController;
@@ -144,7 +147,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role.recruiter.admi
     Route::get('/job-apply/{id}/download/cv', [JobApplyController::class, 'downloadCv'])->name('job-apply.download.cv');
     Route::get('/job-apply/{id}/download/portfolio', [JobApplyController::class, 'downloadPortfolio'])->name('job-apply.download.portfolio');
 });
-
+    
 // Admin Only Routes (Protected - Admin exclusive access)
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'role.admin'])->group(function () {
     // Users Resource Routes - Admin only (recruiters cannot manage users)
@@ -154,7 +157,26 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role.admin'])->grou
     Route::delete('/users/{id}/force-delete', [UserController::class, 'forceDelete'])->name('users.force-delete');
     Route::resource('users', UserController::class);
     
-    // (Add more admin-only routes here)
+    // Companies - Admin only (index must be before show to avoid route conflict)
+    Route::get('/companies', [CompanyController::class, 'index'])->name('companies.index');
+    Route::get('/companies/{companyName}', [CompanyController::class, 'show'])->name('companies.show');
+    
+    // Reports - Admin only
+    Route::prefix('reports')->name('reports.')->group(function () {
+        Route::get('/', [ReportController::class, 'index'])->name('index');
+        Route::get('/users', [ReportController::class, 'users'])->name('users');
+        Route::get('/jobs', [ReportController::class, 'jobs'])->name('jobs');
+        Route::get('/export/overview', [ReportController::class, 'exportOverview'])->name('export.overview');
+        Route::get('/export/users', [ReportController::class, 'exportUsers'])->name('export.users');
+        Route::get('/export/jobs', [ReportController::class, 'exportJobs'])->name('export.jobs');
+    });
+});
+
+// Profile Settings Routes (Protected - accessible by admin and recruiter)
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'role.recruiter.admin'])->group(function () {
+    Route::get('/profile/settings', [AdminProfileController::class, 'show'])->name('profile.settings');
+    Route::put('/profile/settings', [AdminProfileController::class, 'update'])->name('profile.update');
+    Route::get('/profile/avatar/{filename}', [AdminProfileController::class, 'avatar'])->name('profile.avatar');
 });
 
 // Recruiter Routes (Protected - recruiter-facing URLs, accessible by recruiter and admin)
@@ -164,6 +186,9 @@ Route::prefix('recruiter')->name('recruiter.')->middleware(['auth', 'role.recrui
 
     // Dashboard (uses same controller, but URL is /recruiter/dashboard)
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/profile/settings', [AdminProfileController::class, 'show'])->name('profile.settings');
+    Route::put('/profile/settings', [AdminProfileController::class, 'update'])->name('profile.update');
+    Route::get('/profile/avatar/{filename}', [AdminProfileController::class, 'avatar'])->name('profile.avatar');
 
     // Job Listings (recruiter-scoped in controller)
     Route::get('/job-listings/export', [JobListingController::class, 'export'])->name('job-listings.export');

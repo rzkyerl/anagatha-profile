@@ -46,22 +46,64 @@
                 </li>
 
                 @if ($role === 'admin')
+                    {{-- Users Management --}}
                     <li>
-                        <a href="{{ route('admin.users.index') }}" class="waves-effect">
+                        <a href="javascript: void(0);" class="has-arrow waves-effect">
                             <i class="ri-user-line"></i>
                             <span>Users</span>
                         </a>
+                        <ul class="sub-menu" aria-expanded="false">
+                            <li>
+                                <a href="{{ route('admin.users.index') }}">All Users</a>
+                            </li>
+                            <li>
+                                <a href="{{ route('admin.users.index', ['role' => 'recruiter']) }}">Recruiters</a>
+                            </li>
+                            <li>
+                                <a href="{{ route('admin.users.index', ['role' => 'user']) }}">Job Seeker</a>
+                            </li>
+                        </ul>
                     </li>
 
+                    {{-- Companies --}}
+                    <li>
+                        <a href="{{ route('admin.companies.index') }}" class="waves-effect">
+                            <i class="ri-building-line"></i>
+                            <span>Companies</span>
+                        </a>
+                    </li>
+
+                    {{-- Jobs Management --}}
                     <li>
                         <a href="javascript: void(0);" class="has-arrow waves-effect">
-                            <i class="ri-layout-3-line"></i>
+                            <i class="ri-briefcase-line"></i>
                             <span>Jobs</span>
                         </a>
-                        <ul class="sub-menu" aria-expanded="true">
+                        <ul class="sub-menu" aria-expanded="false">
                             <li>
                                 <a href="{{ route('admin.job-listings.index') }}">Job Listings</a>
-                                <a href="{{ route('admin.job-apply.index') }}">Job Apply</a>
+                            </li>
+                            <li>
+                                <a href="{{ route('admin.job-apply.index') }}">Job Applications</a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    {{-- Reports & Analytics --}}
+                    <li>
+                        <a href="javascript: void(0);" class="has-arrow waves-effect">
+                            <i class="ri-bar-chart-line"></i>
+                            <span>Reports</span>
+                        </a>
+                        <ul class="sub-menu" aria-expanded="false">
+                            <li>
+                                <a href="{{ route('admin.reports.index') }}">Overview</a>
+                            </li>
+                            <li>
+                                <a href="{{ route('admin.reports.users') }}">User Reports</a>
+                            </li>
+                            <li>
+                                <a href="{{ route('admin.reports.jobs') }}">Job Reports</a>
                             </li>
                         </ul>
                     </li>

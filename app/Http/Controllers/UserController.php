@@ -16,19 +16,27 @@ class UserController extends Controller
     public function index(Request $request)
     {
         $showTrashed = $request->has('trashed') && $request->trashed == '1';
+        $roleFilter = $request->get('role');
         
         if ($showTrashed) {
-            $users = User::onlyTrashed()
-                ->orderBy('deleted_at', 'desc')
-                ->get();
+            $query = User::onlyTrashed()
+                ->orderBy('deleted_at', 'desc');
         } else {
-        $users = User::orderBy('created_at', 'desc')->get();
+            $query = User::orderBy('created_at', 'desc');
         }
         
+        // Filter by role if provided
+        if ($roleFilter && in_array($roleFilter, ['admin', 'recruiter', 'user'])) {
+            $query->where('role', $roleFilter);
+        }
+        
+        $users = $query->get();
+        
         return view('admin.user.index', [
-            'title' => 'User Management',
+            'title' => $roleFilter ? ucfirst($roleFilter) . ' Management' : 'User Management',
             'users' => $users,
-            'showTrashed' => $showTrashed
+            'showTrashed' => $showTrashed,
+            'roleFilter' => $roleFilter
         ]);
     }
 

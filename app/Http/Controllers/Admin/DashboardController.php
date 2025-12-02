@@ -89,40 +89,40 @@ class DashboardController extends Controller
             $jobListingsGrowthSeries = $jobListingsGrowthData['series'];
         } else {
             // Admin dashboard (global statistics)
-            $totalUsers = User::count();
-            $totalJobListings = JobListing::count();
-            $activeJobListings = JobListing::where('status', 'active')->count();
+        $totalUsers = User::count();
+        $totalJobListings = JobListing::count();
+        $activeJobListings = JobListing::where('status', 'active')->count();
             $totalJobApplications = JobApply::count();
-            $totalRecruiters = User::where('role', 'recruiter')->count();
-            
-            // Get recent users (last 5)
-            $recentUsers = User::orderBy('created_at', 'desc')->limit(5)->get();
-            
-            // Additional statistics
-            $newUsersToday = User::whereDate('created_at', today())->count();
-            $verifiedUsers = User::whereNotNull('email_verified_at')->count();
-            $unverifiedUsers = $totalUsers - $verifiedUsers;
-            
-            // User statistics by role
-            $adminCount = User::where('role', 'admin')->count();
-            $userCount = User::where('role', 'user')->count();
-            $recruiterCount = User::where('role', 'recruiter')->count();
-            
-            // User growth data for last 6 months
-            $userGrowthData = $this->getUserGrowthData(6);
-            $userGrowthCategories = $userGrowthData['categories'];
-            $userGrowthSeries = $userGrowthData['series'];
-            
-            // Job listings growth data for last 6 months
-            $jobListingsGrowthData = $this->getJobListingsGrowthData(6);
-            $jobListingsGrowthCategories = $jobListingsGrowthData['categories'];
-            $jobListingsGrowthSeries = $jobListingsGrowthData['series'];
+        $totalRecruiters = User::where('role', 'recruiter')->count();
+        
+        // Get recent users (last 5)
+        $recentUsers = User::orderBy('created_at', 'desc')->limit(5)->get();
+        
+        // Additional statistics
+        $newUsersToday = User::whereDate('created_at', today())->count();
+        $verifiedUsers = User::whereNotNull('email_verified_at')->count();
+        $unverifiedUsers = $totalUsers - $verifiedUsers;
+        
+        // User statistics by role
+        $adminCount = User::where('role', 'admin')->count();
+        $userCount = User::where('role', 'user')->count();
+        $recruiterCount = User::where('role', 'recruiter')->count();
+        
+        // User growth data for last 6 months
+        $userGrowthData = $this->getUserGrowthData(6);
+        $userGrowthCategories = $userGrowthData['categories'];
+        $userGrowthSeries = $userGrowthData['series'];
+        
+        // Job listings growth data for last 6 months
+        $jobListingsGrowthData = $this->getJobListingsGrowthData(6);
+        $jobListingsGrowthCategories = $jobListingsGrowthData['categories'];
+        $jobListingsGrowthSeries = $jobListingsGrowthData['series'];
         }
         
         // For recruiter we show only recruiter-related totalRecruiters,
         // for admin this was already calculated above
         $totalRecruiters = $totalRecruiters ?? User::where('role', 'recruiter')->count();
-
+        
         return view('admin.dashboard', [
             'title' => $user->role === 'admin' ? 'Admin Dashboard' : 'Recruiter Dashboard',
             'isRecruiterDashboard' => $isRecruiter,

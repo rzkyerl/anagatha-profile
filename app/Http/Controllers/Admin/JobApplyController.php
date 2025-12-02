@@ -64,7 +64,7 @@ class JobApplyController extends Controller
                 ->orderBy('title')
                 ->get();
         } else {
-            $jobListings = JobListing::where('status', 'active')->orderBy('title')->get();
+        $jobListings = JobListing::where('status', 'active')->orderBy('title')->get();
         }
         
         return view('admin.job_apply.create', [
@@ -165,7 +165,7 @@ class JobApplyController extends Controller
                 ->orderBy('title')
                 ->get();
         } else {
-            $jobListings = JobListing::where('status', 'active')->orderBy('title')->get();
+        $jobListings = JobListing::where('status', 'active')->orderBy('title')->get();
         }
         
         return view('admin.job_apply.edit', [

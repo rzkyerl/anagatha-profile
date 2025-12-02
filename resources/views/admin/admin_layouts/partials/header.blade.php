@@ -153,11 +153,16 @@
                 </button>
                 <div class="dropdown-menu dropdown-menu-end">
                     <!-- item-->
-                    <a class="dropdown-item d-block" href=""><span
-                            class="badge bg-success float-end mt-1">11</span><i
-                            class="ri-settings-2-line align-middle me-1"></i> Settings</a>
+                    @php
+                        $role = auth()->user()->role ?? 'user';
+                        $profileRoute = ($role === 'recruiter') ? 'recruiter.profile.settings' : 'admin.profile.settings';
+                        $logoutRoute = ($role === 'recruiter') ? 'recruiter.logout' : 'admin.logout';
+                    @endphp
+                    <a class="dropdown-item d-block" href="{{ route($profileRoute) }}">
+                        <i class="ri-settings-2-line align-middle me-1"></i> Settings
+                    </a>
                     <div class="dropdown-divider"></div>
-                    <form action="{{ route('admin.logout') }}" method="POST" class="d-inline w-100">
+                    <form action="{{ route($logoutRoute) }}" method="POST" class="d-inline w-100">
                         @csrf
                         <button type="submit" class="dropdown-item text-danger w-100" style="border: none; background: none; text-align: left; padding: 0.5rem 1rem; cursor: pointer;">
                             <i class="ri-shut-down-line align-middle me-1 text-danger"></i> Logout
