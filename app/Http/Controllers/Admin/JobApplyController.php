@@ -89,7 +89,8 @@ class JobApplyController extends Controller
             'current_salary' => 'nullable|string|max:100',
             'expected_salary' => 'required|string|max:100',
             'availability' => 'required|string',
-            'relocation' => 'required|string',
+            'relocation' => 'required|in:Yes,No,Other',
+            'relocation_other' => 'required_if:relocation,Other|nullable|string|max:255',
             'linkedin' => 'nullable|url|max:500',
             'github' => 'nullable|url|max:500',
             'social_media' => 'nullable|url|max:500',
@@ -111,6 +112,13 @@ class JobApplyController extends Controller
         try {
             $data = $request->except(['cv', 'portfolio_file']);
             $data['applied_at'] = now();
+            
+            // Handle relocation_other
+            if ($request->relocation === 'Other') {
+                $data['relocation_other'] = $request->relocation_other;
+            } else {
+                $data['relocation_other'] = null;
+            }
 
             // Handle CV file upload
             if ($request->hasFile('cv')) {
@@ -192,7 +200,8 @@ class JobApplyController extends Controller
             'current_salary' => 'nullable|string|max:100',
             'expected_salary' => 'required|string|max:100',
             'availability' => 'required|string',
-            'relocation' => 'required|string',
+            'relocation' => 'required|in:Yes,No,Other',
+            'relocation_other' => 'required_if:relocation,Other|nullable|string|max:255',
             'linkedin' => 'nullable|url|max:500',
             'github' => 'nullable|url|max:500',
             'social_media' => 'nullable|url|max:500',
@@ -213,6 +222,13 @@ class JobApplyController extends Controller
 
         try {
             $data = $request->except(['cv', 'portfolio_file']);
+            
+            // Handle relocation_other
+            if ($request->relocation === 'Other') {
+                $data['relocation_other'] = $request->relocation_other;
+            } else {
+                $data['relocation_other'] = null;
+            }
 
             // Handle CV file upload
             if ($request->hasFile('cv')) {

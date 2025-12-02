@@ -105,7 +105,8 @@ class AuthController extends Controller
                     'full_name' => 'required|string|max:255',
                     'email' => 'required|string|email|max:255|unique:users',
                     'phone' => 'required|string|max:20',
-                    'job_title' => 'required|string|max:255',
+                    'job_title' => 'required|in:HR Manager,HR Business Partner,Talent Acquisition Specialist,Recruitment Manager,HR Director,HR Coordinator,Recruiter,Senior Recruiter,HR Generalist,People Operations Manager,Other',
+                    'job_title_other' => 'required_if:job_title,Other|nullable|string|max:255',
                     'company_name' => 'required|string|max:255',
                     'password' => 'required|string|min:8|confirmed',
                 ], [
@@ -115,6 +116,8 @@ class AuthController extends Controller
                     'email.unique' => 'This email is already registered.',
                     'phone.required' => 'Phone / WhatsApp is required.',
                     'job_title.required' => 'Job Title / Position is required.',
+                    'job_title.in' => 'Please select a valid job title.',
+                    'job_title_other.required_if' => 'Please enter your custom job title.',
                     'company_name.required' => 'Company Name is required.',
                     'password.required' => 'Password is required.',
                     'password.min' => 'Password must be at least 8 characters.',
@@ -126,6 +129,9 @@ class AuthController extends Controller
                 $firstName = $nameParts[0];
                 $lastName = isset($nameParts[1]) ? $nameParts[1] : null;
 
+                // Handle 'Other' selection for job_title
+                $validated['job_title_other'] = $validated['job_title'] === 'Other' ? $validated['job_title_other'] : null;
+
                 $user = \App\Models\User::create([
                     'first_name' => $firstName,
                     'last_name' => $lastName,
@@ -133,6 +139,7 @@ class AuthController extends Controller
                     'password' => bcrypt($validated['password']),
                     'phone' => $validated['phone'],
                     'job_title' => $validated['job_title'],
+                    'job_title_other' => $validated['job_title_other'],
                     'company_name' => $validated['company_name'],
                     'role' => 'recruiter',
                     'email_verified_at' => now(),

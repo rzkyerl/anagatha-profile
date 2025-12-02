@@ -28,6 +28,7 @@ class User extends Authenticatable
         'phone',
         'company_name',
         'job_title',
+        'job_title_other',
         'avatar',
         'github',
         'linkedin',

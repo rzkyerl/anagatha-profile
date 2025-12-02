@@ -154,14 +154,36 @@
                                         </div>
                                         <div class="col-md-6">
                                             <label for="job_title" class="form-label">Job Title</label>
-                                            <input type="text" 
-                                                   class="form-control @error('job_title') is-invalid @enderror" 
-                                                   id="job_title" 
-                                                   name="job_title" 
-                                                   value="{{ old('job_title', $user->job_title) }}">
+                                            <select class="form-select @error('job_title') is-invalid @enderror" 
+                                                    id="job_title" 
+                                                    name="job_title">
+                                                <option value="">Select job title</option>
+                                                <option value="HR Manager" {{ old('job_title', $user->job_title) == 'HR Manager' ? 'selected' : '' }}>HR Manager</option>
+                                                <option value="HR Business Partner" {{ old('job_title', $user->job_title) == 'HR Business Partner' ? 'selected' : '' }}>HR Business Partner</option>
+                                                <option value="Talent Acquisition Specialist" {{ old('job_title', $user->job_title) == 'Talent Acquisition Specialist' ? 'selected' : '' }}>Talent Acquisition Specialist</option>
+                                                <option value="Recruitment Manager" {{ old('job_title', $user->job_title) == 'Recruitment Manager' ? 'selected' : '' }}>Recruitment Manager</option>
+                                                <option value="HR Director" {{ old('job_title', $user->job_title) == 'HR Director' ? 'selected' : '' }}>HR Director</option>
+                                                <option value="HR Coordinator" {{ old('job_title', $user->job_title) == 'HR Coordinator' ? 'selected' : '' }}>HR Coordinator</option>
+                                                <option value="Recruiter" {{ old('job_title', $user->job_title) == 'Recruiter' ? 'selected' : '' }}>Recruiter</option>
+                                                <option value="Senior Recruiter" {{ old('job_title', $user->job_title) == 'Senior Recruiter' ? 'selected' : '' }}>Senior Recruiter</option>
+                                                <option value="HR Generalist" {{ old('job_title', $user->job_title) == 'HR Generalist' ? 'selected' : '' }}>HR Generalist</option>
+                                                <option value="People Operations Manager" {{ old('job_title', $user->job_title) == 'People Operations Manager' ? 'selected' : '' }}>People Operations Manager</option>
+                                                <option value="Other" {{ old('job_title', $user->job_title) == 'Other' ? 'selected' : '' }}>Other</option>
+                                            </select>
                                             @error('job_title')
                                                 <div class="invalid-feedback">{{ $message }}</div>
                                             @enderror
+                                            <div id="job_title_other_wrapper" class="mt-2" style="display: {{ old('job_title', $user->job_title) == 'Other' ? 'block' : 'none' }};">
+                                                <input type="text" 
+                                                       class="form-control @error('job_title_other') is-invalid @enderror" 
+                                                       id="job_title_other" 
+                                                       name="job_title_other" 
+                                                       value="{{ old('job_title_other', $user->job_title_other) }}" 
+                                                       placeholder="Please specify job title">
+                                                @error('job_title_other')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
+                                            </div>
                                         </div>
                                     </div>
                                 @endif
@@ -221,6 +243,35 @@
                 reader.readAsDataURL(file);
             }
         });
+
+        // Handle "Other" option for job_title (recruiter only)
+        @if($user->role === 'recruiter')
+        function toggleJobTitleOther() {
+            const select = document.getElementById('job_title');
+            const wrapper = document.getElementById('job_title_other_wrapper');
+            const input = document.getElementById('job_title_other');
+            
+            if (select && select.value === 'Other') {
+                if (wrapper) wrapper.style.display = 'block';
+                if (input) input.required = true;
+            } else {
+                if (wrapper) wrapper.style.display = 'none';
+                if (input) {
+                    input.required = false;
+                    input.value = '';
+                }
+            }
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const jobTitleSelect = document.getElementById('job_title');
+            if (jobTitleSelect) {
+                toggleJobTitleOther();
+                jobTitleSelect.addEventListener('change', toggleJobTitleOther);
+            }
+        });
+        @endif
     </script>
 @endsection
 

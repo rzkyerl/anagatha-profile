@@ -222,17 +222,30 @@
                             <div class="col-md-4">
                                 <div class="mb-3">
                                     <label for="contract_type" class="form-label">Contract Type <span class="text-danger">*</span></label>
-                                    <input type="text" 
-                                           class="form-control @error('contract_type') is-invalid @enderror" 
+                                    <select class="form-select @error('contract_type') is-invalid @enderror" 
                                            id="contract_type" 
                                            name="contract_type" 
-                                           value="{{ old('contract_type', $jobListing->contract_type) }}" 
-                                           placeholder="e.g., Full Time, Contract, Part Time" 
-                                           required 
-                                           maxlength="255">
+                                            required>
+                                        <option value="">Select contract type</option>
+                                        <option value="Full Time" {{ old('contract_type', $jobListing->contract_type) == 'Full Time' ? 'selected' : '' }}>Full Time</option>
+                                        <option value="Contract" {{ old('contract_type', $jobListing->contract_type) == 'Contract' ? 'selected' : '' }}>Contract</option>
+                                        <option value="Part Time" {{ old('contract_type', $jobListing->contract_type) == 'Part Time' ? 'selected' : '' }}>Part Time</option>
+                                        <option value="Other" {{ old('contract_type', $jobListing->contract_type) == 'Other' ? 'selected' : '' }}>Other</option>
+                                    </select>
                                     @error('contract_type')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
+                                    <div id="contract_type_other_wrapper" class="mt-2" style="display: {{ old('contract_type', $jobListing->contract_type) == 'Other' ? 'block' : 'none' }};">
+                                        <input type="text" 
+                                               class="form-control @error('contract_type_other') is-invalid @enderror" 
+                                               id="contract_type_other" 
+                                               name="contract_type_other" 
+                                               value="{{ old('contract_type_other', $jobListing->contract_type_other) }}" 
+                                               placeholder="Please specify contract type">
+                                        @error('contract_type_other')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
                                 </div>
                             </div>
 
@@ -249,10 +262,22 @@
                                         <option value="5+ Years" {{ old('experience_level', $jobListing->experience_level) == '5+ Years' ? 'selected' : '' }}>5+ Years</option>
                                         <option value="Senior" {{ old('experience_level', $jobListing->experience_level) == 'Senior' ? 'selected' : '' }}>Senior</option>
                                         <option value="Mid Level" {{ old('experience_level', $jobListing->experience_level) == 'Mid Level' ? 'selected' : '' }}>Mid Level</option>
+                                        <option value="Other" {{ old('experience_level', $jobListing->experience_level) == 'Other' ? 'selected' : '' }}>Other</option>
                                     </select>
                                     @error('experience_level')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
+                                    <div id="experience_level_other_wrapper" class="mt-2" style="display: {{ old('experience_level', $jobListing->experience_level) == 'Other' ? 'block' : 'none' }};">
+                                        <input type="text" 
+                                               class="form-control @error('experience_level_other') is-invalid @enderror" 
+                                               id="experience_level_other" 
+                                               name="experience_level_other" 
+                                               value="{{ old('experience_level_other', $jobListing->experience_level_other) }}" 
+                                               placeholder="Please specify experience level">
+                                        @error('experience_level_other')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -261,16 +286,34 @@
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="industry" class="form-label">Industry</label>
-                                    <input type="text" 
-                                           class="form-control @error('industry') is-invalid @enderror" 
+                                    <select class="form-select @error('industry') is-invalid @enderror" 
                                            id="industry" 
-                                           name="industry" 
-                                           value="{{ old('industry', $jobListing->industry) }}" 
-                                           placeholder="e.g., Technology, Finance, Healthcare" 
-                                           maxlength="255">
+                                            name="industry">
+                                        <option value="">Select industry</option>
+                                        <option value="Technology" {{ old('industry', $jobListing->industry) == 'Technology' ? 'selected' : '' }}>Technology</option>
+                                        <option value="Finance" {{ old('industry', $jobListing->industry) == 'Finance' ? 'selected' : '' }}>Finance</option>
+                                        <option value="Healthcare" {{ old('industry', $jobListing->industry) == 'Healthcare' ? 'selected' : '' }}>Healthcare</option>
+                                        <option value="Education" {{ old('industry', $jobListing->industry) == 'Education' ? 'selected' : '' }}>Education</option>
+                                        <option value="E-commerce" {{ old('industry', $jobListing->industry) == 'E-commerce' ? 'selected' : '' }}>E-commerce</option>
+                                        <option value="Manufacturing" {{ old('industry', $jobListing->industry) == 'Manufacturing' ? 'selected' : '' }}>Manufacturing</option>
+                                        <option value="Consulting" {{ old('industry', $jobListing->industry) == 'Consulting' ? 'selected' : '' }}>Consulting</option>
+                                        <option value="Media" {{ old('industry', $jobListing->industry) == 'Media' ? 'selected' : '' }}>Media</option>
+                                        <option value="Other" {{ old('industry', $jobListing->industry) == 'Other' ? 'selected' : '' }}>Other</option>
+                                    </select>
                                     @error('industry')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
+                                    <div id="industry_other_wrapper" class="mt-2" style="display: {{ old('industry', $jobListing->industry) == 'Other' ? 'block' : 'none' }};">
+                                        <input type="text" 
+                                               class="form-control @error('industry_other') is-invalid @enderror" 
+                                               id="industry_other" 
+                                               name="industry_other" 
+                                               value="{{ old('industry_other', $jobListing->industry_other) }}" 
+                                               placeholder="Please specify industry">
+                                        @error('industry_other')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
                                 </div>
                             </div>
 
@@ -287,10 +330,22 @@
                                         <option value="Master" {{ old('minimum_degree', $jobListing->minimum_degree) == 'Master' ? 'selected' : '' }}>Master</option>
                                         <option value="MBA" {{ old('minimum_degree', $jobListing->minimum_degree) == 'MBA' ? 'selected' : '' }}>MBA</option>
                                         <option value="Ph.D" {{ old('minimum_degree', $jobListing->minimum_degree) == 'Ph.D' ? 'selected' : '' }}>Ph.D</option>
+                                        <option value="Other" {{ old('minimum_degree', $jobListing->minimum_degree) == 'Other' ? 'selected' : '' }}>Other</option>
                                     </select>
                                     @error('minimum_degree')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
+                                    <div id="minimum_degree_other_wrapper" class="mt-2" style="display: {{ old('minimum_degree', $jobListing->minimum_degree) == 'Other' ? 'block' : 'none' }};">
+                                        <input type="text" 
+                                               class="form-control @error('minimum_degree_other') is-invalid @enderror" 
+                                               id="minimum_degree_other" 
+                                               name="minimum_degree_other" 
+                                               value="{{ old('minimum_degree_other', $jobListing->minimum_degree_other) }}" 
+                                               placeholder="Please specify minimum degree">
+                                        @error('minimum_degree_other')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -454,6 +509,49 @@
             if (salaryMax.value) {
                 salaryMax.dispatchEvent(new Event('input'));
             }
+        });
+
+        // Handle "Other" option for enum fields
+        function toggleOtherField(selectId, wrapperId) {
+            const select = document.getElementById(selectId);
+            const wrapper = document.getElementById(wrapperId);
+            const input = wrapper.querySelector('input');
+            
+            if (select.value === 'Other') {
+                wrapper.style.display = 'block';
+                if (input) input.required = true;
+            } else {
+                wrapper.style.display = 'none';
+                if (input) {
+                    input.required = false;
+                    input.value = '';
+                }
+            }
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            toggleOtherField('contract_type', 'contract_type_other_wrapper');
+            toggleOtherField('experience_level', 'experience_level_other_wrapper');
+            toggleOtherField('industry', 'industry_other_wrapper');
+            toggleOtherField('minimum_degree', 'minimum_degree_other_wrapper');
+        });
+
+        // Add event listeners
+        document.getElementById('contract_type').addEventListener('change', function() {
+            toggleOtherField('contract_type', 'contract_type_other_wrapper');
+        });
+
+        document.getElementById('experience_level').addEventListener('change', function() {
+            toggleOtherField('experience_level', 'experience_level_other_wrapper');
+        });
+
+        document.getElementById('industry').addEventListener('change', function() {
+            toggleOtherField('industry', 'industry_other_wrapper');
+        });
+
+        document.getElementById('minimum_degree').addEventListener('change', function() {
+            toggleOtherField('minimum_degree', 'minimum_degree_other_wrapper');
         });
     </script>
 @endpush

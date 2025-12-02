@@ -52,7 +52,8 @@ class ProfileController extends Controller
         // Add recruiter-specific fields
         if ($user->role === 'recruiter') {
             $rules['company_name'] = 'nullable|string|max:255';
-            $rules['job_title'] = 'nullable|string|max:255';
+            $rules['job_title'] = 'nullable|in:HR Manager,HR Business Partner,Talent Acquisition Specialist,Recruitment Manager,HR Director,HR Coordinator,Recruiter,Senior Recruiter,HR Generalist,People Operations Manager,Other';
+            $rules['job_title_other'] = 'required_if:job_title,Other|nullable|string|max:255';
         }
 
         $validated = $request->validate($rules, [
@@ -65,6 +66,7 @@ class ProfileController extends Controller
             'password.confirmed' => 'Password confirmation does not match.',
             'avatar.image' => 'Avatar must be an image file.',
             'avatar.max' => 'Avatar size must not exceed 2MB.',
+            'job_title_other.required_if' => 'Please specify the job title.',
         ]);
 
         // Update password only if provided
@@ -102,6 +104,15 @@ class ProfileController extends Controller
         }
 
         try {
+            // Handle job_title_other for recruiters
+            if ($user->role === 'recruiter') {
+                if ($request->job_title === 'Other') {
+                    $validated['job_title_other'] = $request->job_title_other;
+                } else {
+                    $validated['job_title_other'] = null;
+                }
+            }
+            
             // Update user profile
             $user->update($validated);
 

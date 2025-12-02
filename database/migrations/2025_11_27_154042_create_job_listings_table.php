@@ -21,11 +21,15 @@ return new class extends Migration
             $table->decimal('salary_max', 15, 2)->nullable();
             $table->string('salary_display', 255)->default('Not Disclose'); // "IDR 25,000,000 - IDR 35,000,000" or "Not Disclose"
             $table->enum('work_preference', ['wfo', 'wfh', 'hybrid'])->default('wfo');
-            $table->string('contract_type', 255)->default('Full Time'); // Full Time, Contract, Part Time
-            $table->string('experience_level', 255)->nullable(); // Entry, 1-3 Years, 3-5 Years, 5+ Years, Senior, Mid Level
+            $table->enum('contract_type', ['Full Time', 'Contract', 'Part Time', 'Other'])->default('Full Time');
+            $table->string('contract_type_other', 255)->nullable();
+            $table->enum('experience_level', ['Entry', '1-3 Years', '3-5 Years', '5+ Years', 'Senior', 'Mid Level', 'Other'])->nullable();
+            $table->string('experience_level_other', 255)->nullable();
             $table->string('location', 255);
-            $table->string('industry', 255)->nullable();
-            $table->string('minimum_degree', 255)->nullable(); // Senior High School, Diploma, Bachelor, Master, MBA, Ph.D
+            $table->enum('industry', ['Technology', 'Finance', 'Healthcare', 'Education', 'E-commerce', 'Manufacturing', 'Consulting', 'Media', 'Other'])->nullable();
+            $table->string('industry_other', 255)->nullable();
+            $table->enum('minimum_degree', ['Senior High School', 'Diploma', 'Bachelor', 'Master', 'MBA', 'Ph.D', 'Other'])->nullable();
+            $table->string('minimum_degree_other', 255)->nullable();
             $table->foreignId('recruiter_id')->constrained('users')->onDelete('cascade');
             $table->boolean('verified')->default(false);
             $table->enum('status', ['draft', 'active', 'inactive', 'closed'])->default('draft');
@@ -37,6 +41,9 @@ return new class extends Migration
             $table->index('status');
             $table->index('recruiter_id');
             $table->index('work_preference');
+            $table->index('contract_type');
+            $table->index('industry');
+            $table->index('experience_level');
             $table->index('posted_at');
             $table->index('verified');
             $table->index('created_at');

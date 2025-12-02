@@ -53,8 +53,8 @@
                             {{ $errors->first('full_name') }}
                         @elseif ($errors->has('company_name'))
                             {{ $errors->first('company_name') }}
-                        @elseif ($errors->has('job_title'))
-                            {{ $errors->first('job_title') }}
+                        @elseif ($errors->has('job_title') || $errors->has('job_title_other'))
+                            {{ $errors->first('job_title') ?: $errors->first('job_title_other') }}
                         @elseif ($errors->has('phone'))
                             {{ $errors->first('phone') }}
                         @else
@@ -181,17 +181,42 @@
                     <div class="form-group">
                         <div class="form-input-wrapper">
                             <i class="form-input-icon fa-solid fa-briefcase"></i>
-                            <input 
-                                type="text" 
+                            <select 
                                 id="job_title" 
                                 name="job_title" 
                                 class="form-input @error('job_title') is-invalid @enderror" 
-                                placeholder="Job Title / Position"
-                                value="{{ session('toast_type') === 'success' ? '' : old('job_title') }}"
                                 required
-                            />
+                            >
+                                <option value="">Select Job Title</option>
+                                @php
+                                    $jobTitles = ['HR Manager', 'HR Business Partner', 'Talent Acquisition Specialist', 'Recruitment Manager', 'HR Director', 'HR Coordinator', 'Recruiter', 'Senior Recruiter', 'HR Generalist', 'People Operations Manager', 'Other'];
+                                @endphp
+                                @foreach($jobTitles as $jt)
+                                    <option value="{{ $jt }}" {{ old('job_title') == $jt ? 'selected' : '' }}>
+                                        {{ $jt }}
+                                    </option>
+                                @endforeach
+                            </select>
                         </div>
                         @error('job_title')
+                            <span class="form-error">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    {{-- Other Job Title Field (shown when "Other" is selected) --}}
+                    <div class="form-group job-title-other-group" id="job_title_other_container" style="display: {{ old('job_title') == 'Other' ? 'block' : 'none' }};">
+                        <div class="form-input-wrapper">
+                            <i class="form-input-icon fa-solid fa-briefcase"></i>
+                            <input 
+                                type="text" 
+                                id="job_title_other" 
+                                name="job_title_other" 
+                                class="form-input @error('job_title_other') is-invalid @enderror" 
+                                placeholder="Enter custom job title"
+                                value="{{ old('job_title_other') }}"
+                            />
+                        </div>
+                        @error('job_title_other')
                             <span class="form-error">{{ $message }}</span>
                         @enderror
                     </div>
@@ -369,6 +394,52 @@
                     }
                 });
             @endif
+        }
+    });
+
+    // Job Title "Other" field toggle with smooth animation
+    document.addEventListener('DOMContentLoaded', function() {
+        const jobTitleSelect = document.getElementById('job_title');
+        const jobTitleOtherContainer = document.getElementById('job_title_other_container');
+        const jobTitleOtherInput = document.getElementById('job_title_other');
+
+        function toggleJobTitleOther() {
+            if (!jobTitleOtherContainer) return;
+            
+            if (jobTitleSelect.value === 'Other') {
+                // Show with smooth animation
+                jobTitleOtherContainer.style.display = 'block';
+                jobTitleOtherContainer.style.opacity = '0';
+                jobTitleOtherContainer.style.maxHeight = '0';
+                jobTitleOtherContainer.style.overflow = 'hidden';
+                jobTitleOtherInput.setAttribute('required', 'required');
+                
+                // Trigger reflow for animation
+                void jobTitleOtherContainer.offsetHeight;
+                
+                // Animate in
+                requestAnimationFrame(function() {
+                    jobTitleOtherContainer.style.transition = 'opacity 0.3s ease, max-height 0.3s ease, margin 0.3s ease';
+                    jobTitleOtherContainer.style.opacity = '1';
+                    jobTitleOtherContainer.style.maxHeight = '200px';
+                });
+            } else {
+                // Hide with smooth animation
+                jobTitleOtherContainer.style.transition = 'opacity 0.3s ease, max-height 0.3s ease, margin 0.3s ease';
+                jobTitleOtherContainer.style.opacity = '0';
+                jobTitleOtherContainer.style.maxHeight = '0';
+                
+                setTimeout(function() {
+                    jobTitleOtherContainer.style.display = 'none';
+                    jobTitleOtherInput.removeAttribute('required');
+                    jobTitleOtherInput.value = ''; // Clear value when hidden
+                }, 300);
+            }
+        }
+
+        if (jobTitleSelect) {
+            jobTitleSelect.addEventListener('change', toggleJobTitleOther);
+            toggleJobTitleOther(); // Initial call to set state based on current value
         }
     });
 

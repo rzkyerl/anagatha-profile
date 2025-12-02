@@ -171,13 +171,24 @@
                                     <label for="relocation" class="form-label">Relocation <span class="text-danger">*</span></label>
                                     <select class="form-select @error('relocation') is-invalid @enderror" id="relocation" name="relocation" required>
                                         <option value="">Select option</option>
-                                        <option value="yes" {{ old('relocation', $jobApply->relocation) == 'yes' ? 'selected' : '' }}>Yes</option>
-                                        <option value="no" {{ old('relocation', $jobApply->relocation) == 'no' ? 'selected' : '' }}>No</option>
-                                        <option value="maybe" {{ old('relocation', $jobApply->relocation) == 'maybe' ? 'selected' : '' }}>Maybe</option>
+                                        <option value="Yes" {{ old('relocation', $jobApply->relocation) == 'Yes' ? 'selected' : '' }}>Yes</option>
+                                        <option value="No" {{ old('relocation', $jobApply->relocation) == 'No' ? 'selected' : '' }}>No</option>
+                                        <option value="Other" {{ old('relocation', $jobApply->relocation) == 'Other' ? 'selected' : '' }}>Other</option>
                                     </select>
                                     @error('relocation')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
+                                    <div id="relocation_other_wrapper" class="mt-2" style="display: {{ old('relocation', $jobApply->relocation) == 'Other' ? 'block' : 'none' }};">
+                                        <input type="text" 
+                                               class="form-control @error('relocation_other') is-invalid @enderror" 
+                                               id="relocation_other" 
+                                               name="relocation_other" 
+                                               value="{{ old('relocation_other', $jobApply->relocation_other) }}" 
+                                               placeholder="Please specify relocation preference">
+                                        @error('relocation_other')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
                                 </div>
                             </div>
 
@@ -371,6 +382,32 @@
                 }, false);
             });
         })();
+
+        // Handle "Other" option for relocation
+        function toggleRelocationOther() {
+            const select = document.getElementById('relocation');
+            const wrapper = document.getElementById('relocation_other_wrapper');
+            const input = document.getElementById('relocation_other');
+            
+            if (select.value === 'Other') {
+                wrapper.style.display = 'block';
+                if (input) input.required = true;
+            } else {
+                wrapper.style.display = 'none';
+                if (input) {
+                    input.required = false;
+                    input.value = '';
+                }
+            }
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            toggleRelocationOther();
+        });
+
+        // Add event listener
+        document.getElementById('relocation').addEventListener('change', toggleRelocationOther);
     </script>
 @endpush
 

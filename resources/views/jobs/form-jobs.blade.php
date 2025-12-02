@@ -248,12 +248,33 @@
                                 required
                             >
                                 <option value="">Select option</option>
-                                <option value="yes" {{ old('relocation') == 'yes' ? 'selected' : '' }}>Yes, willing to relocate</option>
-                                <option value="no" {{ old('relocation') == 'no' ? 'selected' : '' }}>No, not willing to relocate</option>
-                                <option value="maybe" {{ old('relocation') == 'maybe' ? 'selected' : '' }}>Maybe, depending on location</option>
+                                <option value="Yes" {{ old('relocation') == 'Yes' ? 'selected' : '' }}>Yes</option>
+                                <option value="No" {{ old('relocation') == 'No' ? 'selected' : '' }}>No</option>
+                                <option value="Other" {{ old('relocation') == 'Other' ? 'selected' : '' }}>Other</option>
                             </select>
                         </div>
                         @error('relocation')
+                            <span class="form-error">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    {{-- Other Relocation Field (shown when "Other" is selected) --}}
+                    <div class="form-group relocation-other-group" id="relocation_other_container" style="display: {{ old('relocation') == 'Other' ? 'block' : 'none' }};">
+                        <label for="relocation_other" class="form-label">
+                            Other Relocation Option <span class="required">*</span>
+                        </label>
+                        <div class="form-input-wrapper">
+                            <i class="form-input-icon fa-solid fa-route"></i>
+                            <input 
+                                type="text" 
+                                id="relocation_other" 
+                                name="relocation_other" 
+                                class="form-input @error('relocation_other') is-invalid @enderror" 
+                                placeholder="Enter custom relocation option"
+                                value="{{ old('relocation_other') }}"
+                            />
+                        </div>
+                        @error('relocation_other')
                             <span class="form-error">{{ $message }}</span>
                         @enderror
                     </div>
@@ -568,6 +589,57 @@
             }
         }
         
+        // Relocation "Other" field toggle with smooth animation
+        const relocationSelect = document.getElementById('relocation');
+        const relocationOtherContainer = document.getElementById('relocation_other_container');
+        const relocationOtherInput = document.getElementById('relocation_other');
+
+        function toggleRelocationOther() {
+            if (!relocationOtherContainer) return;
+            
+            if (relocationSelect && relocationSelect.value === 'Other') {
+                // Show with smooth animation
+                relocationOtherContainer.style.display = 'flex';
+                relocationOtherContainer.style.flexDirection = 'column';
+                relocationOtherContainer.style.opacity = '0';
+                relocationOtherContainer.style.maxHeight = '0';
+                relocationOtherContainer.style.overflow = 'hidden';
+                relocationOtherContainer.style.marginTop = '0';
+                relocationOtherContainer.style.marginBottom = '0';
+                relocationOtherInput.setAttribute('required', 'required');
+                
+                // Trigger reflow for animation
+                void relocationOtherContainer.offsetHeight;
+                
+                // Animate in
+                requestAnimationFrame(function() {
+                    relocationOtherContainer.style.transition = 'opacity 0.3s ease, max-height 0.3s ease, margin 0.3s ease';
+                    relocationOtherContainer.style.opacity = '1';
+                    relocationOtherContainer.style.maxHeight = '200px';
+                });
+            } else {
+                // Hide with smooth animation
+                if (relocationOtherContainer.style.display !== 'none' && relocationOtherContainer.style.display !== '') {
+                    relocationOtherContainer.style.transition = 'opacity 0.3s ease, max-height 0.3s ease, margin 0.3s ease';
+                    relocationOtherContainer.style.opacity = '0';
+                    relocationOtherContainer.style.maxHeight = '0';
+                    relocationOtherContainer.style.marginTop = '0';
+                    relocationOtherContainer.style.marginBottom = '0';
+                    
+                    setTimeout(function() {
+                        relocationOtherContainer.style.display = 'none';
+                        relocationOtherInput.removeAttribute('required');
+                        relocationOtherInput.value = ''; // Clear value when hidden
+                    }, 300);
+                }
+            }
+        }
+
+        if (relocationSelect) {
+            relocationSelect.addEventListener('change', toggleRelocationOther);
+            toggleRelocationOther(); // Initial call to set state based on current value
+        }
+
         // Helper function for URL validation
         function isValidUrl(string) {
             try {
@@ -790,7 +862,7 @@
                 let errors = [];
                 
                 // Check required text fields
-                const requiredFields = form.querySelectorAll('input[required]:not([type="file"]):not([type="url"]), textarea[required], select[required]');
+                const requiredFields = form.querySelectorAll('input[required]:not([type="file"]):not([type="url"]):not(#relocation_other), textarea[required], select[required]');
                 console.log('Required fields found:', requiredFields.length); // Debug log
                 
                 requiredFields.forEach(field => {
@@ -815,6 +887,41 @@
                         }
                     }
                 });
+                
+                // Check relocation_other if relocation is "Other"
+                const relocationSelect = form.querySelector('#relocation');
+                const relocationOtherInput = form.querySelector('#relocation_other');
+                if (relocationSelect && relocationSelect.value === 'Other') {
+                    const relocationOtherValue = relocationOtherInput ? relocationOtherInput.value.trim() : '';
+                    if (!relocationOtherValue) {
+                        isValid = false;
+                        if (relocationOtherInput) {
+                            relocationOtherInput.classList.add('is-invalid');
+                            const wrapper = relocationOtherInput.closest('.form-input-wrapper');
+                            if (wrapper) {
+                                wrapper.classList.add('is-invalid');
+                            }
+                        }
+                        errors.push('Other Relocation Option is required');
+                    } else {
+                        if (relocationOtherInput) {
+                            relocationOtherInput.classList.remove('is-invalid');
+                            const wrapper = relocationOtherInput.closest('.form-input-wrapper');
+                            if (wrapper) {
+                                wrapper.classList.remove('is-invalid');
+                            }
+                        }
+                    }
+                } else {
+                    // Clear validation if relocation is not "Other"
+                    if (relocationOtherInput) {
+                        relocationOtherInput.classList.remove('is-invalid');
+                        const wrapper = relocationOtherInput.closest('.form-input-wrapper');
+                        if (wrapper) {
+                            wrapper.classList.remove('is-invalid');
+                        }
+                    }
+                }
                 
                 // Check required URL fields separately
                 const requiredUrlFields = form.querySelectorAll('input[type="url"][required]');

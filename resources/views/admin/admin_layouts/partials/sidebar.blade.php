@@ -38,20 +38,20 @@
                             <span>Recruiter Dashboard</span>
                         </a>
                     @else
-                        <a href="{{ route('admin.dashboard') ?? 'index.html' }}" class="waves-effect">
-                            <i class="ri-dashboard-line"></i>
-                            <span>Dashboard</span>
-                        </a>
+                    <a href="{{ route('admin.dashboard') ?? 'index.html' }}" class="waves-effect">
+                        <i class="ri-dashboard-line"></i>
+                        <span>Dashboard</span>
+                    </a>
                     @endif
                 </li>
 
                 @if ($role === 'admin')
                     {{-- Users Management --}}
-                    <li>
+                <li>
                         <a href="javascript: void(0);" class="has-arrow waves-effect">
-                            <i class="ri-user-line"></i>
-                            <span>Users</span>
-                        </a>
+                        <i class="ri-user-line"></i>
+                        <span>Users</span>
+                    </a>
                         <ul class="sub-menu" aria-expanded="false">
                             <li>
                                 <a href="{{ route('admin.users.index') }}">All Users</a>
@@ -71,7 +71,7 @@
                             <i class="ri-building-line"></i>
                             <span>Companies</span>
                         </a>
-                    </li>
+                </li>
 
                     {{-- Jobs Management --}}
                     <li>
@@ -108,18 +108,18 @@
                         </ul>
                     </li>
                 @elseif ($role === 'recruiter')
-                    <li>
-                        <a href="javascript: void(0);" class="has-arrow waves-effect">
-                            <i class="ri-layout-3-line"></i>
+                <li>
+                    <a href="javascript: void(0);" class="has-arrow waves-effect">
+                        <i class="ri-layout-3-line"></i>
                             <span>My Jobs</span>
-                        </a>
-                        <ul class="sub-menu" aria-expanded="true">
-                            <li>
+                    </a>
+                    <ul class="sub-menu" aria-expanded="true">
+                        <li>
                                 <a href="{{ route('recruiter.job-listings.index') }}">My Job Listings</a>
                                 <a href="{{ route('recruiter.job-apply.index') }}">Job Applications</a>
-                            </li>
-                        </ul>
-                    </li>
+                        </li>
+                    </ul>
+                </li>
                 @endif
             </ul>
         </div>

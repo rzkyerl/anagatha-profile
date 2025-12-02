@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->string('company_name')->nullable()->after('phone');
-            $table->string('job_title')->nullable()->after('company_name');
+            $table->enum('job_title', ['HR Manager', 'HR Business Partner', 'Talent Acquisition Specialist', 'Recruitment Manager', 'HR Director', 'HR Coordinator', 'Recruiter', 'Senior Recruiter', 'HR Generalist', 'People Operations Manager', 'Other'])->nullable()->after('company_name');
+            $table->string('job_title_other', 255)->nullable()->after('job_title');
         });
     }
 
@@ -23,7 +24,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn(['company_name', 'job_title']);
+            $table->dropColumn(['company_name', 'job_title', 'job_title_other']);
         });
     }
 };

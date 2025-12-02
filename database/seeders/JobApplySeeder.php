@@ -93,7 +93,18 @@ class JobApplySeeder extends Seeder
 
             // Availability (random date in next 30 days)
             $availability = now()->addDays(rand(1, 30))->format('Y-m-d');
-            $relocation = rand(0, 1) ? 'Yes' : 'No';
+            // Relocation: 70% No, 25% Yes, 5% Other
+            $relocationRand = rand(1, 100);
+            if ($relocationRand <= 70) {
+                $relocation = 'No';
+                $relocationOther = null;
+            } elseif ($relocationRand <= 95) {
+                $relocation = 'Yes';
+                $relocationOther = null;
+            } else {
+                $relocation = 'Other';
+                $relocationOther = 'Depends on location and opportunity';
+            }
 
             // Social media links
             $linkedin = 'https://linkedin.com/in/' . strtolower($firstName . '-' . $lastName);
@@ -117,6 +128,7 @@ class JobApplySeeder extends Seeder
                 'expected_salary' => $expectedSalaryDisplay,
                 'availability' => $availability,
                 'relocation' => $relocation,
+                'relocation_other' => $relocationOther,
                 'linkedin' => $linkedin,
                 'github' => $github,
                 'social_media' => $socialMedia,

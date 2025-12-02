@@ -22,7 +22,8 @@ return new class extends Migration
             $table->string('current_salary', 100)->nullable();
             $table->string('expected_salary', 100);
             $table->string('availability');
-            $table->string('relocation');
+            $table->enum('relocation', ['Yes', 'No', 'Other'])->default('No');
+            $table->string('relocation_other', 255)->nullable();
             $table->string('linkedin', 500)->nullable();
             $table->string('github', 500)->nullable();
             $table->string('social_media', 500)->nullable();

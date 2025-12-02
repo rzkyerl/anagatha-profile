@@ -24,6 +24,7 @@ class JobApply extends Model
         'expected_salary',
         'availability',
         'relocation',
+        'relocation_other',
         'linkedin',
         'github',
         'social_media',
