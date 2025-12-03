@@ -26,32 +26,33 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        $this->command->info('Base DatabaseSeeder is loaded. No default seeders executed.');
         // ============================================
         // USER SEEDERS
         // ============================================
         // Must run first as other seeders depend on users
-        $this->command->info('Seeding users...');
-        $this->call([
-            UserSeeder::class,
-        ]);
+        // $this->command->info('Seeding users...');
+        // $this->call([
+        //     UserSeeder::class,
+        // ]);
 
         // ============================================
         // JOB LISTING SEEDERS
         // ============================================
         // Requires: Users (recruiters)
-        $this->command->info('Seeding job listings...');
-        $this->call([
-            JobListingSeeder::class,
-        ]);
+        // $this->command->info('Seeding job listings...');
+        // $this->call([
+        //     JobListingSeeder::class,
+        // ]);
 
         // ============================================
         // JOB APPLICATION SEEDERS
         // ============================================
         // Requires: Users (regular users) and Job Listings
-        $this->command->info('Seeding job applications...');
-        $this->call([
-            JobApplySeeder::class,
-        ]);
+        // $this->command->info('Seeding job applications...');
+        // $this->call([
+        //     JobApplySeeder::class,
+        // ]);
 
         // ============================================
         // ADD MORE SEEDERS HERE
@@ -62,6 +63,6 @@ class DatabaseSeeder extends Seeder
         //     NotificationSeeder::class,
         // ]);
         
-        $this->command->info('Database seeding completed!');
+        // $this->command->info('Database seeding completed!');
     }
 }
