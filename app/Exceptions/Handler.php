@@ -24,7 +24,10 @@ class Handler extends ExceptionHandler
     public function register(): void
     {
         $this->reportable(function (Throwable $e) {
-            //
+            // Log to stderr for Railway logs visibility
+            error_log('EXCEPTION: ' . get_class($e) . ' - ' . $e->getMessage());
+            error_log('FILE: ' . $e->getFile() . ':' . $e->getLine());
+            error_log('TRACE: ' . $e->getTraceAsString());
         });
     }
 

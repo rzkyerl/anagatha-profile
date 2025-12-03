@@ -277,7 +277,8 @@ class JobListingController extends Controller
             return redirect()->route('admin.job-listings.index')
                 ->with('success', 'Job listing created successfully!');
         } catch (\Exception $e) {
-            Log::error('Job listing creation error: ' . $e->getMessage(), [
+            $errorMsg = 'Job listing creation error: ' . $e->getMessage();
+            Log::error($errorMsg, [
                 'exception' => $e,
                 'trace' => $e->getTraceAsString(),
                 'file' => $e->getFile(),
@@ -286,6 +287,11 @@ class JobListingController extends Controller
                 'user_id' => $user->id ?? null,
                 'user_role' => $user->role ?? null,
             ]);
+            
+            // Also log to stderr for Railway visibility
+            error_log('JOB LISTING CREATION ERROR: ' . $errorMsg);
+            error_log('FILE: ' . $e->getFile() . ':' . $e->getLine());
+            error_log('TRACE: ' . substr($e->getTraceAsString(), 0, 500));
             
             $errorMessage = config('app.debug') 
                 ? 'Failed to create job listing: ' . $e->getMessage() 
@@ -300,7 +306,8 @@ class JobListingController extends Controller
             throw $e;
         } catch (\Illuminate\Database\QueryException $e) {
             // Handle database errors specifically
-            Log::error('Job listing store database error: ' . $e->getMessage(), [
+            $errorMsg = 'Job listing store database error: ' . $e->getMessage();
+            Log::error($errorMsg, [
                 'exception' => $e,
                 'sql' => $e->getSql() ?? null,
                 'bindings' => $e->getBindings() ?? null,
@@ -308,12 +315,17 @@ class JobListingController extends Controller
                 'request_data' => $request->except(['company_logo', '_token'])
             ]);
             
+            // Also log to stderr for Railway visibility
+            error_log('DATABASE ERROR: ' . $errorMsg);
+            error_log('SQL: ' . ($e->getSql() ?? 'N/A'));
+            
             return redirect()->back()
                 ->with('error', 'Database error occurred. Please check the logs or try again later.')
                 ->withInput();
         } catch (\Exception $e) {
             // Catch any other errors that occur in validation or before the inner try-catch
-            Log::error('Job listing store method error (outer catch): ' . $e->getMessage(), [
+            $errorMsg = 'Job listing store method error (outer catch): ' . $e->getMessage();
+            Log::error($errorMsg, [
                 'exception' => $e,
                 'trace' => $e->getTraceAsString(),
                 'file' => $e->getFile(),
@@ -321,6 +333,11 @@ class JobListingController extends Controller
                 'user_id' => $request->user()?->id ?? null,
                 'request_data' => $request->except(['company_logo', '_token'])
             ]);
+            
+            // Also log to stderr for Railway visibility
+            error_log('EXCEPTION: ' . $errorMsg);
+            error_log('FILE: ' . $e->getFile() . ':' . $e->getLine());
+            error_log('TRACE: ' . substr($e->getTraceAsString(), 0, 500));
             
             return redirect()->back()
                 ->with('error', 'An error occurred while processing your request. Please try again.')
