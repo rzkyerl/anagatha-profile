@@ -72,20 +72,33 @@ class JobListingController extends Controller
      */
     public function create()
     {
-        $user = auth()->user();
+        try {
+            $user = auth()->user();
 
-        if ($user && $user->role === 'recruiter') {
-            // Recruiter can only create jobs for themselves
-            $recruiters = User::where('id', $user->id)->get();
-        } else {
-            // Admin can assign any recruiter
-            $recruiters = User::where('role', 'recruiter')->get();
+            if ($user && $user->role === 'recruiter') {
+                // Recruiter can only create jobs for themselves
+                $recruiters = User::where('id', $user->id)->get();
+            } else {
+                // Admin can assign any recruiter
+                $recruiters = User::where('role', 'recruiter')->get();
+            }
+            
+            return view('admin.job_listings.create', [
+                'title' => 'Create New Job Listing',
+                'recruiters' => $recruiters
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Job listing create form error: ' . $e->getMessage(), [
+                'exception' => $e,
+                'trace' => $e->getTraceAsString(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'user_id' => auth()->id(),
+            ]);
+            
+            return redirect()->route('admin.job-listings.index')
+                ->with('error', 'Failed to load create form. Please try again later.');
         }
-        
-        return view('admin.job_listings.create', [
-            'title' => 'Create New Job Listing',
-            'recruiters' => $recruiters
-        ]);
     }
 
     /**
@@ -93,14 +106,15 @@ class JobListingController extends Controller
      */
     public function store(Request $request)
     {
-        $user = $request->user();
+        try {
+            $user = $request->user();
 
-        // For recruiter, force recruiter_id to current user to prevent assigning jobs to others
-        if ($user && $user->role === 'recruiter') {
-            $request->merge(['recruiter_id' => $user->id]);
-        }
+            // For recruiter, force recruiter_id to current user to prevent assigning jobs to others
+            if ($user && $user->role === 'recruiter') {
+                $request->merge(['recruiter_id' => $user->id]);
+            }
 
-        $validator = Validator::make($request->all(), [
+            $validator = Validator::make($request->all(), [
             'title' => 'required|string|max:255',
             'company' => 'required|string|max:255',
             'company_logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
@@ -230,6 +244,20 @@ class JobListingController extends Controller
             
             return redirect()->back()
                 ->with('error', $errorMessage)
+                ->withInput();
+        }
+        } catch (\Exception $e) {
+            // Catch any errors that occur in validation or before the inner try-catch
+            Log::error('Job listing store method error (outer catch): ' . $e->getMessage(), [
+                'exception' => $e,
+                'trace' => $e->getTraceAsString(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'user_id' => $request->user()->id ?? null,
+            ]);
+            
+            return redirect()->back()
+                ->with('error', 'An error occurred while processing your request. Please try again.')
                 ->withInput();
         }
     }
