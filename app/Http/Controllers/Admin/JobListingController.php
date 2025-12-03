@@ -769,8 +769,13 @@ class JobListingController extends Controller
             throw new \Exception('GD extension is not available. Please install php-gd extension.');
         }
         
+        // Verify required GD functions are available
+        if (!function_exists('imagejpeg') || !function_exists('imagecreatefromjpeg')) {
+            throw new \Exception('Required GD functions (imagejpeg, imagecreatefromjpeg) are not available.');
+        }
+        
         $imagePath = $image->getRealPath();
-        $imageInfo = getimagesize($imagePath);
+        $imageInfo = \getimagesize($imagePath);
         
         if (!$imageInfo) {
             throw new \Exception('Invalid image file');
@@ -798,17 +803,17 @@ class JobListingController extends Controller
         switch ($mimeType) {
             case 'image/jpeg':
             case 'image/jpg':
-                $sourceImage = @imagecreatefromjpeg($imagePath);
+                $sourceImage = @\imagecreatefromjpeg($imagePath);
                 break;
             case 'image/png':
-                $sourceImage = @imagecreatefrompng($imagePath);
+                $sourceImage = @\imagecreatefrompng($imagePath);
                 break;
             case 'image/gif':
-                $sourceImage = @imagecreatefromgif($imagePath);
+                $sourceImage = @\imagecreatefromgif($imagePath);
                 break;
             case 'image/webp':
                 if (function_exists('imagecreatefromwebp')) {
-                    $sourceImage = @imagecreatefromwebp($imagePath);
+                    $sourceImage = @\imagecreatefromwebp($imagePath);
                 } else {
                     throw new \Exception('WebP support is not available');
                 }
@@ -822,19 +827,19 @@ class JobListingController extends Controller
         }
         
         // Create new image with calculated dimensions
-        $newImage = imagecreatetruecolor($newWidth, $newHeight);
+        $newImage = \imagecreatetruecolor($newWidth, $newHeight);
         
         // Preserve transparency for PNG and GIF
         if ($mimeType == 'image/png' || $mimeType == 'image/gif') {
-            imagealphablending($newImage, false);
-            imagesavealpha($newImage, true);
-            $transparent = imagecolorallocatealpha($newImage, 255, 255, 255, 127);
-            imagefilledrectangle($newImage, 0, 0, $newWidth, $newHeight, $transparent);
+            \imagealphablending($newImage, false);
+            \imagesavealpha($newImage, true);
+            $transparent = \imagecolorallocatealpha($newImage, 255, 255, 255, 127);
+            \imagefilledrectangle($newImage, 0, 0, $newWidth, $newHeight, $transparent);
         }
         
         // Resize image if needed
         if ($ratio < 1) {
-            imagecopyresampled(
+            \imagecopyresampled(
                 $newImage, 
                 $sourceImage, 
                 0, 0, 0, 0, 
@@ -845,17 +850,17 @@ class JobListingController extends Controller
             );
         } else {
             // No resize, just copy
-            imagecopy($newImage, $sourceImage, 0, 0, 0, 0, $originalWidth, $originalHeight);
+            \imagecopy($newImage, $sourceImage, 0, 0, 0, 0, $originalWidth, $originalHeight);
         }
         
         // Output to buffer as JPEG
-        ob_start();
-        imagejpeg($newImage, null, $quality);
-        $compressedImage = ob_get_clean();
+        \ob_start();
+        \imagejpeg($newImage, null, $quality);
+        $compressedImage = \ob_get_clean();
         
         // Clean up
-        imagedestroy($sourceImage);
-        imagedestroy($newImage);
+        \imagedestroy($sourceImage);
+        \imagedestroy($newImage);
         
         return $compressedImage;
     }
