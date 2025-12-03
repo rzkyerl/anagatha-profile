@@ -17,32 +17,54 @@ class JobListingController extends Controller
      */
     public function index(Request $request)
     {
-        $user = $request->user();
-        $isRecruiter = $user && $user->role === 'recruiter';
+        try {
+            $user = $request->user();
+            $isRecruiter = $user && $user->role === 'recruiter';
 
-        $showTrashed = $request->has('trashed') && $request->trashed == '1';
+            $showTrashed = $request->has('trashed') && $request->trashed == '1';
 
-        if ($showTrashed) {
-            $query = JobListing::onlyTrashed()
-                ->with('recruiter')
-                ->orderBy('deleted_at', 'desc');
-        } else {
-            $query = JobListing::with('recruiter')
-                ->orderBy('created_at', 'desc');
+            if ($showTrashed) {
+                $query = JobListing::onlyTrashed()
+                    ->with(['recruiter' => function($q) {
+                        $q->withTrashed(); // Include soft-deleted recruiters if any
+                    }])
+                    ->orderBy('deleted_at', 'desc');
+            } else {
+                $query = JobListing::with(['recruiter' => function($q) {
+                    $q->withTrashed(); // Include soft-deleted recruiters if any
+                }])
+                    ->orderBy('created_at', 'desc');
+            }
+
+            // Recruiter only sees their own job listings
+            if ($isRecruiter) {
+                $query->where('recruiter_id', $user->id);
+            }
+
+            $jobListings = $query->get();
+            
+            return view('admin.job_listings.index', [
+                'title' => 'Job Listings Management',
+                'jobListings' => $jobListings,
+                'showTrashed' => $showTrashed
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Job listing index error: ' . $e->getMessage(), [
+                'exception' => $e,
+                'trace' => $e->getTraceAsString(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'user_id' => $request->user()->id ?? null,
+                'user_role' => $request->user()->role ?? null,
+            ]);
+            
+            // Return view with empty collection on error
+            return view('admin.job_listings.index', [
+                'title' => 'Job Listings Management',
+                'jobListings' => collect([]),
+                'showTrashed' => $request->has('trashed') && $request->trashed == '1'
+            ])->with('error', 'Failed to load job listings. Please try again later.');
         }
-
-        // Recruiter only sees their own job listings
-        if ($isRecruiter) {
-            $query->where('recruiter_id', $user->id);
-        }
-
-        $jobListings = $query->get();
-        
-        return view('admin.job_listings.index', [
-            'title' => 'Job Listings Management',
-            'jobListings' => $jobListings,
-            'showTrashed' => $showTrashed
-        ]);
     }
 
     /**
