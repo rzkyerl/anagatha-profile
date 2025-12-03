@@ -137,6 +137,14 @@ class JobListingController extends Controller
                     $logo = $request->file('company_logo');
                     $logoName = time() . '_' . uniqid() . '.jpg'; // Always save as JPG after compression
                     
+                    // Ensure company directory exists
+                    $companyDir = storage_path('app/company');
+                    if (!file_exists($companyDir)) {
+                        if (!mkdir($companyDir, 0755, true)) {
+                            throw new \Exception('Failed to create company directory: ' . $companyDir);
+                        }
+                    }
+                    
                     // Compress and resize image
                     $compressedImage = $this->compressImage($logo, 800, 800, 85);
                     
@@ -145,9 +153,14 @@ class JobListingController extends Controller
                     
                     $companyLogo = $logoName;
                 } catch (\Exception $e) {
-                    Log::error('Company logo upload/compression error: ' . $e->getMessage());
+                    Log::error('Company logo upload/compression error: ' . $e->getMessage(), [
+                        'exception' => $e,
+                        'trace' => $e->getTraceAsString(),
+                        'file' => $e->getFile(),
+                        'line' => $e->getLine(),
+                    ]);
                     return redirect()->back()
-                        ->with('error', 'Failed to upload company logo. Please try again.')
+                        ->with('error', 'Failed to upload company logo: ' . $e->getMessage())
                         ->withInput();
                 }
             }
@@ -182,12 +195,19 @@ class JobListingController extends Controller
             Log::error('Job listing creation error: ' . $e->getMessage(), [
                 'exception' => $e,
                 'trace' => $e->getTraceAsString(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
                 'request_data' => $request->except(['company_logo', '_token']),
                 'user_id' => $user->id ?? null,
                 'user_role' => $user->role ?? null,
             ]);
+            
+            $errorMessage = config('app.debug') 
+                ? 'Failed to create job listing: ' . $e->getMessage() 
+                : 'Failed to create job listing. Please try again.';
+            
             return redirect()->back()
-                ->with('error', 'Failed to create job listing. Please try again.')
+                ->with('error', $errorMessage)
                 ->withInput();
         }
     }
@@ -314,6 +334,14 @@ class JobListingController extends Controller
                     $logo = $request->file('company_logo');
                     $logoName = time() . '_' . uniqid() . '.jpg'; // Always save as JPG after compression
                     
+                    // Ensure company directory exists
+                    $companyDir = storage_path('app/company');
+                    if (!file_exists($companyDir)) {
+                        if (!mkdir($companyDir, 0755, true)) {
+                            throw new \Exception('Failed to create company directory: ' . $companyDir);
+                        }
+                    }
+                    
                     // Compress and resize image
                     $compressedImage = $this->compressImage($logo, 800, 800, 85);
                     
@@ -322,9 +350,14 @@ class JobListingController extends Controller
                     
                     $companyLogo = $logoName;
                 } catch (\Exception $e) {
-                    Log::error('Company logo upload/compression error: ' . $e->getMessage());
+                    Log::error('Company logo upload/compression error: ' . $e->getMessage(), [
+                        'exception' => $e,
+                        'trace' => $e->getTraceAsString(),
+                        'file' => $e->getFile(),
+                        'line' => $e->getLine(),
+                    ]);
                     return redirect()->back()
-                        ->with('error', 'Failed to upload company logo. Please try again.')
+                        ->with('error', 'Failed to upload company logo: ' . $e->getMessage())
                         ->withInput();
                 }
             } else {
@@ -598,6 +631,11 @@ class JobListingController extends Controller
      */
     private function compressImage($image, $maxWidth = 800, $maxHeight = 800, $quality = 85)
     {
+        // Check if GD extension is available
+        if (!extension_loaded('gd')) {
+            throw new \Exception('GD extension is not available. Please install php-gd extension.');
+        }
+        
         $imagePath = $image->getRealPath();
         $imageInfo = getimagesize($imagePath);
         

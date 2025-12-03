@@ -89,6 +89,11 @@ php artisan view:cache 2>&1 || echo "Warning: view:cache failed, continuing..."
 chmod -R 775 storage bootstrap/cache 2>&1 || true
 chown -R www-data:www-data storage bootstrap/cache 2>&1 || true
 
+# Create required storage directories
+mkdir -p storage/app/company 2>&1 || true
+chmod -R 775 storage/app/company 2>&1 || true
+chown -R www-data:www-data storage/app/company 2>&1 || true
+
 # Start PHP built-in server
 PORT=${PORT:-8000}
 echo "=========================================="
