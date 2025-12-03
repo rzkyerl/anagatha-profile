@@ -201,7 +201,6 @@ class JobListingController extends Controller
             if ($request->hasFile('company_logo')) {
                 try {
                     $logo = $request->file('company_logo');
-                    $logoName = time() . '_' . uniqid() . '.jpg'; // Always save as JPG after compression
                     
                     // Ensure company directory exists
                     $companyDir = storage_path('app/company');
@@ -211,15 +210,33 @@ class JobListingController extends Controller
                         }
                     }
                     
-                    // Compress and resize image
-                    $compressedImage = $this->compressImage($logo, 800, 800, 85);
-                    
-                    // Store to local disk in company folder
-                    Storage::disk('local')->put('company/' . $logoName, $compressedImage);
-                    
-                    $companyLogo = $logoName;
+                    // Try to compress and resize image
+                    try {
+                        $compressedImage = $this->compressImage($logo, 800, 800, 85);
+                        $logoName = time() . '_' . uniqid() . '.jpg'; // Save as JPG after compression
+                        Storage::disk('local')->put('company/' . $logoName, $compressedImage);
+                        $companyLogo = $logoName;
+                    } catch (\Exception $compressionError) {
+                        // If compression fails due to missing GD JPEG functions, fall back to storing original
+                        if (strpos($compressionError->getMessage(), 'GD functions') !== false || 
+                            strpos($compressionError->getMessage(), 'imagejpeg') !== false ||
+                            strpos($compressionError->getMessage(), 'imagecreatefromjpeg') !== false) {
+                            Log::warning('GD JPEG functions not available, storing original image without compression', [
+                                'error' => $compressionError->getMessage()
+                            ]);
+                            
+                            // Store original file with original extension
+                            $originalExtension = $logo->getClientOriginalExtension();
+                            $logoName = time() . '_' . uniqid() . '.' . $originalExtension;
+                            Storage::disk('local')->putFileAs('company', $logo, $logoName);
+                            $companyLogo = $logoName;
+                        } else {
+                            // Re-throw if it's a different error
+                            throw $compressionError;
+                        }
+                    }
                 } catch (\Exception $e) {
-                    Log::error('Company logo upload/compression error: ' . $e->getMessage(), [
+                    Log::error('Company logo upload error: ' . $e->getMessage(), [
                         'exception' => $e,
                         'trace' => $e->getTraceAsString(),
                         'file' => $e->getFile(),
@@ -485,7 +502,6 @@ class JobListingController extends Controller
                     }
 
                     $logo = $request->file('company_logo');
-                    $logoName = time() . '_' . uniqid() . '.jpg'; // Always save as JPG after compression
                     
                     // Ensure company directory exists
                     $companyDir = storage_path('app/company');
@@ -495,15 +511,33 @@ class JobListingController extends Controller
                         }
                     }
                     
-                    // Compress and resize image
-                    $compressedImage = $this->compressImage($logo, 800, 800, 85);
-                    
-                    // Store to local disk in company folder
-                    Storage::disk('local')->put('company/' . $logoName, $compressedImage);
-                    
-                    $companyLogo = $logoName;
+                    // Try to compress and resize image
+                    try {
+                        $compressedImage = $this->compressImage($logo, 800, 800, 85);
+                        $logoName = time() . '_' . uniqid() . '.jpg'; // Save as JPG after compression
+                        Storage::disk('local')->put('company/' . $logoName, $compressedImage);
+                        $companyLogo = $logoName;
+                    } catch (\Exception $compressionError) {
+                        // If compression fails due to missing GD JPEG functions, fall back to storing original
+                        if (strpos($compressionError->getMessage(), 'GD functions') !== false || 
+                            strpos($compressionError->getMessage(), 'imagejpeg') !== false ||
+                            strpos($compressionError->getMessage(), 'imagecreatefromjpeg') !== false) {
+                            Log::warning('GD JPEG functions not available, storing original image without compression', [
+                                'error' => $compressionError->getMessage()
+                            ]);
+                            
+                            // Store original file with original extension
+                            $originalExtension = $logo->getClientOriginalExtension();
+                            $logoName = time() . '_' . uniqid() . '.' . $originalExtension;
+                            Storage::disk('local')->putFileAs('company', $logo, $logoName);
+                            $companyLogo = $logoName;
+                        } else {
+                            // Re-throw if it's a different error
+                            throw $compressionError;
+                        }
+                    }
                 } catch (\Exception $e) {
-                    Log::error('Company logo upload/compression error: ' . $e->getMessage(), [
+                    Log::error('Company logo upload error: ' . $e->getMessage(), [
                         'exception' => $e,
                         'trace' => $e->getTraceAsString(),
                         'file' => $e->getFile(),
@@ -794,8 +828,17 @@ class JobListingController extends Controller
         }
         
         // Verify required GD functions are available
-        if (!function_exists('imagejpeg') || !function_exists('imagecreatefromjpeg')) {
-            throw new \Exception('Required GD functions (imagejpeg, imagecreatefromjpeg) are not available.');
+        $requiredFunctions = ['imagejpeg', 'imagecreatefromjpeg', 'imagecreatetruecolor', 'imagecopyresampled'];
+        $missingFunctions = [];
+        foreach ($requiredFunctions as $func) {
+            if (!function_exists($func)) {
+                $missingFunctions[] = $func;
+            }
+        }
+        
+        if (!empty($missingFunctions)) {
+            $missingList = implode(', ', $missingFunctions);
+            throw new \Exception("Required GD functions ({$missingList}) are not available. Please ensure GD extension is compiled with JPEG support.");
         }
         
         $imagePath = $image->getRealPath();
@@ -964,11 +1007,23 @@ class JobListingController extends Controller
             abort(404);
         }
         
-        // Get file content (company logos are always JPEG after compression)
+        // Get file content
         $file = Storage::disk('local')->get($path);
         
+        // Detect MIME type based on file extension
+        $extension = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+        $mimeTypes = [
+            'jpg' => 'image/jpeg',
+            'jpeg' => 'image/jpeg',
+            'png' => 'image/png',
+            'gif' => 'image/gif',
+            'webp' => 'image/webp',
+        ];
+        
+        $contentType = $mimeTypes[$extension] ?? 'image/jpeg'; // Default to JPEG
+        
         return response($file, 200)
-            ->header('Content-Type', 'image/jpeg')
+            ->header('Content-Type', $contentType)
             ->header('Cache-Control', 'public, max-age=31536000') // Cache for 1 year
             ->header('Content-Disposition', 'inline; filename="' . $filename . '"');
     }
