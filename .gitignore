@@ -36,8 +36,8 @@ yarn.lock
 !/storage/app/google/.gitkeep
 
 # Database seeders with sensitive data
-# Ignore seeders that contain real/sensitive data
-database/seeders/*Sensitive*.php
-database/seeders/*Production*.php
-database/seeders/*Real*.php
-# Keep template seeders (UserSeeder.php is safe - only dummy data)
+# Ignore all seeders that contain sensitive/real data
+database/seeders/UserSeeder.php
+database/seeders/JobListingSeeder.php
+database/seeders/JobApplySeeder.php
+# Keep DatabaseSeeder.php as it's the main seeder file (structure only, no sensitive data)
