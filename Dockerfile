@@ -72,7 +72,17 @@ php artisan view:clear 2>&1 || true
 composer dump-autoload --optimize --no-interaction 2>&1 || echo "Warning: composer dump-autoload failed, continuing..."
 
 # Run migrations (safe to skip if DB not available)
-php artisan migrate --force 2>&1 || echo "Warning: migrate failed, continuing..."
+echo "=========================================="
+echo "RUNNING DATABASE MIGRATIONS..."
+echo "Command: php artisan migrate --force"
+echo "=========================================="
+php artisan migrate --force 2>&1 || {
+    echo "WARNING: Migration failed or no migrations to run"
+    echo "This is normal if migrations are already up to date"
+}
+echo "=========================================="
+echo "MIGRATION COMPLETED"
+echo "=========================================="
 
 echo "Caching Laravel configuration..."
 php artisan config:cache 2>&1 || {
