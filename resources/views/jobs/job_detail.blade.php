@@ -91,49 +91,61 @@
                         <h2 class="job-detail-section-card__title">Job Description</h2>
                         
                         <div class="job-detail-description">
+                            @if(!empty($job['responsibilities']) && is_array($job['responsibilities']))
                             <div class="job-detail-description__section">
-                                <h3 class="job-detail-description__section-title">
-                                    <a href="#responsibilities" class="job-detail-description__link">Responsibilities</a>
-                                </h3>
+                                <h3 class="job-detail-description__section-title">Responsibilities</h3>
                                 <ol class="job-detail-description__list">
                                     @foreach($job['responsibilities'] as $responsibility)
+                                        @if(!empty(trim($responsibility ?? '')))
                                         <li>{{ $responsibility }}</li>
+                                        @endif
                                     @endforeach
                                 </ol>
                             </div>
+                            @endif
 
+                            @if(!empty($job['requirements']) && is_array($job['requirements']))
                             <div class="job-detail-description__section">
-                                <h3 class="job-detail-description__section-title">
-                                    <a href="#requirements" class="job-detail-description__link">Requirements</a>
-                                </h3>
+                                <h3 class="job-detail-description__section-title">Requirements</h3>
                                 <ol class="job-detail-description__list">
                                     @foreach($job['requirements'] as $requirement)
+                                        @if(!empty(trim($requirement ?? '')))
                                         <li>{{ $requirement }}</li>
+                                        @endif
                                     @endforeach
                                 </ol>
                             </div>
+                            @endif
                         </div>
                     </div>
 
                     <!-- Key Skills -->
+                    @if(!empty($job['key_skills']) && is_array($job['key_skills']))
                     <div class="job-detail-section-card" data-aos="fade-up" data-aos-delay="150">
                         <h2 class="job-detail-section-card__title">Key Skills</h2>
                         <div class="job-detail-skills">
                             @foreach($job['key_skills'] as $skill)
+                                @if(!empty(trim($skill ?? '')))
                                 <span class="job-detail-skill-tag">{{ $skill }}</span>
+                                @endif
                             @endforeach
                         </div>
                     </div>
+                    @endif
 
                     <!-- Benefits -->
+                    @if(!empty($job['benefits']) && is_array($job['benefits']))
                     <div class="job-detail-section-card" data-aos="fade-up" data-aos-delay="200">
                         <h2 class="job-detail-section-card__title">Benefits</h2>
                         <div class="job-detail-skills">
                             @foreach($job['benefits'] as $benefit)
+                                @if(!empty(trim($benefit ?? '')))
                                 <span class="job-detail-skill-tag">{{ $benefit }}</span>
+                                @endif
                             @endforeach
                         </div>
                     </div>
+                    @endif
 
                     <!-- About the Company -->
                     <div class="job-detail-section-card" data-aos="fade-up" data-aos-delay="250">

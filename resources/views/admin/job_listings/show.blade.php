@@ -96,7 +96,7 @@
                                         </tr>
                                         <tr>
                                             <th scope="row">Company:</th>
-                                            <td>{{ $jobListing->company_logo }}</td>
+                                            <td>{{ $jobListing->company }}</td>
                                         </tr>
                                         <tr>
                                             <th scope="row">Location:</th>
@@ -226,6 +226,81 @@
                 </div>
             </div>
             @endif
+
+            <!-- Job Details Cards (Responsibilities, Requirements, Key Skills, Benefits) -->
+            <div class="row">
+                <!-- Responsibilities -->
+                @if($jobListing->responsibilities && count($jobListing->responsibilities) > 0)
+                <div class="col-md-6 mb-3">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title mb-3">
+                                <i class="ri-task-line me-2"></i>Responsibilities
+                            </h5>
+                            <ul class="mb-0">
+                                @foreach($jobListing->responsibilities as $responsibility)
+                                    <li class="mb-2">{{ $responsibility }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                @endif
+
+                <!-- Requirements -->
+                @if($jobListing->requirements && count($jobListing->requirements) > 0)
+                <div class="col-md-6 mb-3">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title mb-3">
+                                <i class="ri-file-list-3-line me-2"></i>Requirements
+                            </h5>
+                            <ul class="mb-0">
+                                @foreach($jobListing->requirements as $requirement)
+                                    <li class="mb-2">{{ $requirement }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                @endif
+
+                <!-- Key Skills -->
+                @if($jobListing->key_skills && count($jobListing->key_skills) > 0)
+                <div class="col-md-6 mb-3">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title mb-3">
+                                <i class="ri-star-line me-2"></i>Key Skills
+                            </h5>
+                            <ul class="mb-0">
+                                @foreach($jobListing->key_skills as $skill)
+                                    <li class="mb-2">{{ $skill }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                @endif
+
+                <!-- Benefits -->
+                @if($jobListing->benefits && count($jobListing->benefits) > 0)
+                <div class="col-md-6 mb-3">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title mb-3">
+                                <i class="ri-gift-line me-2"></i>Benefits
+                            </h5>
+                            <ul class="mb-0">
+                                @foreach($jobListing->benefits as $benefit)
+                                    <li class="mb-2">{{ $benefit }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                @endif
+            </div>
 
             <!-- Action Buttons Card -->
             @include('admin.components.actionCard', [

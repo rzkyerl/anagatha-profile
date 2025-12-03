@@ -121,6 +121,114 @@
                             @enderror
                         </div>
 
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="responsibilities" class="form-label">Responsibilities</label>
+                                    <div id="responsibilitiesContainer">
+                                        <div class="input-group mb-2">
+                                            <input type="text" 
+                                                   class="form-control responsibilities-input @error('responsibilities.*') is-invalid @enderror" 
+                                                   name="responsibilities[]" 
+                                                   placeholder="Enter responsibility...">
+                                            <div class="input-group-append">
+                                                <button type="button" class="btn btn-danger removeResponsibility" style="display: none;">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @error('responsibilities.*')
+                                        <div class="text-danger small">{{ $message }}</div>
+                                    @enderror
+                                    <button type="button" class="btn btn-sm btn-secondary" id="addResponsibility">
+                                        <i class="fas fa-plus"></i> Add Responsibility
+                                    </button>
+                                    <small class="form-text text-muted">Click button to add responsibility</small>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="requirements" class="form-label">Requirements</label>
+                                    <div id="requirementsContainer">
+                                        <div class="input-group mb-2">
+                                            <input type="text" 
+                                                   class="form-control requirements-input @error('requirements.*') is-invalid @enderror" 
+                                                   name="requirements[]" 
+                                                   placeholder="Enter requirement...">
+                                            <div class="input-group-append">
+                                                <button type="button" class="btn btn-danger removeRequirement" style="display: none;">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @error('requirements.*')
+                                        <div class="text-danger small">{{ $message }}</div>
+                                    @enderror
+                                    <button type="button" class="btn btn-sm btn-secondary" id="addRequirement">
+                                        <i class="fas fa-plus"></i> Add Requirement
+                                    </button>
+                                    <small class="form-text text-muted">Click button to add requirement</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="key_skills" class="form-label">Key Skills</label>
+                                    <div id="keySkillsContainer">
+                                        <div class="input-group mb-2">
+                                            <input type="text" 
+                                                   class="form-control key-skills-input @error('key_skills.*') is-invalid @enderror" 
+                                                   name="key_skills[]" 
+                                                   placeholder="Enter skill...">
+                                            <div class="input-group-append">
+                                                <button type="button" class="btn btn-danger removeKeySkill" style="display: none;">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @error('key_skills.*')
+                                        <div class="text-danger small">{{ $message }}</div>
+                                    @enderror
+                                    <button type="button" class="btn btn-sm btn-secondary" id="addKeySkill">
+                                        <i class="fas fa-plus"></i> Add Skill
+                                    </button>
+                                    <small class="form-text text-muted">Click button to add skill</small>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="benefits" class="form-label">Benefits</label>
+                                    <div id="benefitsContainer">
+                                        <div class="input-group mb-2">
+                                            <input type="text" 
+                                                   class="form-control benefits-input @error('benefits.*') is-invalid @enderror" 
+                                                   name="benefits[]" 
+                                                   placeholder="Enter benefit...">
+                                            <div class="input-group-append">
+                                                <button type="button" class="btn btn-danger removeBenefit" style="display: none;">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @error('benefits.*')
+                                        <div class="text-danger small">{{ $message }}</div>
+                                    @enderror
+                                    <button type="button" class="btn btn-sm btn-secondary" id="addBenefit">
+                                        <i class="fas fa-plus"></i> Add Benefit
+                                    </button>
+                                    <small class="form-text text-muted">Click button to add benefit</small>
+                                </div>
+                            </div>
+                        </div>
+
                         <hr class="my-4">
 
                         <!-- Salary Information -->
@@ -522,6 +630,120 @@
 
         document.getElementById('minimum_degree').addEventListener('change', function() {
             toggleOtherField('minimum_degree', 'minimum_degree_other_wrapper');
+        });
+
+        // Dynamic input fields for Responsibilities, Requirements, Key Skills, and Benefits
+        function addDynamicField(containerId, inputName, placeholder, removeButtonClass) {
+            const container = document.getElementById(containerId);
+            
+            // Create new input group
+            const newInputGroup = document.createElement('div');
+            newInputGroup.className = 'input-group mb-2';
+            
+            const removeButton = document.createElement('button');
+            removeButton.type = 'button';
+            removeButton.className = 'btn btn-danger ' + removeButtonClass;
+            removeButton.style.display = 'none';
+            removeButton.innerHTML = '<i class="fas fa-times"></i>';
+            
+            const inputGroupAppend = document.createElement('div');
+            inputGroupAppend.className = 'input-group-append';
+            inputGroupAppend.appendChild(removeButton);
+            
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.className = 'form-control';
+            input.name = inputName + '[]';
+            input.placeholder = placeholder;
+            
+            newInputGroup.appendChild(input);
+            newInputGroup.appendChild(inputGroupAppend);
+            
+            container.appendChild(newInputGroup);
+            
+            // Show remove buttons if more than 1 input
+            updateRemoveButtons(container, removeButtonClass);
+            
+            // Focus on new input
+            input.focus();
+        }
+
+        function removeDynamicField(button, containerId, removeButtonClass) {
+            const container = document.getElementById(containerId);
+            const inputGroup = button.closest('.input-group');
+            const inputGroups = container.querySelectorAll('.input-group');
+            
+            // Don't remove if it's the last one
+            if (inputGroups.length > 1) {
+                inputGroup.remove();
+                updateRemoveButtons(container, removeButtonClass);
+            }
+        }
+
+        function updateRemoveButtons(container, removeButtonClass) {
+            const inputGroups = container.querySelectorAll('.input-group');
+            const removeButtons = container.querySelectorAll('.' + removeButtonClass);
+            
+            // Show remove button if more than 1 input, hide if only 1
+            removeButtons.forEach(btn => {
+                if (inputGroups.length > 1) {
+                    btn.style.display = 'block';
+                } else {
+                    btn.style.display = 'none';
+                }
+            });
+        }
+
+        // Responsibilities
+        document.getElementById('addResponsibility').addEventListener('click', function() {
+            addDynamicField('responsibilitiesContainer', 'responsibilities', 'Enter responsibility...', 'removeResponsibility');
+        });
+
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.removeResponsibility')) {
+                removeDynamicField(e.target.closest('.removeResponsibility'), 'responsibilitiesContainer', 'removeResponsibility');
+            }
+        });
+
+        // Requirements
+        document.getElementById('addRequirement').addEventListener('click', function() {
+            addDynamicField('requirementsContainer', 'requirements', 'Enter requirement...', 'removeRequirement');
+        });
+
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.removeRequirement')) {
+                removeDynamicField(e.target.closest('.removeRequirement'), 'requirementsContainer', 'removeRequirement');
+            }
+        });
+
+        // Key Skills
+        document.getElementById('addKeySkill').addEventListener('click', function() {
+            addDynamicField('keySkillsContainer', 'key_skills', 'Enter skill...', 'removeKeySkill');
+        });
+
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.removeKeySkill')) {
+                removeDynamicField(e.target.closest('.removeKeySkill'), 'keySkillsContainer', 'removeKeySkill');
+            }
+        });
+
+        // Benefits
+        document.getElementById('addBenefit').addEventListener('click', function() {
+            addDynamicField('benefitsContainer', 'benefits', 'Enter benefit...', 'removeBenefit');
+        });
+
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.removeBenefit')) {
+                removeDynamicField(e.target.closest('.removeBenefit'), 'benefitsContainer', 'removeBenefit');
+            }
+        });
+
+        // Initialize remove buttons on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateRemoveButtons(document.getElementById('responsibilitiesContainer'), 'removeResponsibility');
+            updateRemoveButtons(document.getElementById('requirementsContainer'), 'removeRequirement');
+            updateRemoveButtons(document.getElementById('keySkillsContainer'), 'removeKeySkill');
+            updateRemoveButtons(document.getElementById('benefitsContainer'), 'removeBenefit');
         });
     </script>
 @endpush

@@ -141,6 +141,14 @@ class JobListingController extends Controller
             'company' => 'required|string|max:255',
             'company_logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'description' => 'nullable|string',
+            'responsibilities' => 'nullable|array',
+            'responsibilities.*' => 'nullable|string|max:500',
+            'requirements' => 'nullable|array',
+            'requirements.*' => 'nullable|string|max:500',
+            'key_skills' => 'nullable|array',
+            'key_skills.*' => 'nullable|string|max:255',
+            'benefits' => 'nullable|array',
+            'benefits.*' => 'nullable|string|max:255',
             'salary_min' => 'nullable|numeric|min:0',
             'salary_max' => 'nullable|numeric|min:0|gte:salary_min',
             'salary_display' => 'required|string|max:255',
@@ -246,6 +254,10 @@ class JobListingController extends Controller
                 'company' => $request->company,
                 'company_logo' => $companyLogo,
                 'description' => $request->filled('description') ? $request->description : null,
+                'responsibilities' => $this->filterArray($request->input('responsibilities')),
+                'requirements' => $this->filterArray($request->input('requirements')),
+                'key_skills' => $this->filterArray($request->input('key_skills')),
+                'benefits' => $this->filterArray($request->input('benefits')),
                 'salary_min' => $request->filled('salary_min') ? $request->salary_min : null,
                 'salary_max' => $request->filled('salary_max') ? $request->salary_max : null,
                 'salary_display' => $request->salary_display,
@@ -409,6 +421,14 @@ class JobListingController extends Controller
             'company' => 'required|string|max:255',
             'company_logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'description' => 'nullable|string',
+            'responsibilities' => 'nullable|array',
+            'responsibilities.*' => 'nullable|string|max:500',
+            'requirements' => 'nullable|array',
+            'requirements.*' => 'nullable|string|max:500',
+            'key_skills' => 'nullable|array',
+            'key_skills.*' => 'nullable|string|max:255',
+            'benefits' => 'nullable|array',
+            'benefits.*' => 'nullable|string|max:255',
             'salary_min' => 'nullable|numeric|min:0',
             'salary_max' => 'nullable|numeric|min:0|gte:salary_min',
             'salary_display' => 'required|string|max:255',
@@ -503,6 +523,10 @@ class JobListingController extends Controller
                 'company' => $request->company,
                 'company_logo' => $companyLogo,
                 'description' => $request->description,
+                'responsibilities' => $this->filterArray($request->input('responsibilities')),
+                'requirements' => $this->filterArray($request->input('requirements')),
+                'key_skills' => $this->filterArray($request->input('key_skills')),
+                'benefits' => $this->filterArray($request->input('benefits')),
                 'salary_min' => $request->salary_min,
                 'salary_max' => $request->salary_max,
                 'salary_display' => $request->salary_display,
@@ -863,6 +887,23 @@ class JobListingController extends Controller
         \imagedestroy($newImage);
         
         return $compressedImage;
+    }
+
+    /**
+     * Filter and clean array input (remove empty values).
+     */
+    private function filterArray(?array $input): ?array
+    {
+        if (empty($input)) {
+            return null;
+        }
+
+        // Filter out empty values and trim each item
+        $filtered = array_filter(array_map('trim', $input), function($item) {
+            return !empty($item);
+        });
+
+        return !empty($filtered) ? array_values($filtered) : null;
     }
 
     /**

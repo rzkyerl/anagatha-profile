@@ -233,63 +233,25 @@ class PageController extends Controller
             $recruiterAvatar = strtoupper(substr($jobListing->recruiter->first_name, 0, 1) . substr($jobListing->recruiter->last_name, 0, 1));
         }
         
-        // Parse description - split into responsibilities and requirements if structured
+        // Get structured job details from database
         $description = $jobListing->description ?? '';
-        $responsibilities = [];
-        $requirements = [];
-        $keySkills = [];
-        $benefits = [];
+        $responsibilities = $jobListing->responsibilities ?? [];
+        $requirements = $jobListing->requirements ?? [];
+        $keySkills = $jobListing->key_skills ?? [];
+        $benefits = $jobListing->benefits ?? [];
         
-        if ($description) {
-            // Try to detect structured format
-            $lines = explode("\n", $description);
-            $currentSection = null;
-            
-            foreach ($lines as $line) {
-                $line = trim($line);
-                if (empty($line)) continue;
-                
-                // Detect section headers
-                if (preg_match('/^(Responsibilities|Requirements|Key Skills|Benefits|Skills):/i', $line)) {
-                    if (stripos($line, 'responsibilities') !== false) {
-                        $currentSection = 'responsibilities';
-                    } elseif (stripos($line, 'requirements') !== false) {
-                        $currentSection = 'requirements';
-                    } elseif (stripos($line, 'skills') !== false) {
-                        $currentSection = 'skills';
-                    } elseif (stripos($line, 'benefits') !== false) {
-                        $currentSection = 'benefits';
-                    }
-                    continue;
-                }
-                
-                // Remove bullet points and numbering
-                $cleanLine = preg_replace('/^[-*•]\s*/', '', $line);
-                $cleanLine = preg_replace('/^\d+[\.)]\s*/', '', $cleanLine);
-                $cleanLine = trim($cleanLine);
-                
-                if (empty($cleanLine)) continue;
-                
-                // Assign to appropriate section
-                if ($currentSection === 'responsibilities') {
-                    $responsibilities[] = $cleanLine;
-                } elseif ($currentSection === 'requirements') {
-                    $requirements[] = $cleanLine;
-                } elseif ($currentSection === 'skills') {
-                    // Handle comma-separated skills
-                    $skills = array_map('trim', explode(',', $cleanLine));
-                    $keySkills = array_merge($keySkills, array_filter($skills));
-                } elseif ($currentSection === 'benefits') {
-                    // Handle comma-separated benefits
-                    $benefitList = array_map('trim', explode(',', $cleanLine));
-                    $benefits = array_merge($benefits, array_filter($benefitList));
-                } else {
-                    // No section header, treat as general description/responsibilities
-                    if (empty($responsibilities)) {
-                        $responsibilities[] = $cleanLine;
-                    }
-                }
-            }
+        // Ensure arrays (in case of null or non-array values)
+        if (!is_array($responsibilities)) {
+            $responsibilities = [];
+        }
+        if (!is_array($requirements)) {
+            $requirements = [];
+        }
+        if (!is_array($keySkills)) {
+            $keySkills = [];
+        }
+        if (!is_array($benefits)) {
+            $benefits = [];
         }
         
         // Fallback: use description as responsibilities if no structured data found
@@ -303,16 +265,30 @@ class PageController extends Controller
             }
         }
         
-        // Fallback defaults
-        if (empty($requirements)) {
+        // Fallback defaults only if absolutely no data - but don't add if array is null/empty from DB
+        if (empty($requirements) && $jobListing->requirements === null) {
             $requirements = ['Please refer to job description for full requirements.'];
         }
-        if (empty($keySkills)) {
+        if (empty($keySkills) && $jobListing->key_skills === null) {
             $keySkills = ['See job description'];
         }
-        if (empty($benefits)) {
+        if (empty($benefits) && $jobListing->benefits === null) {
             $benefits = ['Competitive salary', 'Professional development'];
         }
+        
+        // Filter out empty values from arrays
+        $responsibilities = array_values(array_filter($responsibilities, function($item) {
+            return !empty(trim($item ?? ''));
+        }));
+        $requirements = array_values(array_filter($requirements, function($item) {
+            return !empty(trim($item ?? ''));
+        }));
+        $keySkills = array_values(array_filter($keySkills, function($item) {
+            return !empty(trim($item ?? ''));
+        }));
+        $benefits = array_values(array_filter($benefits, function($item) {
+            return !empty(trim($item ?? ''));
+        }));
         
         // Prepare job data for view
         $job = [

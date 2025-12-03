@@ -17,6 +17,10 @@ class JobListing extends Model
         'company',
         'company_logo',
         'description',
+        'responsibilities',
+        'requirements',
+        'key_skills',
+        'benefits',
         'salary_min',
         'salary_max',
         'salary_display',
@@ -41,6 +45,10 @@ class JobListing extends Model
         'salary_max' => 'decimal:2',
         'verified' => 'boolean',
         'posted_at' => 'datetime',
+        'responsibilities' => 'array',
+        'requirements' => 'array',
+        'key_skills' => 'array',
+        'benefits' => 'array',
     ];
 
     /**
