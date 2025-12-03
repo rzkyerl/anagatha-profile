@@ -9,6 +9,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Database\QueryException;
 
 class JobListingController extends Controller
 {
@@ -109,9 +111,29 @@ class JobListingController extends Controller
         try {
             $user = $request->user();
 
+            // Ensure user is authenticated
+            if (!$user) {
+                Log::error('Job listing store: User not authenticated');
+                return redirect()->back()
+                    ->with('error', 'You must be logged in to create a job listing.')
+                    ->withInput();
+            }
+
             // For recruiter, force recruiter_id to current user to prevent assigning jobs to others
-            if ($user && $user->role === 'recruiter') {
+            if ($user->role === 'recruiter') {
                 $request->merge(['recruiter_id' => $user->id]);
+            }
+
+            // Ensure recruiter_id is set before validation
+            if (!$request->has('recruiter_id') || !$request->recruiter_id) {
+                Log::error('Job listing store: recruiter_id is missing', [
+                    'user_id' => $user->id,
+                    'user_role' => $user->role,
+                    'request_data' => $request->except(['company_logo', '_token'])
+                ]);
+                return redirect()->back()
+                    ->with('error', 'Recruiter is required. Please try again.')
+                    ->withInput();
             }
 
             $validator = Validator::make($request->all(), [
@@ -201,6 +223,24 @@ class JobListingController extends Controller
                 }
             }
 
+            // Prepare posted_at value
+            $postedAt = null;
+            if ($request->filled('posted_at')) {
+                try {
+                    $postedAt = \Carbon\Carbon::parse($request->posted_at);
+                } catch (\Exception $e) {
+                    Log::warning('Invalid posted_at date format: ' . $request->posted_at, [
+                        'error' => $e->getMessage()
+                    ]);
+                    $postedAt = null;
+                }
+            }
+            
+            // Auto-set posted_at if status is active and not set
+            if (!$postedAt && $request->status === 'active') {
+                $postedAt = now();
+            }
+
             $jobListing = JobListing::create([
                 'title' => $request->title,
                 'company' => $request->company,
@@ -222,7 +262,16 @@ class JobListingController extends Controller
                 'recruiter_id' => $request->recruiter_id,
                 'verified' => $request->has('verified') ? true : false,
                 'status' => $request->status,
-                'posted_at' => $request->filled('posted_at') ? $request->posted_at : ($request->status === 'active' ? now() : null),
+                'posted_at' => $postedAt,
+            ]);
+
+            Log::info('Job listing created successfully', [
+                'job_listing_id' => $jobListing->id,
+                'title' => $jobListing->title,
+                'status' => $jobListing->status,
+                'recruiter_id' => $jobListing->recruiter_id,
+                'user_id' => $user->id,
+                'user_role' => $user->role
             ]);
 
             return redirect()->route('admin.job-listings.index')
@@ -246,14 +295,31 @@ class JobListingController extends Controller
                 ->with('error', $errorMessage)
                 ->withInput();
         }
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            // Re-throw validation exceptions to let Laravel handle them properly
+            throw $e;
+        } catch (\Illuminate\Database\QueryException $e) {
+            // Handle database errors specifically
+            Log::error('Job listing store database error: ' . $e->getMessage(), [
+                'exception' => $e,
+                'sql' => $e->getSql() ?? null,
+                'bindings' => $e->getBindings() ?? null,
+                'user_id' => $request->user()?->id ?? null,
+                'request_data' => $request->except(['company_logo', '_token'])
+            ]);
+            
+            return redirect()->back()
+                ->with('error', 'Database error occurred. Please check the logs or try again later.')
+                ->withInput();
         } catch (\Exception $e) {
-            // Catch any errors that occur in validation or before the inner try-catch
+            // Catch any other errors that occur in validation or before the inner try-catch
             Log::error('Job listing store method error (outer catch): ' . $e->getMessage(), [
                 'exception' => $e,
                 'trace' => $e->getTraceAsString(),
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
-                'user_id' => $request->user()->id ?? null,
+                'user_id' => $request->user()?->id ?? null,
+                'request_data' => $request->except(['company_logo', '_token'])
             ]);
             
             return redirect()->back()
