@@ -47,9 +47,9 @@ Dengan pengalaman industri yang kuat, pendekatan yang personal, dan jaringan pro
         Melalui platform yang kami kembangkan, kami membantu perusahaan menemukan kandidat terbaik dengan lebih cepat, objektif, dan efisien. Kami terus berinovasi agar proses rekrutmen tidak hanya mudah, tetapi juga tepat sasaran dan memberikan hasil jangka panjang.
         Terima kasih kepada para klien, mitra, dan tim kami atas kepercayaan dan kerja sama yang luar biasa. Bersama, kita membangun masa depan dunia kerja yang lebih cerdas dan manusiawi.',
         'cards' => [
-            'executive' => 'Executive Search & Penempatan Leader',
-            'culture_fit' => 'Rekrutmen Berbasis Culture Fit untuk Startup',
-            'pipeline' => 'Pengembangan Pipeline Talenta untuk Posisi Spesialis',
+            'executive' => 'Recruitment',
+            'culture_fit' => 'Training',
+            'pipeline' => 'Outsourcing',
         ],
         'modal_copy' => [
             'subtitle' => 'Apa yang Anda dapatkan',

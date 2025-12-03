@@ -45,9 +45,9 @@ return [
         Through the platform we have developed, we help companies discover the best candidates faster, more objectively, and more efficiently. We continuously innovate to ensure that the recruitment process is not only seamless, but also highly targeted and capable of delivering long-term results.
         We extend our gratitude to our clients, partners, and team for their trust and exceptional collaboration. Together, we are shaping a smarter and more human centered future of work.',
         'cards' => [
-            'executive' => 'Executive & Professional Recruitment',
-            'culture_fit' => 'Corporate Training & Talent Development',
-            'pipeline' => 'Professional Workforce Outsourcing Services',
+            'executive' => 'Recruitment',
+            'culture_fit' => 'Training',
+            'pipeline' => 'Outsourcing',
             'view_details' => 'View Details',
         ],
         'modal_copy' => [

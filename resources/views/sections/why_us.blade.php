@@ -61,7 +61,7 @@
             </article>
             <article class="why-us-card" data-aos="fade-up" data-aos-delay="450">
                 <div class="why-us-card__icon">
-                    <i class="fa-solid fa-arrow-trend-up"></i>
+                    <i class="fa-solid fa-arrows-rotate"></i>
                 </div>
                 <h3 class="why-us-card__title">{{ __('app.why_us.cards.improvement') }}</h3>
             </article>
