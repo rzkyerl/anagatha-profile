@@ -156,29 +156,36 @@ class JobListingController extends Controller
                 'title' => $request->title,
                 'company' => $request->company,
                 'company_logo' => $companyLogo,
-                'description' => $request->description,
-                'salary_min' => $request->salary_min,
-                'salary_max' => $request->salary_max,
+                'description' => $request->filled('description') ? $request->description : null,
+                'salary_min' => $request->filled('salary_min') ? $request->salary_min : null,
+                'salary_max' => $request->filled('salary_max') ? $request->salary_max : null,
                 'salary_display' => $request->salary_display,
                 'work_preference' => $request->work_preference,
                 'contract_type' => $request->contract_type,
-                'contract_type_other' => $request->contract_type === 'Other' ? $request->contract_type_other : null,
-                'experience_level' => $request->experience_level,
-                'experience_level_other' => $request->experience_level === 'Other' ? $request->experience_level_other : null,
+                'contract_type_other' => ($request->contract_type === 'Other' && $request->filled('contract_type_other')) ? $request->contract_type_other : null,
+                'experience_level' => $request->filled('experience_level') ? $request->experience_level : null,
+                'experience_level_other' => ($request->experience_level === 'Other' && $request->filled('experience_level_other')) ? $request->experience_level_other : null,
                 'location' => $request->location,
-                'industry' => $request->industry,
-                'industry_other' => $request->industry === 'Other' ? $request->industry_other : null,
-                'minimum_degree' => $request->minimum_degree,
-                'minimum_degree_other' => $request->minimum_degree === 'Other' ? $request->minimum_degree_other : null,
+                'industry' => $request->filled('industry') ? $request->industry : null,
+                'industry_other' => ($request->industry === 'Other' && $request->filled('industry_other')) ? $request->industry_other : null,
+                'minimum_degree' => $request->filled('minimum_degree') ? $request->minimum_degree : null,
+                'minimum_degree_other' => ($request->minimum_degree === 'Other' && $request->filled('minimum_degree_other')) ? $request->minimum_degree_other : null,
                 'recruiter_id' => $request->recruiter_id,
                 'verified' => $request->has('verified') ? true : false,
                 'status' => $request->status,
-                'posted_at' => $request->posted_at ?? ($request->status === 'active' ? now() : null),
+                'posted_at' => $request->filled('posted_at') ? $request->posted_at : ($request->status === 'active' ? now() : null),
             ]);
 
             return redirect()->route('admin.job-listings.index')
                 ->with('success', 'Job listing created successfully!');
         } catch (\Exception $e) {
+            Log::error('Job listing creation error: ' . $e->getMessage(), [
+                'exception' => $e,
+                'trace' => $e->getTraceAsString(),
+                'request_data' => $request->except(['company_logo', '_token']),
+                'user_id' => $user->id ?? null,
+                'user_role' => $user->role ?? null,
+            ]);
             return redirect()->back()
                 ->with('error', 'Failed to create job listing. Please try again.')
                 ->withInput();
@@ -234,6 +241,15 @@ class JobListingController extends Controller
         if ($user && $user->role === 'recruiter') {
             $request->merge(['recruiter_id' => $user->id]);
         }
+        
+        Log::info('Job listing update request received', [
+            'job_listing_id' => $id,
+            'current_status' => $jobListing->status,
+            'request_status' => $request->status,
+            'all_request_data' => $request->except(['company_logo', '_token', '_method']),
+            'user_id' => $user->id ?? null,
+            'user_role' => $user->role ?? null
+        ]);
 
         $validator = Validator::make($request->all(), [
             'title' => 'required|string|max:255',
@@ -349,10 +365,27 @@ class JobListingController extends Controller
             }
 
             $jobListing->update($updateData);
+            
+            // Refresh to get updated data
+            $jobListing->refresh();
+            
+            Log::info('Job listing updated successfully', [
+                'job_listing_id' => $id,
+                'new_status' => $jobListing->status,
+                'posted_at' => $jobListing->posted_at
+            ]);
 
             return redirect()->route('admin.job-listings.show', $jobListing->id)
                 ->with('success', 'Job listing updated successfully!');
         } catch (\Exception $e) {
+            Log::error('Job listing update error: ' . $e->getMessage(), [
+                'exception' => $e,
+                'trace' => $e->getTraceAsString(),
+                'request_data' => $request->except(['company_logo', '_token']),
+                'job_listing_id' => $id,
+                'user_id' => $user->id ?? null,
+                'user_role' => $user->role ?? null,
+            ]);
             return redirect()->back()
                 ->with('error', 'Failed to update job listing. Please try again.')
                 ->withInput();
@@ -654,6 +687,53 @@ class JobListingController extends Controller
         imagedestroy($newImage);
         
         return $compressedImage;
+    }
+
+    /**
+     * Quick update job listing status.
+     */
+    public function updateStatus(Request $request, string $id)
+    {
+        try {
+            $jobListing = JobListing::findOrFail($id);
+            $this->ensureJobListingAccessible($jobListing);
+
+            $request->validate([
+                'status' => 'required|in:draft,active,inactive,closed',
+            ]);
+
+            $oldStatus = $jobListing->status;
+            $newStatus = $request->status;
+
+            // Update status
+            $jobListing->status = $newStatus;
+
+            // Update posted_at if status changes to active and wasn't posted before
+            if ($newStatus === 'active' && !$jobListing->posted_at) {
+                $jobListing->posted_at = now();
+            }
+
+            $jobListing->save();
+
+            Log::info('Job listing status updated', [
+                'job_listing_id' => $id,
+                'old_status' => $oldStatus,
+                'new_status' => $newStatus,
+                'user_id' => $request->user()->id ?? null,
+                'user_role' => $request->user()->role ?? null
+            ]);
+
+            return redirect()->back()
+                ->with('success', 'Job listing status updated successfully from ' . ucfirst($oldStatus) . ' to ' . ucfirst($newStatus) . '!');
+        } catch (\Exception $e) {
+            Log::error('Job listing status update error: ' . $e->getMessage(), [
+                'exception' => $e,
+                'job_listing_id' => $id,
+                'request_status' => $request->status ?? null
+            ]);
+            return redirect()->back()
+                ->with('error', 'Failed to update job listing status. Please try again.');
+        }
     }
 
     /**

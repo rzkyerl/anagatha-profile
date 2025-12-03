@@ -1,7 +1,7 @@
 <section id="about" class="page-section page-section--flush-top">
     <div class="container section-shell section-shell--stack">
         <div class="section-heading section-heading--left" data-aos="fade-up">
-            <h2 class="section-heading__title">{{ __('app.about.title') }}</h2>
+            <h3 class="section-heading__title">{{ __('app.about.title') }}</h3>
             <p class="section-heading__text">{{ __('app.about.description') }}</p>
         </div>
     </div>

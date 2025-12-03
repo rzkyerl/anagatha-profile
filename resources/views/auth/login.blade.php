@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.auth')
 
 @section('title', 'Login - Anagata Executive')
 @section('body_class', 'page login-page')
@@ -104,20 +104,6 @@
                         <div class="form-forgot-password">
                             <a href="{{ route('password.request') }}" class="forgot-password-link">Forgot Password?</a>
                         </div>
-                    </div>
-
-                    {{-- Remember Me --}}
-                    <div class="form-group" style="margin-bottom: 1.5rem;">
-                        <label style="display: flex; align-items: center; cursor: pointer; font-size: 0.875rem; color: #666;">
-                            <input 
-                                type="checkbox" 
-                                name="remember" 
-                                id="remember"
-                                style="margin-right: 0.5rem; width: 1rem; height: 1rem; cursor: pointer;"
-                                {{ old('remember') ? 'checked' : '' }}
-                            />
-                            <span>Remember me</span>
-                        </label>
                     </div>
 
                     {{-- Submit Button --}}

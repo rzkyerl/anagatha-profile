@@ -533,22 +533,23 @@ body.register-page {
     max-height: calc(100vh - 2rem);
 }
 
-/* Hide scrollbar but keep functionality */
+/* Scrollbar styling - visible */
 .register-right-section::-webkit-scrollbar {
-    width: 6px;
+    width: 8px;
 }
 
 .register-right-section::-webkit-scrollbar-track {
-    background: transparent;
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 4px;
 }
 
 .register-right-section::-webkit-scrollbar-thumb {
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: 3px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
 }
 
 .register-right-section::-webkit-scrollbar-thumb:hover {
-    background: rgba(0, 0, 0, 0.3);
+    background: rgba(0, 0, 0, 0.5);
 }
 
 /* ==========================================================================
@@ -609,10 +610,12 @@ body.register-recruiter-page main {
     max-height: 100vh;
 }
 
-/* Recruiter card - no scroll */
+/* Recruiter card - fixed height for scrolling */
 .register-recruiter-page .register-card {
     overflow: hidden;
+    height: calc(100vh - 3rem);
     max-height: calc(100vh - 3rem);
+    min-height: calc(100vh - 3rem);
 }
 
 /* Recruiter form specific styles - right section padding */
@@ -622,13 +625,51 @@ body.register-recruiter-page main {
         align-items: center;
     }
     
-    .register-recruiter-page .register-right-section {
+    .register-recruiter-page .register-card {
+        height: calc(100vh - 3rem);
         max-height: calc(100vh - 3rem);
+        min-height: calc(100vh - 3rem);
+    }
+    
+    .register-recruiter-page .register-right-section {
+        height: 100%;
+        max-height: 100%;
         padding: 1rem 1.25rem;
-        overflow-y: hidden;
+        overflow-y: auto !important;
         overflow-x: hidden;
-        display: flex;
-        flex-direction: column;
+        display: block;
+        position: relative;
+    }
+    
+    .register-recruiter-page .register-right-section .register-form-wrapper {
+        padding-bottom: 2rem;
+        min-height: fit-content;
+    }
+    
+    /* Show scrollbar for recruiter page on desktop */
+    .register-recruiter-page .register-right-section::-webkit-scrollbar {
+        width: 10px;
+        display: block !important;
+    }
+    
+    .register-recruiter-page .register-right-section::-webkit-scrollbar-track {
+        background: rgba(0, 0, 0, 0.1);
+        border-radius: 5px;
+    }
+    
+    .register-recruiter-page .register-right-section::-webkit-scrollbar-thumb {
+        background: rgba(0, 0, 0, 0.4);
+        border-radius: 5px;
+    }
+    
+    .register-recruiter-page .register-right-section::-webkit-scrollbar-thumb:hover {
+        background: rgba(0, 0, 0, 0.6);
+    }
+    
+    .register-recruiter-page .register-right-section {
+        -ms-overflow-style: scrollbar !important;
+        scrollbar-width: thin !important;
+        scrollbar-color: rgba(0, 0, 0, 0.4) rgba(0, 0, 0, 0.1) !important;
     }
 }
 
@@ -640,38 +681,15 @@ body.register-recruiter-page main {
 /* Recruiter Register - Form Wrapper - Compact */
 @media (min-width: 1025px) {
     .register-recruiter-page .register-form-wrapper {
-        display: flex;
-        flex-direction: column;
-        flex: 1;
-        min-height: 0;
-        overflow: hidden;
-    }
-    
-    .register-recruiter-page .register-title {
-        flex-shrink: 0;
-    }
-    
-    .register-recruiter-page .register-subtitle {
-        flex-shrink: 0;
-    }
-    
-    .register-recruiter-page .social-login-top {
-        flex-shrink: 0;
-    }
-    
-    .register-recruiter-page .register-separator {
-        flex-shrink: 0;
-    }
-    
-    .register-recruiter-page .register-form {
-        flex: 1;
-        min-height: 0;
+        display: block;
+        width: 100%;
         overflow: visible;
+        min-height: auto;
     }
     
     .register-recruiter-page .register-footer {
-        flex-shrink: 0;
-        margin-top: auto;
+        margin-top: 1.25rem;
+        padding-bottom: 0.5rem;
     }
 }
 
@@ -870,24 +888,39 @@ body.register-recruiter-page main {
 /* Job Title Other field - smooth transition */
 .job-title-other-group {
     transition: opacity 0.3s ease, max-height 0.3s ease, margin 0.3s ease;
-    overflow: hidden;
+    overflow: visible;
 }
 
 .job-title-other-group[style*="display: none"] {
     margin-top: 0 !important;
     margin-bottom: 0 !important;
+    opacity: 0 !important;
+    max-height: 0 !important;
 }
 
 /* Ensure consistent spacing when field appears */
 .register-form .form-group.job-title-other-group {
-    margin-top: -0.5rem;
+    margin-top: 0;
     margin-bottom: 1rem;
+    opacity: 1;
+    max-height: none;
+}
+
+/* Force visibility when displayed */
+.register-form .form-group.job-title-other-group[style*="display: block"],
+.register-form .form-group.job-title-other-group:not([style*="display: none"]) {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
 }
 
 /* Recruiter Register - Job Title Other spacing */
 @media (min-width: 1025px) {
     .register-recruiter-page .register-form .form-group.job-title-other-group {
-        margin-top: -0.3rem;
+        margin-top: 0;
         margin-bottom: 0.5rem;
     }
 }
@@ -895,14 +928,69 @@ body.register-recruiter-page main {
 /* Responsive adjustments for mobile */
 @media (max-width: 768px) {
     .register-form .form-group.job-title-other-group {
-        margin-top: -0.5rem;
+        margin-top: 0;
         margin-bottom: 0.875rem;
     }
 }
 
 @media (max-width: 480px) {
     .register-form .form-group.job-title-other-group {
-        margin-top: -0.5rem;
+        margin-top: 0;
+        margin-bottom: 0.875rem;
+    }
+}
+
+/* Industry Other field - smooth transition */
+.industry-other-group {
+    transition: opacity 0.3s ease, max-height 0.3s ease, margin 0.3s ease;
+    overflow: visible;
+}
+
+.industry-other-group[style*="display: none"] {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    opacity: 0 !important;
+    max-height: 0 !important;
+}
+
+/* Ensure consistent spacing when field appears */
+.register-form .form-group.industry-other-group {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    opacity: 1;
+    max-height: none;
+}
+
+/* Force visibility when displayed */
+.register-form .form-group.industry-other-group[style*="display: block"],
+.register-form .form-group.industry-other-group:not([style*="display: none"]) {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+}
+
+/* Recruiter Register - Industry Other spacing */
+@media (min-width: 1025px) {
+    .register-recruiter-page .register-form .form-group.industry-other-group {
+        margin-top: 0;
+        margin-bottom: 0.5rem;
+    }
+}
+
+/* Responsive adjustments for mobile */
+@media (max-width: 768px) {
+    .register-form .form-group.industry-other-group {
+        margin-top: 0;
+        margin-bottom: 0.875rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .register-form .form-group.industry-other-group {
+        margin-top: 0;
         margin-bottom: 0.875rem;
     }
 }
@@ -1189,24 +1277,43 @@ body.register-recruiter-page main {
     }
     
     .register-recruiter-page .register-card {
+        height: calc(100vh - 3rem);
         max-height: calc(100vh - 3rem);
+        min-height: calc(100vh - 3rem);
         overflow: hidden;
     }
     
     .register-recruiter-page .register-right-section {
+        height: 100%;
+        max-height: 100%;
         overflow-y: auto;
         overflow-x: hidden;
-        max-height: calc(100vh - 3rem);
+        padding-bottom: 1.5rem;
     }
     
-    /* Hide scrollbar for recruiter page on tablet */
+    /* Show scrollbar for recruiter page on tablet */
     .register-recruiter-page .register-right-section::-webkit-scrollbar {
-        display: none;
+        width: 8px;
+        display: block;
+    }
+    
+    .register-recruiter-page .register-right-section::-webkit-scrollbar-track {
+        background: rgba(0, 0, 0, 0.05);
+        border-radius: 4px;
+    }
+    
+    .register-recruiter-page .register-right-section::-webkit-scrollbar-thumb {
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 4px;
+    }
+    
+    .register-recruiter-page .register-right-section::-webkit-scrollbar-thumb:hover {
+        background: rgba(0, 0, 0, 0.5);
     }
     
     .register-recruiter-page .register-right-section {
-        -ms-overflow-style: none;
-        scrollbar-width: none;
+        -ms-overflow-style: scrollbar;
+        scrollbar-width: thin;
     }
 }
 
@@ -1241,9 +1348,11 @@ body.register-recruiter-page main {
         max-height: calc(100vh - 2rem);
     }
     
-    /* Recruiter card - prevent scroll on mobile */
+    /* Recruiter card - fixed height for scrolling on mobile */
     .register-recruiter-page .register-card {
+        height: calc(100vh - 2rem);
         max-height: calc(100vh - 2rem);
+        min-height: calc(100vh - 2rem);
         overflow: hidden;
     }
 
@@ -1277,19 +1386,36 @@ body.register-recruiter-page main {
     
     /* Recruiter Register - Responsive Styles */
     .register-recruiter-page .register-right-section {
+        height: 100%;
+        max-height: 100%;
         overflow-y: auto;
         overflow-x: hidden;
-        max-height: calc(100vh - 1rem);
+        padding-bottom: 1.5rem;
     }
     
-    /* Hide scrollbar for recruiter page on mobile */
+    /* Show scrollbar for recruiter page on mobile */
     .register-recruiter-page .register-right-section::-webkit-scrollbar {
-        display: none;
+        width: 8px;
+        display: block;
+    }
+    
+    .register-recruiter-page .register-right-section::-webkit-scrollbar-track {
+        background: rgba(0, 0, 0, 0.05);
+        border-radius: 4px;
+    }
+    
+    .register-recruiter-page .register-right-section::-webkit-scrollbar-thumb {
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 4px;
+    }
+    
+    .register-recruiter-page .register-right-section::-webkit-scrollbar-thumb:hover {
+        background: rgba(0, 0, 0, 0.5);
     }
     
     .register-recruiter-page .register-right-section {
-        -ms-overflow-style: none;
-        scrollbar-width: none;
+        -ms-overflow-style: scrollbar;
+        scrollbar-width: thin;
     }
 
     .register-title {
@@ -1333,9 +1459,11 @@ body.register-recruiter-page main {
         align-items: center;
     }
     
-    /* Recruiter card - prevent scroll on small mobile */
+    /* Recruiter card - fixed height for scrolling on small mobile */
     .register-recruiter-page .register-card {
+        height: calc(100vh - 2rem);
         max-height: calc(100vh - 2rem);
+        min-height: calc(100vh - 2rem);
         overflow: hidden;
     }
     
@@ -1360,19 +1488,36 @@ body.register-recruiter-page main {
     
     /* Recruiter Register - Responsive Styles */
     .register-recruiter-page .register-right-section {
+        height: 100%;
+        max-height: 100%;
         overflow-y: auto;
         overflow-x: hidden;
-        max-height: calc(100vh - 1rem);
+        padding-bottom: 1.5rem;
     }
     
-    /* Hide scrollbar for recruiter page on small mobile */
+    /* Show scrollbar for recruiter page on small mobile */
     .register-recruiter-page .register-right-section::-webkit-scrollbar {
-        display: none;
+        width: 8px;
+        display: block;
+    }
+    
+    .register-recruiter-page .register-right-section::-webkit-scrollbar-track {
+        background: rgba(0, 0, 0, 0.05);
+        border-radius: 4px;
+    }
+    
+    .register-recruiter-page .register-right-section::-webkit-scrollbar-thumb {
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 4px;
+    }
+    
+    .register-recruiter-page .register-right-section::-webkit-scrollbar-thumb:hover {
+        background: rgba(0, 0, 0, 0.5);
     }
     
     .register-recruiter-page .register-right-section {
-        -ms-overflow-style: none;
-        scrollbar-width: none;
+        -ms-overflow-style: scrollbar;
+        scrollbar-width: thin;
     }
 
     .register-title {

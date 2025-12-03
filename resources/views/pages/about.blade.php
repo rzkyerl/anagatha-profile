@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', __('app.about.title') . ' | ' . __('app.meta.title'))
+@section('title', __('app.nav.about') . ' | Anagata Executive')
 @section('body_class', 'page about-page')
 
 @section('content')

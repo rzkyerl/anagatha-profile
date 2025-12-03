@@ -179,7 +179,8 @@ class JobApplyController extends Controller
         return view('admin.job_apply.edit', [
             'title' => 'Edit Job Application',
             'jobApply' => $jobApply,
-            'jobListings' => $jobListings
+            'jobListings' => $jobListings,
+            'isRecruiter' => $user && $user->role === 'recruiter'
         ]);
     }
 
@@ -191,28 +192,40 @@ class JobApplyController extends Controller
         $jobApply = JobApply::findOrFail($id);
         $this->ensureJobApplyAccessible($jobApply);
 
-        $validator = Validator::make($request->all(), [
-            'job_listing_id' => 'nullable|exists:job_listings,id',
-            'full_name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255',
-            'phone' => 'required|string|max:50',
-            'address' => 'required|string|max:500',
-            'current_salary' => 'nullable|string|max:100',
-            'expected_salary' => 'required|string|max:100',
-            'availability' => 'required|string',
-            'relocation' => 'required|in:Yes,No,Other',
-            'relocation_other' => 'required_if:relocation,Other|nullable|string|max:255',
-            'linkedin' => 'nullable|url|max:500',
-            'github' => 'nullable|url|max:500',
-            'social_media' => 'nullable|url|max:500',
-            'cv' => 'nullable|file|mimes:pdf,doc,docx|max:10240',
-            'portfolio_file' => 'nullable|file|mimes:pdf,doc,docx,zip,rar|max:10240',
-            'cover_letter' => 'nullable|string',
-            'reason_applying' => 'required|string',
-            'relevant_experience' => 'nullable|string',
-            'status' => 'required|in:pending,shortlisted,interview,hired,rejected',
-            'notes' => 'nullable|string',
-        ]);
+        $user = auth()->user();
+        $isRecruiter = $user && $user->role === 'recruiter';
+
+        // If recruiter, only allow updating status and notes
+        if ($isRecruiter) {
+            $validator = Validator::make($request->all(), [
+                'status' => 'required|in:pending,hired,rejected',
+                'notes' => 'nullable|string',
+            ]);
+        } else {
+            // Admin can edit all fields
+            $validator = Validator::make($request->all(), [
+                'job_listing_id' => 'nullable|exists:job_listings,id',
+                'full_name' => 'required|string|max:255',
+                'email' => 'required|string|email|max:255',
+                'phone' => 'required|string|max:50',
+                'address' => 'required|string|max:500',
+                'current_salary' => 'nullable|string|max:100',
+                'expected_salary' => 'required|string|max:100',
+                'availability' => 'required|string',
+                'relocation' => 'required|in:Yes,No,Other',
+                'relocation_other' => 'required_if:relocation,Other|nullable|string|max:255',
+                'linkedin' => 'nullable|url|max:500',
+                'github' => 'nullable|url|max:500',
+                'social_media' => 'nullable|url|max:500',
+                'cv' => 'nullable|file|mimes:pdf,doc,docx|max:10240',
+                'portfolio_file' => 'nullable|file|mimes:pdf,doc,docx,zip,rar|max:10240',
+                'cover_letter' => 'nullable|string',
+                'reason_applying' => 'required|string',
+                'relevant_experience' => 'nullable|string',
+                'status' => 'required|in:pending,shortlisted,interview,hired,rejected',
+                'notes' => 'nullable|string',
+            ]);
+        }
 
         if ($validator->fails()) {
             return redirect()->back()
@@ -221,44 +234,53 @@ class JobApplyController extends Controller
         }
 
         try {
-            $data = $request->except(['cv', 'portfolio_file']);
-            
-            // Handle relocation_other
-            if ($request->relocation === 'Other') {
-                $data['relocation_other'] = $request->relocation_other;
+            // If recruiter, only update status and notes
+            if ($isRecruiter) {
+                $jobApply->update([
+                    'status' => $request->status,
+                    'notes' => $request->notes,
+                ]);
             } else {
-                $data['relocation_other'] = null;
-            }
-
-            // Handle CV file upload
-            if ($request->hasFile('cv')) {
-                // Delete old CV if exists (check both local and public for backward compatibility)
-                if ($jobApply->cv) {
-                    if (Storage::disk('local')->exists($jobApply->cv)) {
-                        Storage::disk('local')->delete($jobApply->cv);
-                    } elseif (Storage::disk('public')->exists($jobApply->cv)) {
-                        Storage::disk('public')->delete($jobApply->cv);
-                    }
+                // Admin can update all fields
+                $data = $request->except(['cv', 'portfolio_file']);
+                
+                // Handle relocation_other
+                if ($request->relocation === 'Other') {
+                    $data['relocation_other'] = $request->relocation_other;
+                } else {
+                    $data['relocation_other'] = null;
                 }
-                $cvPath = $request->file('cv')->store('resume', 'local');
-                $data['cv'] = $cvPath;
-            }
 
-            // Handle Portfolio file upload
-            if ($request->hasFile('portfolio_file')) {
-                // Delete old portfolio if exists (check both local and public for backward compatibility)
-                if ($jobApply->portfolio_file) {
-                    if (Storage::disk('local')->exists($jobApply->portfolio_file)) {
-                        Storage::disk('local')->delete($jobApply->portfolio_file);
-                    } elseif (Storage::disk('public')->exists($jobApply->portfolio_file)) {
-                        Storage::disk('public')->delete($jobApply->portfolio_file);
+                // Handle CV file upload
+                if ($request->hasFile('cv')) {
+                    // Delete old CV if exists (check both local and public for backward compatibility)
+                    if ($jobApply->cv) {
+                        if (Storage::disk('local')->exists($jobApply->cv)) {
+                            Storage::disk('local')->delete($jobApply->cv);
+                        } elseif (Storage::disk('public')->exists($jobApply->cv)) {
+                            Storage::disk('public')->delete($jobApply->cv);
+                        }
                     }
+                    $cvPath = $request->file('cv')->store('resume', 'local');
+                    $data['cv'] = $cvPath;
                 }
-                $portfolioPath = $request->file('portfolio_file')->store('job_applies/portfolio', 'local');
-                $data['portfolio_file'] = $portfolioPath;
-            }
 
-            $jobApply->update($data);
+                // Handle Portfolio file upload
+                if ($request->hasFile('portfolio_file')) {
+                    // Delete old portfolio if exists (check both local and public for backward compatibility)
+                    if ($jobApply->portfolio_file) {
+                        if (Storage::disk('local')->exists($jobApply->portfolio_file)) {
+                            Storage::disk('local')->delete($jobApply->portfolio_file);
+                        } elseif (Storage::disk('public')->exists($jobApply->portfolio_file)) {
+                            Storage::disk('public')->delete($jobApply->portfolio_file);
+                        }
+                    }
+                    $portfolioPath = $request->file('portfolio_file')->store('job_applies/portfolio', 'local');
+                    $data['portfolio_file'] = $portfolioPath;
+                }
+
+                $jobApply->update($data);
+            }
 
             return redirect()->route('admin.job-apply.show', $jobApply->id)
                 ->with('success', 'Job application updated successfully!');

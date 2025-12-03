@@ -22,8 +22,20 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <div>
-                            <h4 class="card-title mb-1">Edit Job Application</h4>
-                            <p class="card-title-desc mb-0">Update job application information</p>
+                            <h4 class="card-title mb-1">
+                                @if(isset($isRecruiter) && $isRecruiter)
+                                    Review Job Application
+                                @else
+                                    Edit Job Application
+                                @endif
+                            </h4>
+                            <p class="card-title-desc mb-0">
+                                @if(isset($isRecruiter) && $isRecruiter)
+                                    Update application status and add notes for the applicant
+                                @else
+                                    Update job application information
+                                @endif
+                            </p>
                         </div>
                         <div class="d-flex gap-2">
                             <a href="{{ route('admin.job-apply.show', $jobApply->id) }}" class="btn btn-info">
@@ -46,6 +58,197 @@
                         @csrf
                         @method('PUT')
 
+                        {{-- Debug: isRecruiter = {{ isset($isRecruiter) ? ($isRecruiter ? 'true' : 'false') : 'not set' }} --}}
+                        @if(isset($isRecruiter) && $isRecruiter)
+                        {{-- Recruiter View: Read-only information display --}}
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="alert alert-info mb-4">
+                                    <i class="ri-information-line me-2"></i>
+                                    <strong>Information:</strong> As a recruiter, you can only update the application status and add notes for the applicant. All other information is read-only.
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Read-only Applicant Information --}}
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <h5 class="mb-3">Applicant Information</h5>
+                                <div class="table-responsive">
+                                    <table class="table table-bordered">
+                                        <tbody>
+                                            <tr>
+                                                <th style="width: 200px;">Job Position:</th>
+                                                <td>{{ $jobApply->jobListing ? $jobApply->jobListing->title : 'N/A' }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Full Name:</th>
+                                                <td>{{ $jobApply->full_name }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Email:</th>
+                                                <td>{{ $jobApply->email }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Phone:</th>
+                                                <td>{{ $jobApply->phone }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Address:</th>
+                                                <td>{{ $jobApply->address }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Current Salary:</th>
+                                                <td>{{ $jobApply->current_salary ?? 'Not specified' }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Expected Salary:</th>
+                                                <td>{{ $jobApply->expected_salary }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Availability:</th>
+                                                <td>{{ $jobApply->availability }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Relocation:</th>
+                                                <td>{{ $jobApply->relocation }}@if($jobApply->relocation === 'Other' && $jobApply->relocation_other) - {{ $jobApply->relocation_other }}@endif</td>
+                                            </tr>
+                                            @if($jobApply->linkedin)
+                                            <tr>
+                                                <th>LinkedIn:</th>
+                                                <td><a href="{{ $jobApply->linkedin }}" target="_blank">{{ $jobApply->linkedin }}</a></td>
+                                            </tr>
+                                            @endif
+                                            @if($jobApply->github)
+                                            <tr>
+                                                <th>GitHub:</th>
+                                                <td><a href="{{ $jobApply->github }}" target="_blank">{{ $jobApply->github }}</a></td>
+                                            </tr>
+                                            @endif
+                                            @if($jobApply->social_media)
+                                            <tr>
+                                                <th>Social Media:</th>
+                                                <td><a href="{{ $jobApply->social_media }}" target="_blank">{{ $jobApply->social_media }}</a></td>
+                                            </tr>
+                                            @endif
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <h5 class="mb-3">Application Details</h5>
+                                @if($jobApply->cover_letter)
+                                <div class="mb-3">
+                                    <strong>Cover Letter:</strong>
+                                    <div class="p-3 bg-light rounded mt-2">{{ $jobApply->cover_letter }}</div>
+                                </div>
+                                @endif
+                                <div class="mb-3">
+                                    <strong>Reason for Applying:</strong>
+                                    <div class="p-3 bg-light rounded mt-2">{{ $jobApply->reason_applying }}</div>
+                                </div>
+                                @if($jobApply->relevant_experience)
+                                <div class="mb-3">
+                                    <strong>Relevant Experience:</strong>
+                                    <div class="p-3 bg-light rounded mt-2">{{ $jobApply->relevant_experience }}</div>
+                                </div>
+                                @endif
+                                @if($jobApply->cv)
+                                <div class="mb-3">
+                                    <strong>CV / Resume:</strong>
+                                    <div class="mt-2">
+                                        <a href="{{ route('admin.job-apply.download.cv', $jobApply->id) }}" class="btn btn-sm btn-primary" target="_blank">
+                                            <i class="ri-file-pdf-line me-1"></i> Download CV
+                                        </a>
+                                    </div>
+                                </div>
+                                @endif
+                                @if($jobApply->portfolio_file)
+                                <div class="mb-3">
+                                    <strong>Portfolio:</strong>
+                                    <div class="mt-2">
+                                        <a href="{{ route('admin.job-apply.download.portfolio', $jobApply->id) }}" class="btn btn-sm btn-primary" target="_blank">
+                                            <i class="ri-folder-line me-1"></i> Download Portfolio
+                                        </a>
+                                    </div>
+                                </div>
+                                @endif
+                            </div>
+                        </div>
+
+                        {{-- Separator --}}
+                        <div class="row mt-4 mb-3">
+                            <div class="col-12">
+                                <hr>
+                                <h5 class="mt-4 mb-3">
+                                    <i class="ri-edit-line me-2"></i> Update Application Status & Notes
+                                </h5>
+                            </div>
+                        </div>
+
+                        {{-- Editable Section: Status and Notes --}}
+                        <div class="card" id="recruiter-status-notes-section" style="display: block !important; visibility: visible !important;">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6 col-lg-5">
+                                        <div class="mb-4">
+                                            <label for="status" class="form-label fw-semibold">
+                                                Application Status <span class="text-danger">*</span>
+                                            </label>
+                                            <select class="form-select @error('status') is-invalid @enderror" 
+                                                    id="status" 
+                                                    name="status" 
+                                                    required 
+                                                    style="cursor: pointer; display: block !important; visibility: visible !important; opacity: 1 !important;">
+                                                <option value="">-- Pilih Status --</option>
+                                                <option value="pending" {{ old('status', $jobApply->status) == 'pending' ? 'selected' : '' }}>Pending</option>
+                                                <option value="hired" {{ old('status', $jobApply->status) == 'hired' ? 'selected' : '' }}>Diterima</option>
+                                                <option value="rejected" {{ old('status', $jobApply->status) == 'rejected' ? 'selected' : '' }}>Ditolak</option>
+                                            </select>
+                                            @error('status')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                            <small class="form-text text-muted d-block mt-2">
+                                                <i class="ri-information-line me-1"></i> 
+                                                Anda hanya dapat mengubah status menjadi: <strong>Pending</strong>, <strong>Diterima (Accepted)</strong>, atau <strong>Ditolak (Rejected)</strong>
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="mb-0">
+                                            <label for="notes" class="form-label fw-semibold">Notes untuk Pelamar</label>
+                                            <textarea class="form-control @error('notes') is-invalid @enderror" 
+                                                      id="notes" 
+                                                      name="notes" 
+                                                      rows="5"
+                                                      placeholder="Tambahkan catatan untuk pelamar... (catatan ini akan terlihat oleh pelamar di halaman history mereka)">{{ old('notes', $jobApply->notes) }}</textarea>
+                                            @error('notes')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                            <small class="form-text text-muted d-block mt-2">
+                                                <i class="ri-information-line me-1"></i> 
+                                                Notes ini akan ditampilkan kepada pelamar di halaman history mereka
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-transparent border-top pt-3" id="recruiter-action-buttons" style="display: block !important; visibility: visible !important;">
+                                <div class="d-flex gap-2 justify-content-end">
+                                    <a href="{{ route('admin.job-apply.show', $jobApply->id) }}" class="btn btn-secondary" style="display: inline-block !important; visibility: visible !important;">
+                                        <i class="ri-close-line align-middle me-1"></i> Cancel
+                                    </a>
+                                    <button type="submit" class="btn btn-primary waves-effect waves-light" id="submit-status-notes-btn" style="display: inline-block !important; visibility: visible !important;">
+                                        <i class="ri-save-line align-middle me-1"></i> Update Status & Notes
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        @else
+                        {{-- Admin View: Full editable form --}}
                         <div class="row">
                             <!-- Left Column -->
                             <div class="col-md-6">
@@ -358,6 +561,7 @@
                                 </a>
                             </div>
                         </div>
+                        @endif
                     </form>
 
                 </div>
@@ -383,31 +587,144 @@
             });
         })();
 
-        // Handle "Other" option for relocation
-        function toggleRelocationOther() {
-            const select = document.getElementById('relocation');
-            const wrapper = document.getElementById('relocation_other_wrapper');
-            const input = document.getElementById('relocation_other');
+        // Ensure recruiter status section is always visible
+        function ensureRecruiterSectionVisible() {
+            const statusSection = document.getElementById('recruiter-status-notes-section');
+            const statusSelect = document.getElementById('status');
+            const actionButtons = document.getElementById('recruiter-action-buttons');
+            const submitBtn = document.getElementById('submit-status-notes-btn');
             
-            if (select.value === 'Other') {
-                wrapper.style.display = 'block';
-                if (input) input.required = true;
-            } else {
-                wrapper.style.display = 'none';
-                if (input) {
-                    input.required = false;
-                    input.value = '';
-                }
+            @if(isset($isRecruiter) && $isRecruiter)
+            // Only run if this is recruiter view
+            if (statusSection) {
+                statusSection.style.setProperty('display', 'block', 'important');
+                statusSection.style.setProperty('visibility', 'visible', 'important');
+                statusSection.style.setProperty('opacity', '1', 'important');
+                statusSection.classList.remove('d-none');
             }
+            
+            if (statusSelect) {
+                statusSelect.style.setProperty('display', 'block', 'important');
+                statusSelect.style.setProperty('visibility', 'visible', 'important');
+                statusSelect.style.setProperty('opacity', '1', 'important');
+                statusSelect.style.setProperty('width', '100%', 'important');
+            }
+            
+            if (actionButtons) {
+                actionButtons.style.setProperty('display', 'block', 'important');
+                actionButtons.style.setProperty('visibility', 'visible', 'important');
+            }
+            
+            if (submitBtn) {
+                submitBtn.style.setProperty('display', 'inline-block', 'important');
+                submitBtn.style.setProperty('visibility', 'visible', 'important');
+            }
+            
+            // Check if elements are actually visible
+            if (statusSection && (statusSection.offsetParent === null || window.getComputedStyle(statusSection).display === 'none')) {
+                console.warn('Recruiter status section is hidden, forcing visibility');
+                statusSection.removeAttribute('style');
+                statusSection.style.cssText = 'display: block !important; visibility: visible !important; opacity: 1 !important;';
+            }
+            @endif
         }
 
-        // Initialize on page load
+        // Run after DOM is ready
         document.addEventListener('DOMContentLoaded', function() {
-            toggleRelocationOther();
+            ensureRecruiterSectionVisible();
+            
+            // Keep checking to ensure elements remain visible
+            setTimeout(ensureRecruiterSectionVisible, 100);
+            setTimeout(ensureRecruiterSectionVisible, 500);
+            setTimeout(ensureRecruiterSectionVisible, 1000);
+            
+            // Continuous check every 500ms for first 5 seconds
+            let checkCount = 0;
+            const maxChecks = 10;
+            const checkInterval = setInterval(function() {
+                ensureRecruiterSectionVisible();
+                checkCount++;
+                if (checkCount >= maxChecks) {
+                    clearInterval(checkInterval);
+                }
+            }, 500);
         });
 
-        // Add event listener
-        document.getElementById('relocation').addEventListener('change', toggleRelocationOther);
+        // Also run after all resources are loaded
+        window.addEventListener('load', function() {
+            ensureRecruiterSectionVisible();
+            setTimeout(ensureRecruiterSectionVisible, 100);
+            setTimeout(ensureRecruiterSectionVisible, 500);
+        });
+        
+        // Run immediately if DOM is already loaded
+        if (document.readyState === 'loading') {
+            // DOM is still loading, wait for DOMContentLoaded
+        } else {
+            // DOM is already loaded, run immediately
+            ensureRecruiterSectionVisible();
+        }
+
+        // Use MutationObserver to watch for changes that might hide the elements
+        if (typeof MutationObserver !== 'undefined') {
+            const observer = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+                        const target = mutation.target;
+                        if (target.id === 'recruiter-status-notes-section' || 
+                            target.id === 'status' || 
+                            target.id === 'recruiter-action-buttons' ||
+                            target.id === 'submit-status-notes-btn') {
+                            ensureRecruiterSectionVisible();
+                        }
+                    }
+                    if (mutation.type === 'childList') {
+                        ensureRecruiterSectionVisible();
+                    }
+                });
+            });
+
+            document.addEventListener('DOMContentLoaded', function() {
+                const statusSection = document.getElementById('recruiter-status-notes-section');
+                if (statusSection) {
+                    observer.observe(statusSection, {
+                        attributes: true,
+                        attributeFilter: ['style', 'class'],
+                        childList: true,
+                        subtree: true
+                    });
+                }
+            });
+        }
+
+        // Handle "Other" option for relocation (only for admin view)
+        const relocationSelect = document.getElementById('relocation');
+        if (relocationSelect && !document.getElementById('recruiter-status-notes-section')) {
+            function toggleRelocationOther() {
+                const select = document.getElementById('relocation');
+                const wrapper = document.getElementById('relocation_other_wrapper');
+                const input = document.getElementById('relocation_other');
+                
+                if (select && select.value === 'Other') {
+                    if (wrapper) wrapper.style.display = 'block';
+                    if (input) input.required = true;
+                } else {
+                    if (wrapper) wrapper.style.display = 'none';
+                    if (input) {
+                        input.required = false;
+                        input.value = '';
+                    }
+                }
+            }
+
+            // Initialize on page load
+            document.addEventListener('DOMContentLoaded', function() {
+                toggleRelocationOther();
+            });
+
+            // Add event listener
+            relocationSelect.addEventListener('change', toggleRelocationOther);
+        }
     </script>
 @endpush
 

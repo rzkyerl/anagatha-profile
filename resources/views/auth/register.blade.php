@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.auth')
 
 @section('title', 'Register - Anagata Executive')
 @section('body_class', 'page register-page register-employee-page')

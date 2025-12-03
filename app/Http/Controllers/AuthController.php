@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
@@ -108,6 +109,8 @@ class AuthController extends Controller
                     'job_title' => 'required|in:HR Manager,HR Business Partner,Talent Acquisition Specialist,Recruitment Manager,HR Director,HR Coordinator,Recruiter,Senior Recruiter,HR Generalist,People Operations Manager,Other',
                     'job_title_other' => 'required_if:job_title,Other|nullable|string|max:255',
                     'company_name' => 'required|string|max:255',
+                    'industry' => 'required|in:Technology,Healthcare,Finance,Education,Manufacturing,Retail,Real Estate,Hospitality,Transportation & Logistics,Energy,Telecommunications,Media & Entertainment,Consulting,Legal,Construction,Agriculture,Food & Beverage,Automotive,Aerospace,Pharmaceuticals,Other',
+                    'industry_other' => 'required_if:industry,Other|nullable|string|max:255',
                     'password' => 'required|string|min:8|confirmed',
                 ], [
                     'full_name.required' => 'Full name is required.',
@@ -119,6 +122,9 @@ class AuthController extends Controller
                     'job_title.in' => 'Please select a valid job title.',
                     'job_title_other.required_if' => 'Please enter your custom job title.',
                     'company_name.required' => 'Company Name is required.',
+                    'industry.required' => 'Industry is required.',
+                    'industry.in' => 'Please select a valid industry.',
+                    'industry_other.required_if' => 'Please enter your custom industry.',
                     'password.required' => 'Password is required.',
                     'password.min' => 'Password must be at least 8 characters.',
                     'password.confirmed' => 'Password confirmation does not match.',
@@ -131,6 +137,9 @@ class AuthController extends Controller
 
                 // Handle 'Other' selection for job_title
                 $validated['job_title_other'] = $validated['job_title'] === 'Other' ? $validated['job_title_other'] : null;
+                
+                // Handle 'Other' selection for industry
+                $validated['industry_other'] = $validated['industry'] === 'Other' ? $validated['industry_other'] : null;
 
                 $user = \App\Models\User::create([
                     'first_name' => $firstName,
@@ -141,6 +150,8 @@ class AuthController extends Controller
                     'job_title' => $validated['job_title'],
                     'job_title_other' => $validated['job_title_other'],
                     'company_name' => $validated['company_name'],
+                    'industry' => $validated['industry'],
+                    'industry_other' => $validated['industry_other'],
                     'role' => 'recruiter',
                     'email_verified_at' => now(),
                 ]);
@@ -174,10 +185,17 @@ class AuthController extends Controller
             // Clear the role from session
             $request->session()->forget('register_role');
 
-            // Don't auto-login user after registration
-            // User needs to login manually after registration
+            // Auto-login user after registration
+            Auth::login($user);
 
-            // Redirect to login page with success message
+            // Redirect based on user role
+            if ($role === 'recruiter') {
+                return redirect()->route('recruiter.dashboard')
+                    ->with('status', 'Registration successful! Welcome to your dashboard.')
+                    ->with('toast_type', 'success');
+            }
+
+            // For employee registration, redirect to login page
             return redirect()->route('login')
                 ->with('status', 'Registration successful! Please login to continue.')
                 ->with('toast_type', 'success');
@@ -186,10 +204,49 @@ class AuthController extends Controller
             return redirect()->back()
                 ->withErrors($e->validator)
                 ->withInput();
-        } catch (\Exception $e) {
-            // Handle any other errors
+        } catch (\Illuminate\Database\QueryException $e) {
+            // Handle database errors
+            $errorMessage = $e->getMessage();
+            Log::error('Registration database error: ' . $errorMessage, [
+                'email' => $request->email,
+                'role' => $role,
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            // Check for specific database errors
+            $userMessage = 'Registration failed due to a database error. ';
+            if (str_contains($errorMessage, "Unknown column 'industry'")) {
+                $userMessage .= 'Please run database migration: php artisan migrate';
+            } elseif (str_contains($errorMessage, "Data too long for column 'industry'")) {
+                $userMessage .= 'Industry value is too long. Please select a valid industry.';
+            } elseif (str_contains($errorMessage, "Unknown column")) {
+                $userMessage .= 'Database schema is missing required columns. Please run: php artisan migrate';
+            } else {
+                $userMessage .= 'Please check all fields and try again. If the problem persists, please contact support.';
+            }
+            
             return redirect()->back()
-                ->with('status', 'Registration failed. Please try again later.')
+                ->with('status', $userMessage)
+                ->with('toast_type', 'error')
+                ->withInput();
+        } catch (\Exception $e) {
+            // Handle any other errors with detailed logging
+            Log::error('Registration error: ' . $e->getMessage(), [
+                'email' => $request->email ?? 'unknown',
+                'role' => $role,
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            // Show user-friendly error message
+            $errorMessage = 'Registration failed. ';
+            if (str_contains($e->getMessage(), 'SQLSTATE')) {
+                $errorMessage .= 'There was a problem saving your data. Please check all fields and try again.';
+            } else {
+                $errorMessage .= 'Please check your input and try again. If the problem persists, please contact support.';
+            }
+            
+            return redirect()->back()
+                ->with('status', $errorMessage)
                 ->with('toast_type', 'error')
                 ->withInput();
         }

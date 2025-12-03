@@ -126,7 +126,7 @@
                             
                             $jobs[] = [
                                 'id' => $listing->id,
-                                'logo' => $listing->company_logo ?? '/assets/hero-sec.png',
+                                'logo' => $listing->company_logo ? route('company.logo', $listing->company_logo) : '/assets/hero-sec.png',
                                 'title' => $listing->title,
                                 'company' => $listing->company,
                                 'verified' => $listing->verified ?? false,

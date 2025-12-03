@@ -90,10 +90,11 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             @if($listing->company_logo)
-                                                <img src="{{ $listing->company_logo }}" 
+                                                <img src="{{ route('company.logo', $listing->company_logo) }}" 
                                                      alt="{{ $listing->company }}" 
                                                      class="rounded me-2" 
-                                                     style="width: 40px; height: 40px; object-fit: cover;">
+                                                     style="width: 40px; height: 40px; object-fit: cover;"
+                                                     onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling.style.display='flex';">
                                             @else
                                                 <div class="avatar-xs me-2">
                                                     <span class="avatar-title bg-primary rounded-circle font-size-12">
@@ -120,14 +121,38 @@
                                                 'closed' => 'danger'
                                             ];
                                         @endphp
-                                        <span class="badge bg-{{ $statusColors[$listing->status] ?? 'secondary' }}">
-                                            {{ ucfirst($listing->status) }}
-                                        </span>
-                                        @if($listing->verified)
-                                            <span class="badge bg-info ms-1" data-bs-toggle="tooltip" title="Verified">
-                                                <i class="ri-checkbox-circle-line"></i>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <span class="badge bg-{{ $statusColors[$listing->status] ?? 'secondary' }}">
+                                                {{ ucfirst($listing->status) }}
                                             </span>
-                                        @endif
+                                            @if($listing->verified)
+                                                <span class="badge bg-info" data-bs-toggle="tooltip" title="Verified">
+                                                    <i class="ri-checkbox-circle-line"></i>
+                                                </span>
+                                            @endif
+                                            @if(!isset($showTrashed) || !$showTrashed)
+                                                <div class="dropdown">
+                                                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                        <i class="ri-arrow-up-down-line"></i>
+                                                    </button>
+                                                    <ul class="dropdown-menu">
+                                                        @foreach(['draft', 'active', 'inactive', 'closed'] as $statusOption)
+                                                            @if($statusOption !== $listing->status)
+                                                                <li>
+                                                                    <form action="{{ route('admin.job-listings.update-status', $listing->id) }}" method="POST" class="d-inline">
+                                                                        @csrf
+                                                                        <input type="hidden" name="status" value="{{ $statusOption }}">
+                                                                        <button type="submit" class="dropdown-item" onclick="return confirm('Are you sure you want to change status to {{ ucfirst($statusOption) }}?')">
+                                                                            Change to {{ ucfirst($statusOption) }}
+                                                                        </button>
+                                                                    </form>
+                                                                </li>
+                                                            @endif
+                                                        @endforeach
+                                                    </ul>
+                                                </div>
+                                            @endif
+                                        </div>
                                     </td>
                                     <td>
                                         @if(isset($showTrashed) && $showTrashed)

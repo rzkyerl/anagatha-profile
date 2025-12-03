@@ -80,10 +80,19 @@ class LoginController extends Controller
      */
     public function logout(Request $request)
     {
+        // Get user role before logout
+        $userRole = Auth::user()->role ?? null;
+        
         Auth::logout();
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();
+
+        // Redirect based on user role
+        if ($userRole === 'recruiter') {
+            return redirect()->route('landing')
+                ->with('success', 'You have been logged out successfully.');
+        }
 
         return redirect()->route('admin.login')
             ->with('success', 'You have been logged out successfully.');

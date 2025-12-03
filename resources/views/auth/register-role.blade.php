@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.auth')
 
 @section('title', 'Choose Role - Anagata Executive')
 @section('body_class', 'page register-page register-role-page')
@@ -64,32 +64,48 @@
 
 @push('scripts')
 <script nonce="{{ $cspNonce ?? '' }}">
-    document.addEventListener('DOMContentLoaded', function() {
-        const roleCards = document.querySelectorAll('.role-card-option');
-        const selectedRoleInput = document.getElementById('selected_role');
-        const continueBtn = document.getElementById('continue-btn');
+    (function() {
+        'use strict';
+        
+        function initRoleSelection() {
+            const roleCards = document.querySelectorAll('.role-card-option');
+            const selectedRoleInput = document.getElementById('selected_role');
+            const continueBtn = document.getElementById('continue-btn');
 
-        // Handle card clicks
-        roleCards.forEach(function(card) {
-            card.addEventListener('click', function() {
-                const role = this.getAttribute('data-role');
-                
-                // Remove active class from all cards
-                roleCards.forEach(function(c) {
-                    c.classList.remove('active');
+            if (!roleCards.length || !selectedRoleInput || !continueBtn) {
+                return;
+            }
+
+            // Handle card clicks
+            roleCards.forEach(function(card) {
+                card.addEventListener('click', function() {
+                    const role = this.getAttribute('data-role');
+                    
+                    // Remove active class from all cards
+                    roleCards.forEach(function(c) {
+                        c.classList.remove('active');
+                    });
+
+                    // Add active class to selected card
+                    this.classList.add('active');
+
+                    // Set the selected role
+                    selectedRoleInput.value = role;
+
+                    // Enable continue button
+                    continueBtn.disabled = false;
                 });
-
-                // Add active class to selected card
-                this.classList.add('active');
-
-                // Set the selected role
-                selectedRoleInput.value = role;
-
-                // Enable continue button
-                continueBtn.disabled = false;
             });
-        });
-    });
+        }
+        
+        // Initialize when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initRoleSelection);
+        } else {
+            // DOM is already ready
+            initRoleSelection();
+        }
+    })();
 </script>
 @endpush
 @endsection

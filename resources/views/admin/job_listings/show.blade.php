@@ -51,10 +51,11 @@
                         <!-- Company Logo / Avatar -->
                         <div class="col-md-3 text-center mb-4 mb-md-0">
                             @if($jobListing->company_logo)
-                                <img src="{{ $jobListing->company_logo }} ?? {{ asset('assets/images/megamenu.png') }}" 
+                                <img src="{{ route('company.logo', $jobListing->company_logo) }}" 
                                      alt="{{ $jobListing->company }}" 
                                      class="rounded mb-3" 
-                                     style="width: 120px; height: 120px; object-fit: cover;">
+                                     style="width: 120px; height: 120px; object-fit: cover;"
+                                     onerror="this.onerror=null; this.src='{{ asset('assets/images/megamenu.png') }}';">
                             @else
                                 <div class="avatar-xl mx-auto mb-3">
                                     <span class="avatar-title bg-primary rounded-circle font-size-24">

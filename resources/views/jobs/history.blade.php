@@ -12,6 +12,33 @@
             <p class="history-subtitle">Track your job applications</p>
         </div>
 
+        {{-- Success Message Alert --}}
+        @if(session('application_success'))
+        <div class="history-alert history-alert--success" id="historySuccessAlert">
+            <div class="history-alert__icon">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <div class="history-alert__content">
+                <h3 class="history-alert__title">Application Submitted Successfully!</h3>
+                <p class="history-alert__message">{{ session('status', 'Your job application has been submitted successfully!') }}</p>
+            </div>
+            <button type="button" class="history-alert__close" aria-label="Close alert" onclick="document.getElementById('historySuccessAlert').style.display='none'">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        @endif
+
+        @if(session('status') && !session('application_success'))
+        <div class="history-alert history-alert--info">
+            <div class="history-alert__icon">
+                <i class="fa-solid fa-info-circle"></i>
+            </div>
+            <div class="history-alert__content">
+                <p class="history-alert__message">{{ session('status') }}</p>
+            </div>
+        </div>
+        @endif
+
         <div class="history-content">
             {{-- My Applications Section --}}
             <div class="history-section">
@@ -174,6 +201,19 @@
                         </p>
                     </div>
                 </div>
+
+                {{-- Recruiter Notes Section --}}
+                <div class="application-detail__section" id="modal-notes-section" style="display: none;">
+                    <h4 class="application-detail__section-title">
+                        <i class="fa-solid fa-comment-dots"></i>
+                        Notes dari Recruiter
+                    </h4>
+                    <div class="application-detail__notes-info">
+                        <div class="p-3 bg-light rounded" id="modal-notes-content">
+                            <!-- Notes will be populated here -->
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="application-detail-modal__footer">
@@ -229,6 +269,20 @@
             document.getElementById('modal-location').textContent = data.location;
             document.getElementById('modal-status-message').textContent = data.statusMessage;
             document.getElementById('modal-view-job-link').href = data.jobLink;
+
+            // Update notes section
+            const notesSection = document.getElementById('modal-notes-section');
+            const notesContent = document.getElementById('modal-notes-content');
+            if (data.notes && data.notes.trim() !== '') {
+                if (notesSection) notesSection.style.display = 'block';
+                if (notesContent) {
+                    // Convert line breaks to <br> tags
+                    notesContent.innerHTML = data.notes.replace(/\n/g, '<br>');
+                }
+            } else {
+                if (notesSection) notesSection.style.display = 'none';
+                if (notesContent) notesContent.innerHTML = '';
+            }
 
             // Update company logo
             const logoImg = document.getElementById('modal-company-logo');

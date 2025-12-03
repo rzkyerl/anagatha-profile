@@ -21,6 +21,32 @@ Route::get('/health', function () {
     return response()->json(['status' => 'ok', 'timestamp' => now()], 200);
 });
 
+// Optimized CSS serving with cache headers for auth pages
+// This route should be placed before other routes to ensure it's matched first
+Route::get('/styles/{type}/{file}', function ($type, $file) {
+    // Only handle CSS files
+    if (!str_ends_with($file, '.css')) {
+        abort(404);
+    }
+    
+    $filePath = public_path("styles/{$type}/{$file}");
+    if (file_exists($filePath) && is_file($filePath)) {
+        $response = response()->file($filePath);
+        
+        // Set proper content type
+        $response->header('Content-Type', 'text/css; charset=utf-8');
+        
+        // Set aggressive cache headers for CSS (1 year with revalidation)
+        $response->header('Cache-Control', 'public, max-age=31536000, must-revalidate');
+        $response->header('Expires', gmdate('D, d M Y H:i:s', time() + 31536000) . ' GMT');
+        $response->header('ETag', md5_file($filePath));
+        $response->header('Vary', 'Accept-Encoding');
+        
+        return $response;
+    }
+    abort(404);
+})->where(['type' => '[a-z]+', 'file' => '[a-zA-Z0-9._-]+\.css'])->name('styles.asset');
+
 // Ensure dashboard assets are accessible (fallback for static files)
 // This helps ensure CSS and JS files from dashboard directory can be served
 Route::get('/dashboard/{path}', function ($path) {
@@ -134,6 +160,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role.recruiter.admi
     Route::get('/job-listings/trashed/list', [JobListingController::class, 'trashed'])->name('job-listings.trashed');
     Route::post('/job-listings/{id}/restore', [JobListingController::class, 'restore'])->name('job-listings.restore');
     Route::delete('/job-listings/{id}/force-delete', [JobListingController::class, 'forceDelete'])->name('job-listings.force-delete');
+    Route::post('/job-listings/{id}/update-status', [JobListingController::class, 'updateStatus'])->name('job-listings.update-status');
     Route::resource('job-listings', JobListingController::class);
     
     // Job Apply Resource Routes - Admin can see all, recruiter sees only their own (handled in controller)
@@ -195,6 +222,7 @@ Route::prefix('recruiter')->name('recruiter.')->middleware(['auth', 'role.recrui
     Route::get('/job-listings/trashed/list', [JobListingController::class, 'trashed'])->name('job-listings.trashed');
     Route::post('/job-listings/{id}/restore', [JobListingController::class, 'restore'])->name('job-listings.restore');
     Route::delete('/job-listings/{id}/force-delete', [JobListingController::class, 'forceDelete'])->name('job-listings.force-delete');
+    Route::post('/job-listings/{id}/update-status', [JobListingController::class, 'updateStatus'])->name('job-listings.update-status');
     Route::resource('job-listings', JobListingController::class);
 
     // Job Applications (only for this recruiter in controller)

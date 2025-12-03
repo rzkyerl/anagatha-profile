@@ -29,6 +29,8 @@ class User extends Authenticatable
         'company_name',
         'job_title',
         'job_title_other',
+        'industry',
+        'industry_other',
         'avatar',
         'github',
         'linkedin',

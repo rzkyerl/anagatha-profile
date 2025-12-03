@@ -26,17 +26,17 @@ return [
     ],
 
     'about' => [
-        'title' => 'Excellence in Talent Acquisition',
-        'description' => 'We deliver comprehensive recruitment solutions with a data-driven and technology enabled approach to ensure your organization\'s success. We are committed to finding the perfect fit for both our clients and candidates. By combining deep industry expertise, a personalized recruitment approach, and an extensive professional network, we identify and attract top talent with precision and care. Our process focuses not only on skills and experience, but also on cultural alignment and long-term potential, ensuring that every placement supports sustainable growth. Through this approach, we help companies build stronger teams while guiding candidates toward meaningful career opportunities.',
+        'title' => 'We are your trusted partner in finding the best talent in a smarter way.',
+        'description' => 'We don\'t just look for people who meet the criteria on paper. We focus on helping your company find individuals who truly fit your work culture, have the potential to grow, and are ready to make a real contribution. Backed by data analysis and the latest technology, as well as our extensive industry experience, we are ready to build the solid team you envision. At the same time, we also help talents find the most meaningful career paths for them. Find and be found more accurately!',
     ],
 
     'vision_mission' => [
-        'title' => 'Our Vision & Mission',
-        'subtitle' => 'Guiding principles that shape our commitment to excellence in talent acquisition',
-        'vision_title' => 'Our Vision',
-        'vision_body' => 'To become the most trusted and strategic talent partner in the industry, recognized for our ability to deliver exceptional talent solutions that drive organizational growth and success across diverse sectors.',
-        'mission_title' => 'Our Mission',
-        'mission_body' => 'To bridge the gap between exceptional talent and remarkable opportunities by leveraging cutting-edge technology, data-driven insights, and human expertise. We are committed to building lasting partnerships, delivering unparalleled value to our clients, and empowering candidates to achieve their career aspirations through meaningful placements that foster professional growth and organizational excellence.',
+        'title' => 'Vision & Mission',
+        'subtitle' => 'These are the values that drive our every step:',
+        'vision_title' => 'Vision: To be your partner in success',
+        'vision_body' => 'To be the leading and most strategic recruitment partner trusted by various industry sectors. We want to be known for our ability to provide talent solutions that not only fill positions, but truly support and accelerate your business growth.',
+        'mission_title' => 'Mission:',
+        'mission_body' => 'Connecting talent with golden opportunities - Connecting exceptional talent with the best career opportunities using advanced technology and data-driven insights. Committed to building long-term partnerships with clients, delivering the best value and services that make the recruitment process feel easy and effective. Supporting every candidate to find a win-win solution—the best for the company and the best for their career development.',
     ],
 
     'services' => [

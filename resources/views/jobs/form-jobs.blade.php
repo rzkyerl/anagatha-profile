@@ -553,11 +553,13 @@
             </p>
             <div class="job-application-success-modal__actions">
                 <a href="{{ route('history') }}" class="job-application-success-modal__btn job-application-success-modal__btn--primary">
+                    <i class="fa-solid fa-history"></i>
                     View History
                 </a>
-                <a href="{{ route('jobs') }}" class="job-application-success-modal__btn job-application-success-modal__btn--secondary">
+                <button type="button" class="job-application-success-modal__btn job-application-success-modal__btn--secondary" data-success-modal-close>
+                    <i class="fa-solid fa-xmark"></i>
                     Close
-                </a>
+                </button>
             </div>
         </div>
     </div>
@@ -566,6 +568,19 @@
 @push('scripts')
 <script nonce="{{ $cspNonce ?? '' }}">
     document.addEventListener('DOMContentLoaded', function() {
+        // Check if application was successful (from session or URL parameter) - check early
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlSuccess = urlParams.get('success') === '1';
+        const sessionSuccess = @json(session('application_success', false) || session('show_success_modal', false));
+        const applicationSuccess = sessionSuccess || urlSuccess;
+        
+        console.log('Application success check:', {
+            urlSuccess: urlSuccess,
+            sessionSuccess: sessionSuccess,
+            applicationSuccess: applicationSuccess,
+            urlParams: window.location.search
+        });
+        
         // Check if user has already applied
         const hasApplied = @json(isset($hasApplied) && $hasApplied);
         
@@ -753,8 +768,12 @@
         }
         
         fileInputs.forEach(input => {
-            const preview = input.nextElementSibling.querySelector('.file-upload-preview');
-            const label = input.nextElementSibling;
+            // Get the wrapper and related elements
+            const wrapper = input.closest('.file-upload-wrapper');
+            const preview = wrapper ? wrapper.querySelector('.file-upload-preview') : null;
+            const label = wrapper ? wrapper.querySelector('.file-upload-label') : null;
+            
+            if (!wrapper || !preview || !label) return;
             
             input.addEventListener('change', function(e) {
                 const file = e.target.files[0];
@@ -765,9 +784,33 @@
                     const fileIcon = getFileIcon(fileType);
                     const fileTypeLabel = getFileTypeLabel(fileType, fileName);
                     
+                    // Update label to show file is uploaded
+                    label.classList.add('has-file');
+                    
+                    // Update icon to show success
+                    const uploadIcon = label.querySelector('.file-upload-icon');
+                    if (uploadIcon) {
+                        uploadIcon.className = 'fa-solid fa-circle-check file-upload-icon';
+                    }
+                    
+                    // Update label text to show success
+                    const uploadText = label.querySelector('.file-upload-text');
+                    if (uploadText) {
+                        uploadText.innerHTML = `File uploaded successfully!`;
+                    }
+                    
+                    // Update hint to show filename
+                    const uploadHint = label.querySelector('.file-upload-hint');
+                    if (uploadHint) {
+                        uploadHint.innerHTML = `${fileName} (${fileSize} MB)`;
+                        uploadHint.style.color = '#10b981';
+                        uploadHint.style.fontWeight = '600';
+                    }
+                    
                     // Clear previous preview
                     preview.innerHTML = '';
                     
+                    // Show preview with file details
                     preview.innerHTML = `
                         <div class="file-preview-item">
                             <div class="file-preview-icon">
@@ -789,16 +832,66 @@
                     
                     // Remove file functionality
                     const removeBtn = preview.querySelector('.file-preview-remove');
-                    removeBtn.addEventListener('click', function() {
-                        input.value = '';
-                        preview.innerHTML = '';
-                        label.classList.remove('has-file');
-                    });
-                    
-                    label.classList.add('has-file');
+                    if (removeBtn) {
+                        removeBtn.addEventListener('click', function() {
+                            input.value = '';
+                            preview.innerHTML = '';
+                            label.classList.remove('has-file');
+                            
+                            // Reset icon
+                            const uploadIcon = label.querySelector('.file-upload-icon');
+                            if (uploadIcon) {
+                                uploadIcon.className = 'fa-solid fa-cloud-arrow-up file-upload-icon';
+                            }
+                            
+                            // Reset label text
+                            const uploadText = label.querySelector('.file-upload-text');
+                            if (uploadText) {
+                                uploadText.innerHTML = 'Choose file or drag it here';
+                            }
+                            
+                            // Reset hint
+                            const uploadHint = label.querySelector('.file-upload-hint');
+                            if (uploadHint) {
+                                const fieldId = input.id;
+                                if (fieldId === 'cv') {
+                                    uploadHint.innerHTML = 'PDF, DOC, DOCX (Max 5MB)';
+                                } else if (fieldId === 'portfolio_file') {
+                                    uploadHint.innerHTML = 'PDF, ZIP, RAR (Max 10MB)';
+                                }
+                                uploadHint.style.color = '';
+                                uploadHint.style.fontWeight = '';
+                            }
+                        });
+                    }
                 } else {
                     preview.innerHTML = '';
                     label.classList.remove('has-file');
+                    
+                    // Reset icon
+                    const uploadIcon = label.querySelector('.file-upload-icon');
+                    if (uploadIcon) {
+                        uploadIcon.className = 'fa-solid fa-cloud-arrow-up file-upload-icon';
+                    }
+                    
+                    // Reset label text
+                    const uploadText = label.querySelector('.file-upload-text');
+                    if (uploadText) {
+                        uploadText.innerHTML = 'Choose file or drag it here';
+                    }
+                    
+                    // Reset hint
+                    const uploadHint = label.querySelector('.file-upload-hint');
+                    if (uploadHint) {
+                        const fieldId = input.id;
+                        if (fieldId === 'cv') {
+                            uploadHint.innerHTML = 'PDF, DOC, DOCX (Max 5MB)';
+                        } else if (fieldId === 'portfolio_file') {
+                            uploadHint.innerHTML = 'PDF, ZIP, RAR (Max 10MB)';
+                        }
+                        uploadHint.style.color = '';
+                        uploadHint.style.fontWeight = '';
+                    }
                 }
             });
 
@@ -1040,15 +1133,88 @@
         const successModal = document.getElementById('jobApplicationSuccessModal');
         const successModalBackdrop = document.querySelector('[data-success-modal-close]');
         
-        // Check if application was successful (from session) - for backend mode
-        @if(session('application_success'))
-            if (successModal) {
-                // Show modal after a short delay for better UX
-                setTimeout(function() {
-                    showSuccessModal();
-                }, 300);
+        // applicationSuccess is already defined above, just use it here
+        if (applicationSuccess) {
+            console.log('Application success detected - will show modal');
+            
+            // Re-enable submit button and reset form after successful submission
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Submit Application';
             }
-        @endif
+            
+            // Reset form fields
+            if (form) {
+                form.reset();
+                
+                // Reset file upload previews
+                const fileInputs = form.querySelectorAll('.file-upload-input');
+                fileInputs.forEach(input => {
+                    const wrapper = input.closest('.file-upload-wrapper');
+                    const preview = wrapper ? wrapper.querySelector('.file-upload-preview') : null;
+                    const label = wrapper ? wrapper.querySelector('.file-upload-label') : null;
+                    
+                    if (preview) preview.innerHTML = '';
+                    if (label) {
+                        label.classList.remove('has-file');
+                        const uploadIcon = label.querySelector('.file-upload-icon');
+                        if (uploadIcon) {
+                            uploadIcon.className = 'fa-solid fa-cloud-arrow-up file-upload-icon';
+                        }
+                        const uploadText = label.querySelector('.file-upload-text');
+                        if (uploadText) {
+                            uploadText.innerHTML = 'Choose file or drag it here';
+                        }
+                        const uploadHint = label.querySelector('.file-upload-hint');
+                        if (uploadHint) {
+                            const fieldId = input.id;
+                            if (fieldId === 'cv') {
+                                uploadHint.innerHTML = 'PDF, DOC, DOCX (Max 5MB)';
+                            } else if (fieldId === 'portfolio_file') {
+                                uploadHint.innerHTML = 'PDF, ZIP, RAR (Max 10MB)';
+                            }
+                            uploadHint.style.color = '';
+                            uploadHint.style.fontWeight = '';
+                        }
+                    }
+                });
+                
+                // Clear validation classes
+                const invalidFields = form.querySelectorAll('.is-invalid');
+                invalidFields.forEach(field => {
+                    field.classList.remove('is-invalid');
+                });
+            }
+            
+            // Show modal after page fully loads
+            if (successModal) {
+                console.log('Success modal element found, will show modal');
+                
+                // Remove success parameter from URL to prevent showing again on refresh
+                if (urlSuccess && window.history && window.history.replaceState) {
+                    const newUrl = window.location.pathname + (window.location.search.replace(/[?&]success=1/, '').replace(/^\?$/, '') || '');
+                    window.history.replaceState({}, '', newUrl);
+                }
+                
+                // Wait for page to fully load, then show modal
+                setTimeout(function() {
+                    console.log('Attempting to show success modal');
+                    if (successModal) {
+                        showSuccessModal();
+                        // Scroll to top to show modal
+                        setTimeout(() => {
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                        }, 100);
+                    } else {
+                        console.error('Success modal not found when trying to show');
+                    }
+                }, 1000);
+            } else {
+                console.error('Success modal element not found!');
+            }
+        } else {
+            console.log('Application success not detected');
+        }
         
         // Check if there are validation errors from backend
         @if($errors->any())

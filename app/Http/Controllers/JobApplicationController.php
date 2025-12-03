@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\JobApply;
+use App\Models\JobListing;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -83,20 +84,44 @@ class JobApplicationController extends Controller
             // but we overwrite them with file paths above, so no need to unset
 
             // Create job application
-            JobApply::create($data);
+            $jobApply = JobApply::create($data);
+
+            // Get job listing and recruiter information
+            $jobListing = JobListing::with('recruiter')->find($validated['job_listing_id']);
+            $recruiter = $jobListing ? $jobListing->recruiter : null;
 
             Log::info('Job application submitted successfully', [
                 'email' => $validated['email'],
                 'name' => $validated['full_name'],
                 'job_listing_id' => $validated['job_listing_id'],
+                'job_title' => $jobListing ? $jobListing->title : 'N/A',
+                'company' => $jobListing ? $jobListing->company : 'N/A',
+                'recruiter_id' => $recruiter ? $recruiter->id : null,
+                'recruiter_email' => $recruiter ? $recruiter->email : null,
             ]);
 
-            // Redirect back with success message and modal trigger
-            return redirect()
-                ->back()
+            // Notify recruiter about new application (log for now, can be extended with email/notification)
+            if ($recruiter) {
+                Log::info('New job application notification for recruiter', [
+                    'recruiter_id' => $recruiter->id,
+                    'recruiter_email' => $recruiter->email,
+                    'job_title' => $jobListing ? $jobListing->title : 'N/A',
+                    'applicant_name' => $validated['full_name'],
+                    'applicant_email' => $validated['email'],
+                    'application_id' => $jobApply->id,
+                ]);
+            }
+
+            // Redirect back to form page with success message to show modal
+            // Use specific route to ensure we return to the correct form page
+            // Add URL parameter as fallback for modal detection
+            $redirectUrl = route('job.apply', ['id' => $validated['job_listing_id']]) . '?success=1';
+            
+            return redirect($redirectUrl)
                 ->with('application_success', true)
-                ->with('status', 'Your job application has been submitted successfully!')
-                ->with('toast_type', 'success');
+                ->with('status', 'Your job application has been submitted successfully! It will appear in your history and the recruiter has been notified.')
+                ->with('toast_type', 'success')
+                ->with('show_success_modal', true);
         } catch (\Exception $e) {
             Log::error('Job application submission error', [
                 'error' => $e->getMessage(),

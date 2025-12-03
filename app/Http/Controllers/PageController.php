@@ -84,7 +84,7 @@ class PageController extends Controller
             
             $jobs[] = [
                 'id' => $listing->id,
-                'logo' => $listing->company_logo ?? '/assets/hero-sec.png',
+                'logo' => $listing->company_logo ? route('company.logo', $listing->company_logo) : '/assets/hero-sec.png',
                 'title' => $listing->title,
                 'company' => $listing->company,
                 'verified' => $listing->verified ?? false,
@@ -317,7 +317,7 @@ class PageController extends Controller
         // Prepare job data for view
         $job = [
             'id' => $jobListing->id,
-            'logo' => $jobListing->company_logo ?? '/assets/hero-sec.png',
+            'logo' => $jobListing->company_logo ? route('company.logo', $jobListing->company_logo) : '/assets/hero-sec.png',
             'title' => $jobListing->title,
             'company' => $jobListing->company,
             'verified' => $jobListing->verified ?? false,
@@ -499,7 +499,7 @@ class PageController extends Controller
             
             if ($apply->jobListing) {
                 if ($apply->jobListing->company_logo) {
-                    $companyLogo = $apply->jobListing->company_logo;
+                    $companyLogo = route('company.logo', $apply->jobListing->company_logo);
                 }
                 // Generate placeholder from company name
                 $companyName = $apply->jobListing->company;
@@ -559,6 +559,7 @@ class PageController extends Controller
                 'location' => $apply->jobListing ? $apply->jobListing->location : 'N/A',
                 'jobLink' => $jobLink,
                 'jobListingId' => $apply->jobListing ? $apply->jobListing->id : null,
+                'notes' => $apply->notes, // Recruiter notes
             ];
         }
         

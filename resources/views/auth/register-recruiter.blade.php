@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.auth')
 
 @section('title', 'Register as Recruiter - Anagata Executive')
 @section('body_class', 'page register-page register-recruiter-page')
@@ -55,6 +55,8 @@
                             {{ $errors->first('company_name') }}
                         @elseif ($errors->has('job_title') || $errors->has('job_title_other'))
                             {{ $errors->first('job_title') ?: $errors->first('job_title_other') }}
+                        @elseif ($errors->has('industry') || $errors->has('industry_other'))
+                            {{ $errors->first('industry') ?: $errors->first('industry_other') }}
                         @elseif ($errors->has('phone'))
                             {{ $errors->first('phone') }}
                         @else
@@ -214,6 +216,7 @@
                                 class="form-input @error('job_title_other') is-invalid @enderror" 
                                 placeholder="Enter custom job title"
                                 value="{{ old('job_title_other') }}"
+                                {{ old('job_title') == 'Other' ? 'required' : '' }}
                             />
                         </div>
                         @error('job_title_other')
@@ -236,6 +239,51 @@
                             />
                         </div>
                         @error('company_name')
+                            <span class="form-error">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    {{-- Industry Field --}}
+                    <div class="form-group">
+                        <div class="form-input-wrapper">
+                            <i class="form-input-icon fa-solid fa-industry"></i>
+                            <select 
+                                id="industry" 
+                                name="industry" 
+                                class="form-input @error('industry') is-invalid @enderror" 
+                                required
+                            >
+                                <option value="">Select Industry</option>
+                                @php
+                                    $industries = ['Technology', 'Healthcare', 'Finance', 'Education', 'Manufacturing', 'Retail', 'Real Estate', 'Hospitality', 'Transportation & Logistics', 'Energy', 'Telecommunications', 'Media & Entertainment', 'Consulting', 'Legal', 'Construction', 'Agriculture', 'Food & Beverage', 'Automotive', 'Aerospace', 'Pharmaceuticals', 'Other'];
+                                @endphp
+                                @foreach($industries as $industry)
+                                    <option value="{{ $industry }}" {{ old('industry') == $industry ? 'selected' : '' }}>
+                                        {{ $industry }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        @error('industry')
+                            <span class="form-error">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    {{-- Other Industry Field (shown when "Other" is selected) --}}
+                    <div class="form-group industry-other-group" id="industry_other_container" style="display: {{ old('industry') == 'Other' ? 'block' : 'none' }};">
+                        <div class="form-input-wrapper">
+                            <i class="form-input-icon fa-solid fa-industry"></i>
+                            <input 
+                                type="text" 
+                                id="industry_other" 
+                                name="industry_other" 
+                                class="form-input @error('industry_other') is-invalid @enderror" 
+                                placeholder="Enter custom industry"
+                                value="{{ old('industry_other') }}"
+                                {{ old('industry') == 'Other' ? 'required' : '' }}
+                            />
+                        </div>
+                        @error('industry_other')
                             <span class="form-error">{{ $message }}</span>
                         @enderror
                     </div>
@@ -397,50 +445,86 @@
         }
     });
 
-    // Job Title "Other" field toggle with smooth animation
+    // Job Title "Other" field toggle
     document.addEventListener('DOMContentLoaded', function() {
         const jobTitleSelect = document.getElementById('job_title');
         const jobTitleOtherContainer = document.getElementById('job_title_other_container');
         const jobTitleOtherInput = document.getElementById('job_title_other');
 
+        if (!jobTitleSelect || !jobTitleOtherContainer) return;
+
         function toggleJobTitleOther() {
-            if (!jobTitleOtherContainer) return;
-            
             if (jobTitleSelect.value === 'Other') {
-                // Show with smooth animation
+                // Show field immediately - remove all hiding styles
                 jobTitleOtherContainer.style.display = 'block';
-                jobTitleOtherContainer.style.opacity = '0';
-                jobTitleOtherContainer.style.maxHeight = '0';
-                jobTitleOtherContainer.style.overflow = 'hidden';
-                jobTitleOtherInput.setAttribute('required', 'required');
-                
-                // Trigger reflow for animation
-                void jobTitleOtherContainer.offsetHeight;
-                
-                // Animate in
-                requestAnimationFrame(function() {
-                    jobTitleOtherContainer.style.transition = 'opacity 0.3s ease, max-height 0.3s ease, margin 0.3s ease';
-                    jobTitleOtherContainer.style.opacity = '1';
-                    jobTitleOtherContainer.style.maxHeight = '200px';
-                });
+                jobTitleOtherContainer.style.visibility = 'visible';
+                jobTitleOtherContainer.style.opacity = '1';
+                jobTitleOtherContainer.style.height = 'auto';
+                jobTitleOtherContainer.style.maxHeight = 'none';
+                jobTitleOtherContainer.style.overflow = 'visible';
+                if (jobTitleOtherInput) {
+                    jobTitleOtherInput.setAttribute('required', 'required');
+                    // Small delay before focus to ensure field is visible
+                    setTimeout(function() {
+                        jobTitleOtherInput.focus();
+                    }, 100);
+                }
             } else {
-                // Hide with smooth animation
-                jobTitleOtherContainer.style.transition = 'opacity 0.3s ease, max-height 0.3s ease, margin 0.3s ease';
-                jobTitleOtherContainer.style.opacity = '0';
-                jobTitleOtherContainer.style.maxHeight = '0';
-                
-                setTimeout(function() {
-                    jobTitleOtherContainer.style.display = 'none';
+                // Hide field
+                jobTitleOtherContainer.style.display = 'none';
+                if (jobTitleOtherInput) {
                     jobTitleOtherInput.removeAttribute('required');
                     jobTitleOtherInput.value = ''; // Clear value when hidden
-                }, 300);
+                }
             }
         }
 
-        if (jobTitleSelect) {
-            jobTitleSelect.addEventListener('change', toggleJobTitleOther);
-            toggleJobTitleOther(); // Initial call to set state based on current value
+        // Add event listener for change
+        jobTitleSelect.addEventListener('change', toggleJobTitleOther);
+        
+        // Initial call to set state based on current value (for page reload/back navigation)
+        toggleJobTitleOther();
+    });
+
+    // Industry "Other" field toggle
+    document.addEventListener('DOMContentLoaded', function() {
+        const industrySelect = document.getElementById('industry');
+        const industryOtherContainer = document.getElementById('industry_other_container');
+        const industryOtherInput = document.getElementById('industry_other');
+
+        if (!industrySelect || !industryOtherContainer) return;
+
+        function toggleIndustryOther() {
+            if (industrySelect.value === 'Other') {
+                // Show field immediately - remove all hiding styles
+                industryOtherContainer.style.display = 'block';
+                industryOtherContainer.style.visibility = 'visible';
+                industryOtherContainer.style.opacity = '1';
+                industryOtherContainer.style.height = 'auto';
+                industryOtherContainer.style.maxHeight = 'none';
+                industryOtherContainer.style.overflow = 'visible';
+                if (industryOtherInput) {
+                    industryOtherInput.setAttribute('required', 'required');
+                    // Small delay before focus to ensure field is visible
+                    setTimeout(function() {
+                        industryOtherInput.focus();
+                    }, 100);
+                }
+            } else {
+                // Hide field
+                industryOtherContainer.style.display = 'none';
+                if (industryOtherInput) {
+                    industryOtherInput.removeAttribute('required');
+                    industryOtherInput.value = ''; // Clear value when hidden
+                }
+            }
         }
+
+        // Add event listener for change
+        industrySelect.addEventListener('change', toggleIndustryOther);
+        
+        // Initial call to set state based on current value (for page reload/back navigation)
+        toggleIndustryOther();
     });
 
     // Password toggle functionality with auto-hide

@@ -340,21 +340,27 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label for="recruiter_id" class="form-label">Recruiter <span class="text-danger">*</span></label>
-                                    <select class="form-select @error('recruiter_id') is-invalid @enderror" 
-                                            id="recruiter_id" 
-                                            name="recruiter_id" 
-                                            required>
-                                        <option value="">Select recruiter</option>
-                                        @foreach($recruiters ?? [] as $recruiter)
-                                            <option value="{{ $recruiter->id }}" {{ old('recruiter_id') == $recruiter->id ? 'selected' : '' }}>
-                                                {{ $recruiter->first_name }} {{ $recruiter->last_name }} ({{ $recruiter->email }})
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    @error('recruiter_id')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
+                                    @if(auth()->user()->role === 'recruiter')
+                                        <input type="hidden" name="recruiter_id" value="{{ auth()->user()->id }}">
+                                        <label class="form-label">Recruiter</label>
+                                        <input type="text" class="form-control" value="{{ auth()->user()->first_name }} {{ auth()->user()->last_name }} ({{ auth()->user()->email }})" disabled>
+                                    @else
+                                        <label for="recruiter_id" class="form-label">Recruiter <span class="text-danger">*</span></label>
+                                        <select class="form-select @error('recruiter_id') is-invalid @enderror" 
+                                                id="recruiter_id" 
+                                                name="recruiter_id" 
+                                                required>
+                                            <option value="">Select recruiter</option>
+                                            @foreach($recruiters ?? [] as $recruiter)
+                                                <option value="{{ $recruiter->id }}" {{ old('recruiter_id') == $recruiter->id ? 'selected' : '' }}>
+                                                    {{ $recruiter->first_name }} {{ $recruiter->last_name }} ({{ $recruiter->email }})
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        @error('recruiter_id')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    @endif
                                 </div>
                             </div>
 
@@ -366,14 +372,20 @@
                                             name="status" 
                                             required>
                                         <option value="">Select status</option>
-                                        <option value="draft" {{ old('status', 'draft') == 'draft' ? 'selected' : '' }}>Draft</option>
-                                        <option value="active" {{ old('status') == 'active' ? 'selected' : '' }}>Active</option>
+                                        @php
+                                            $defaultStatus = auth()->user()->role === 'recruiter' ? 'active' : 'draft';
+                                        @endphp
+                                        <option value="draft" {{ old('status', $defaultStatus) == 'draft' ? 'selected' : '' }}>Draft</option>
+                                        <option value="active" {{ old('status', $defaultStatus) == 'active' ? 'selected' : '' }}>Active</option>
                                         <option value="inactive" {{ old('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
                                         <option value="closed" {{ old('status') == 'closed' ? 'selected' : '' }}>Closed</option>
                                     </select>
                                     @error('status')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
+                                    <div class="form-text">
+                                        <strong>Note:</strong> Only job listings with status "Active" will be visible to employees on the job listing page.
+                                    </div>
                                 </div>
                             </div>
                         </div>
