@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use GuzzleHttp\Exception\ClientException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use Laravel\Socialite\Two\InvalidStateException;
 use Laravel\Socialite\Facades\Socialite;
 
 class GoogleAuthController extends Controller
@@ -15,7 +17,35 @@ class GoogleAuthController extends Controller
      */
     public function redirect()
     {
-        return Socialite::driver('google')->redirect();
+        // Validate OAuth configuration before redirecting
+        $clientId = config('services.google.client_id');
+        $clientSecret = config('services.google.client_secret');
+        $redirectUri = config('services.google.redirect');
+
+        if (empty($clientId) || empty($clientSecret) || empty($redirectUri)) {
+            \Log::error('Google OAuth configuration missing', [
+                'has_client_id' => !empty($clientId),
+                'has_client_secret' => !empty($clientSecret),
+                'has_redirect_uri' => !empty($redirectUri),
+            ]);
+
+            return redirect()->route('login')
+                ->with('status', 'Google authentication is not properly configured. Please contact the administrator.')
+                ->with('toast_type', 'error');
+        }
+
+        try {
+            return Socialite::driver('google')->redirect();
+        } catch (\Exception $e) {
+            \Log::error('Google OAuth redirect error: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString(),
+                'client_id' => substr($clientId, 0, 20) . '...',
+            ]);
+
+            return redirect()->route('login')
+                ->with('status', 'Failed to initiate Google authentication. Please try again later.')
+                ->with('toast_type', 'error');
+        }
     }
 
     /**
@@ -89,9 +119,35 @@ class GoogleAuthController extends Controller
                 ->with('status', 'Welcome back, ' . ($user->first_name ?? '') . ($user->last_name ?? '' ? ' ' . $user->last_name : '') . '!')
                 ->with('toast_type', 'success');
 
+        } catch (InvalidStateException $e) {
+            \Log::warning('Google OAuth InvalidStateException: ' . $e->getMessage());
+            return redirect()->route('login')
+                ->with('status', 'Authentication session expired. Please try again.')
+                ->with('toast_type', 'error');
+        } catch (ClientException $e) {
+            $statusCode = $e->getResponse() ? $e->getResponse()->getStatusCode() : null;
+            $responseBody = $e->getResponse() ? $e->getResponse()->getBody()->getContents() : null;
+            
+            \Log::error('Google OAuth HTTP Error', [
+                'status_code' => $statusCode,
+                'response' => $responseBody,
+                'message' => $e->getMessage(),
+            ]);
+
+            // Check for specific OAuth errors
+            if ($statusCode === 401 || $statusCode === 400) {
+                $errorMessage = 'Google OAuth configuration error. Please verify that the Client ID and Redirect URI are correctly configured in Google Cloud Console.';
+            } else {
+                $errorMessage = 'Failed to authenticate with Google. Please try again.';
+            }
+
+            return redirect()->route('login')
+                ->with('status', $errorMessage)
+                ->with('toast_type', 'error');
         } catch (\Exception $e) {
             \Log::error('Google OAuth Error: ' . $e->getMessage(), [
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
+                'class' => get_class($e),
             ]);
 
             return redirect()->route('login')
