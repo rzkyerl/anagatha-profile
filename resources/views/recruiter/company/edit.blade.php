@@ -142,7 +142,7 @@
                         @enderror
 
                         {{-- Other Job Title Field (shown when "Other" is selected) --}}
-                        <div class="mt-3 job-title-other-group" id="job_title_other_container" style="display: {{ (old('job_title', $user->job_title) == 'Other') ? 'block' : 'none' }};">
+                        <div class="mt-3 job-title-other-group {{ (old('job_title', $user->job_title) == 'Other') ? 'd-block' : 'd-none' }}" id="job_title_other_container" style="{{ (old('job_title', $user->job_title) == 'Other') ? 'display: block !important;' : 'display: none !important;' }}">
                             <label for="job_title_other" class="form-label fw-semibold mb-2">
                                 <i class="ri-briefcase-line me-1"></i> Custom Job Title <span class="text-danger">*</span>
                             </label>
@@ -182,7 +182,7 @@
                         @enderror
 
                         {{-- Other Industry Field (shown when "Other" is selected) --}}
-                        <div class="mt-3 industry-other-group" id="industry_other_container" style="display: {{ (old('industry', $user->industry) == 'Other') ? 'block' : 'none' }};">
+                        <div class="mt-3 industry-other-group {{ (old('industry', $user->industry) == 'Other') ? 'd-block' : 'd-none' }}" id="industry_other_container" style="{{ (old('industry', $user->industry) == 'Other') ? 'display: block !important;' : 'display: none !important;' }}">
                             <label for="industry_other" class="form-label fw-semibold mb-2">
                                 <i class="ri-building-line me-1"></i> Custom Industry <span class="text-danger">*</span>
                             </label>
@@ -231,7 +231,7 @@
     </div>
 
     @push('scripts')
-    <script>
+    <script nonce="{{ $cspNonce ?? '' }}">
         // Logo Preview Function
         function previewLogo(input) {
             const preview = document.getElementById('logoPreview');
@@ -275,63 +275,108 @@
             }
         }
 
-        // Handle "Other" option for enum fields
-        function toggleOtherField(selectId, wrapperId) {
+        // Handle "Other" option for enum fields - make it globally accessible
+        window.toggleOtherField = function(selectId, wrapperId) {
+            console.log('toggleOtherField called:', selectId, wrapperId);
             const select = document.getElementById(selectId);
             const wrapper = document.getElementById(wrapperId);
             
-            if (!select || !wrapper) {
-                console.warn('Element not found:', selectId, wrapperId);
+            if (!select) {
+                console.error('Select element not found:', selectId);
+                return;
+            }
+            
+            if (!wrapper) {
+                console.error('Wrapper element not found:', wrapperId);
                 return;
             }
             
             const input = wrapper.querySelector('input');
             
+            console.log('Current select value:', select.value);
+            
             if (select.value === 'Other') {
-                // Force show the field - remove inline style first, then set display
-                wrapper.removeAttribute('style');
-                wrapper.style.setProperty('display', 'block', 'important');
-                wrapper.style.setProperty('visibility', 'visible', 'important');
-                wrapper.style.setProperty('opacity', '1', 'important');
+                // Show the field - use multiple methods to ensure visibility
+                wrapper.classList.remove('d-none');
+                wrapper.style.display = 'block';
+                wrapper.style.visibility = 'visible';
+                wrapper.style.opacity = '1';
+                wrapper.style.height = 'auto';
+                wrapper.style.minHeight = 'auto';
+                wrapper.style.marginTop = '1rem';
+                wrapper.style.overflow = 'visible';
                 wrapper.removeAttribute('hidden');
+                
+                // Force show with important
+                wrapper.setAttribute('style', 'display: block !important; visibility: visible !important; opacity: 1 !important; height: auto !important; min-height: auto !important; margin-top: 1rem !important; overflow: visible !important;');
+                
                 if (input) {
                     input.required = true;
                     input.removeAttribute('disabled');
                     input.removeAttribute('readonly');
+                    input.style.display = 'block';
                 }
+                
+                console.log('Field shown:', wrapperId, 'Display:', window.getComputedStyle(wrapper).display);
             } else {
-                wrapper.style.setProperty('display', 'none', 'important');
+                // Hide the field
+                wrapper.classList.add('d-none');
+                wrapper.style.display = 'none';
                 if (input) {
                     input.required = false;
                     input.value = '';
                 }
+                console.log('Field hidden:', wrapperId);
             }
-        }
+        };
 
-        // Initialize on page load and add event listeners
+        // Initialize function
         function initOtherFields() {
-            // Initialize field visibility
-            toggleOtherField('job_title', 'job_title_other_container');
-            toggleOtherField('industry', 'industry_other_container');
-            
-            // Add event listeners
+            // Get select elements
             const jobTitleSelect = document.getElementById('job_title');
             const industrySelect = document.getElementById('industry');
+            const jobTitleOtherContainer = document.getElementById('job_title_other_container');
+            const industryOtherContainer = document.getElementById('industry_other_container');
             
-            if (jobTitleSelect) {
-                jobTitleSelect.addEventListener('change', function() {
-                    toggleOtherField('job_title', 'job_title_other_container');
-                });
+            console.log('Initializing other fields...', {
+                jobTitleSelect: !!jobTitleSelect,
+                industrySelect: !!industrySelect,
+                jobTitleOtherContainer: !!jobTitleOtherContainer,
+                industryOtherContainer: !!industryOtherContainer
+            });
+            
+            // Initialize field visibility on page load
+            if (jobTitleSelect && jobTitleOtherContainer) {
+                // Check current value and show/hide accordingly
+                toggleOtherField('job_title', 'job_title_other_container');
+                
+                // Add event listener - remove existing first to avoid duplicates
+                jobTitleSelect.removeEventListener('change', handleJobTitleChange);
+                jobTitleSelect.addEventListener('change', handleJobTitleChange);
             }
             
-            if (industrySelect) {
-                industrySelect.addEventListener('change', function() {
-                    toggleOtherField('industry', 'industry_other_container');
-                });
+            if (industrySelect && industryOtherContainer) {
+                // Check current value and show/hide accordingly
+                toggleOtherField('industry', 'industry_other_container');
+                
+                // Add event listener - remove existing first to avoid duplicates
+                industrySelect.removeEventListener('change', handleIndustryChange);
+                industrySelect.addEventListener('change', handleIndustryChange);
             }
         }
         
-        // Run when DOM is ready
+        // Separate handler functions for better debugging
+        function handleJobTitleChange() {
+            console.log('Job title changed to:', this.value);
+            toggleOtherField('job_title', 'job_title_other_container');
+        }
+        
+        function handleIndustryChange() {
+            console.log('Industry changed to:', this.value);
+            toggleOtherField('industry', 'industry_other_container');
+        }
+
+        // Try multiple ways to ensure script runs
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', initOtherFields);
         } else {
@@ -339,10 +384,14 @@
             initOtherFields();
         }
         
-        // Also run on window load as fallback
+        // Also run after a short delay as fallback
+        setTimeout(function() {
+            initOtherFields();
+        }, 200);
+        
+        // Run on window load as final fallback
         window.addEventListener('load', function() {
-            toggleOtherField('job_title', 'job_title_other_container');
-            toggleOtherField('industry', 'industry_other_container');
+            setTimeout(initOtherFields, 100);
         });
     </script>
     @endpush
@@ -363,77 +412,105 @@
             box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
         }
 
-        /* Job Title Other field - smooth transition */
+        /* Job Title Other field - ensure it has space and visibility */
         .job-title-other-group {
-            transition: opacity 0.3s ease, max-height 0.3s ease, margin 0.3s ease;
-            overflow: visible !important;
-            min-height: 0;
+            transition: opacity 0.3s ease;
+            margin-top: 1rem !important;
+            min-height: auto;
+            width: 100% !important;
+            position: relative !important;
+            z-index: 1 !important;
         }
 
-        .job-title-other-group[style*="display: none"] {
-            margin-top: 0 !important;
-            margin-bottom: 0 !important;
-            opacity: 0 !important;
-            max-height: 0 !important;
-            min-height: 0 !important;
-            padding-top: 0 !important;
-            padding-bottom: 0 !important;
+        .job-title-other-group.d-none {
+            display: none !important;
+            height: 0 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            overflow: hidden !important;
+            visibility: hidden !important;
         }
 
-        /* Force visibility when displayed */
-        .job-title-other-group[style*="display: block"],
-        .job-title-other-group:not([style*="display: none"]) {
+        .job-title-other-group.d-block,
+        .job-title-other-group:not(.d-none) {
             display: block !important;
-            visibility: visible !important;
             opacity: 1 !important;
+            visibility: visible !important;
             height: auto !important;
             min-height: auto !important;
             max-height: none !important;
             overflow: visible !important;
             margin-top: 1rem !important;
-            margin-bottom: 0 !important;
-            padding-top: 0 !important;
-            padding-bottom: 0 !important;
+        }
+        
+        #job_title_other_container {
+            display: block !important;
+        }
+        
+        #job_title_other_container.d-none {
+            display: none !important;
         }
 
-        /* Ensure parent container doesn't clip */
-        .mb-3:has(.job-title-other-group),
-        .mb-4:has(.industry-other-group) {
-            overflow: visible !important;
-            min-height: auto !important;
-        }
-
-        /* Industry Other field - smooth transition */
+        /* Industry Other field - ensure it has space and visibility */
         .industry-other-group {
-            transition: opacity 0.3s ease, max-height 0.3s ease, margin 0.3s ease;
-            overflow: visible !important;
-            min-height: 0;
+            transition: opacity 0.3s ease;
+            margin-top: 1rem !important;
+            min-height: auto;
+            width: 100% !important;
+            position: relative !important;
+            z-index: 1 !important;
         }
 
-        .industry-other-group[style*="display: none"] {
-            margin-top: 0 !important;
-            margin-bottom: 0 !important;
-            opacity: 0 !important;
-            max-height: 0 !important;
-            min-height: 0 !important;
-            padding-top: 0 !important;
-            padding-bottom: 0 !important;
+        .industry-other-group.d-none {
+            display: none !important;
+            height: 0 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            overflow: hidden !important;
+            visibility: hidden !important;
         }
 
-        /* Force visibility when displayed */
-        .industry-other-group[style*="display: block"],
-        .industry-other-group:not([style*="display: none"]) {
+        .industry-other-group.d-block,
+        .industry-other-group:not(.d-none) {
             display: block !important;
-            visibility: visible !important;
             opacity: 1 !important;
+            visibility: visible !important;
             height: auto !important;
             min-height: auto !important;
             max-height: none !important;
             overflow: visible !important;
             margin-top: 1rem !important;
-            margin-bottom: 0 !important;
-            padding-top: 0 !important;
-            padding-bottom: 0 !important;
+        }
+        
+        #industry_other_container {
+            display: block !important;
+        }
+        
+        #industry_other_container.d-none {
+            display: none !important;
+        }
+
+        /* Ensure parent columns and row don't clip content */
+        .row.g-3 {
+            overflow: visible !important;
+            min-height: auto !important;
+        }
+        
+        .row.g-3 .col-md-6 {
+            overflow: visible !important;
+            min-height: auto !important;
+            height: auto !important;
+        }
+        
+        /* Ensure form has enough space */
+        form.needs-validation {
+            overflow: visible !important;
+        }
+        
+        /* Make sure the container divs don't restrict height */
+        #job_title_other_container,
+        #industry_other_container {
+            box-sizing: border-box;
         }
     </style>
     @endpush

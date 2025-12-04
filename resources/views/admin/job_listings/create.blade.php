@@ -407,13 +407,15 @@
                                     @error('minimum_degree')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
-                                    <div id="minimum_degree_other_wrapper" class="mt-2" style="display: none;">
+                                    <div id="minimum_degree_other_wrapper" class="mt-2" style="display: {{ old('minimum_degree') == 'Other' ? 'block' : 'none' }};">
+                                        <label for="minimum_degree_other" class="form-label">Custom Minimum Degree <span class="text-danger">*</span></label>
                                         <input type="text" 
                                                class="form-control @error('minimum_degree_other') is-invalid @enderror" 
                                                id="minimum_degree_other" 
                                                name="minimum_degree_other" 
                                                value="{{ old('minimum_degree_other') }}" 
-                                               placeholder="Please specify minimum degree">
+                                               placeholder="Please specify minimum degree"
+                                               {{ old('minimum_degree') == 'Other' ? 'required' : '' }}>
                                         @error('minimum_degree_other')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
@@ -509,7 +511,7 @@
 @endsection
 
 @push('scripts')
-    <script>
+    <script nonce="{{ $cspNonce ?? '' }}">
         // Bootstrap 5 form validation
         (function() {
             'use strict';
@@ -548,11 +550,22 @@
         function toggleOtherField(selectId, wrapperId) {
             const select = document.getElementById(selectId);
             const wrapper = document.getElementById(wrapperId);
+            
+            if (!select || !wrapper) {
+                console.warn('Element not found:', selectId, wrapperId);
+                return;
+            }
+            
             const input = wrapper.querySelector('input');
             
             if (select.value === 'Other') {
                 wrapper.style.display = 'block';
-                if (input) input.required = true;
+                wrapper.style.visibility = 'visible';
+                if (input) {
+                    input.required = true;
+                    input.removeAttribute('disabled');
+                    input.removeAttribute('readonly');
+                }
             } else {
                 wrapper.style.display = 'none';
                 if (input) {
@@ -562,30 +575,56 @@
             }
         }
 
+        // Initialize function
+        function initOtherFields() {
+            // Initialize field visibility on page load
+            toggleOtherField('contract_type', 'contract_type_other_wrapper');
+            toggleOtherField('experience_level', 'experience_level_other_wrapper');
+            toggleOtherField('industry', 'industry_other_wrapper');
+            toggleOtherField('minimum_degree', 'minimum_degree_other_wrapper');
+            
+            // Add event listeners with null checks
+            const contractTypeSelect = document.getElementById('contract_type');
+            if (contractTypeSelect) {
+                contractTypeSelect.addEventListener('change', function() {
+                    toggleOtherField('contract_type', 'contract_type_other_wrapper');
+                });
+            }
+
+            const experienceLevelSelect = document.getElementById('experience_level');
+            if (experienceLevelSelect) {
+                experienceLevelSelect.addEventListener('change', function() {
+                    toggleOtherField('experience_level', 'experience_level_other_wrapper');
+                });
+            }
+
+            const industrySelect = document.getElementById('industry');
+            if (industrySelect) {
+                industrySelect.addEventListener('change', function() {
+                    toggleOtherField('industry', 'industry_other_wrapper');
+                });
+            }
+
+            const minimumDegreeSelect = document.getElementById('minimum_degree');
+            if (minimumDegreeSelect) {
+                minimumDegreeSelect.addEventListener('change', function() {
+                    toggleOtherField('minimum_degree', 'minimum_degree_other_wrapper');
+                });
+            }
+        }
+
         // Initialize on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            toggleOtherField('contract_type', 'contract_type_other_wrapper');
-            toggleOtherField('experience_level', 'experience_level_other_wrapper');
-            toggleOtherField('industry', 'industry_other_wrapper');
-            toggleOtherField('minimum_degree', 'minimum_degree_other_wrapper');
-        });
-
-        // Add event listeners
-        document.getElementById('contract_type').addEventListener('change', function() {
-            toggleOtherField('contract_type', 'contract_type_other_wrapper');
-        });
-
-        document.getElementById('experience_level').addEventListener('change', function() {
-            toggleOtherField('experience_level', 'experience_level_other_wrapper');
-        });
-
-        document.getElementById('industry').addEventListener('change', function() {
-            toggleOtherField('industry', 'industry_other_wrapper');
-        });
-
-        document.getElementById('minimum_degree').addEventListener('change', function() {
-            toggleOtherField('minimum_degree', 'minimum_degree_other_wrapper');
-        });
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initOtherFields);
+        } else {
+            // DOM is already ready
+            initOtherFields();
+        }
+        
+        // Also run after a short delay as fallback
+        setTimeout(function() {
+            initOtherFields();
+        }, 200);
 
         // Dynamic input fields for Responsibilities, Requirements, Key Skills, and Benefits
         function addDynamicField(containerId, inputName, placeholder, removeButtonClass) {

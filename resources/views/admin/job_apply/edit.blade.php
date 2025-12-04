@@ -192,19 +192,19 @@
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="mb-4">
-                                            <label for="status" class="form-label fw-semibold mb-2">
-                                                Application Status <span class="text-danger">*</span>
-                                            </label>
-                                            <select class="form-select @error('status') is-invalid @enderror" 
-                                                    id="status" 
-                                                    name="status" 
-                                                    required 
-                                                    style="cursor: pointer; display: block !important; visibility: visible !important; opacity: 1 !important;">
-                                                <option value="">Select Status</option>
-                                                <option value="pending" {{ old('status', $jobApply->status) == 'pending' ? 'selected' : '' }}>Pending</option>
-                                                <option value="hired" {{ old('status', $jobApply->status) == 'hired' ? 'selected' : '' }}>Accepted</option>
-                                                <option value="rejected" {{ old('status', $jobApply->status) == 'rejected' ? 'selected' : '' }}>Rejected</option>
-                                            </select>
+                                            <div style="display: block !important;">
+                                                <label for="status" class="form-label fw-semibold mb-2" style="display: block !important; width: 100%;">
+                                                    Application Status <span class="text-danger">*</span>
+                                                </label>
+                                            </div>
+                                            <div style="display: block !important; width: 100%;">
+                                                <select class="form-select @error('status') is-invalid @enderror" id="status" name="status" required style="cursor: pointer; display: block !important; visibility: visible !important; opacity: 1 !important; width: 100%; position: static !important; left: auto !important; right: auto !important; top: auto !important; transform: none !important; margin: 0 !important;">
+                                                    <option value="">Select Status</option>
+                                                    <option value="pending" {{ old('status', $jobApply->status) == 'pending' ? 'selected' : '' }}>Pending</option>
+                                                    <option value="hired" {{ old('status', $jobApply->status) == 'hired' ? 'selected' : '' }}>Accepted</option>
+                                                    <option value="rejected" {{ old('status', $jobApply->status) == 'rejected' ? 'selected' : '' }}>Rejected</option>
+                                                </select>
+                                            </div>
                                             @error('status')
                                                 <div class="invalid-feedback">{{ $message }}</div>
                                             @enderror
@@ -722,5 +722,44 @@
             relocationSelect.addEventListener('change', toggleRelocationOther);
         }
     </script>
+@endpush
+
+@push('styles')
+<style>
+    /* Ensure Application Status label and select are on separate lines */
+    #recruiter-status-notes-section .mb-4 > div:first-child,
+    #recruiter-status-notes-section .mb-4 > label[for="status"] {
+        display: block !important;
+        width: 100% !important;
+        margin-bottom: 0.5rem !important;
+    }
+    
+    #recruiter-status-notes-section .mb-4 > div:last-child,
+    #recruiter-status-notes-section .mb-4 > select#status {
+        display: block !important;
+        width: 100% !important;
+        margin-top: 0 !important;
+    }
+    
+    #recruiter-status-notes-section .form-label[for="status"] {
+        display: block !important;
+        width: 100% !important;
+    }
+    
+    /* Override preloader CSS for #status select element */
+    #recruiter-status-notes-section select#status,
+    #recruiter-status-notes-section #status.form-select {
+        position: static !important;
+        left: auto !important;
+        right: auto !important;
+        top: auto !important;
+        bottom: auto !important;
+        transform: none !important;
+        -webkit-transform: none !important;
+        margin: 0 !important;
+        display: block !important;
+        width: 100% !important;
+    }
+</style>
 @endpush
 
