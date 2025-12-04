@@ -3,10 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Models\Company;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use App\Notifications\CustomResetPassword;
 
 class AuthController extends Controller
 {
@@ -298,11 +303,157 @@ class AuthController extends Controller
     }
 
     /**
-     * Show the forgot password form (display only, no functionality).
+     * Show the forgot password form.
      */
     public function showForgotPasswordForm()
     {
         return view('auth.forgot-password');
+    }
+
+    /**
+     * Handle forgot password request.
+     * Only verified users can reset their password.
+     */
+    public function sendPasswordResetLink(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+        ], [
+            'email.required' => 'Email is required.',
+            'email.email' => 'Please enter a valid email address.',
+        ]);
+
+        // Check if user exists and is verified
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user) {
+            // Don't reveal if email exists or not (security best practice)
+            return back()->with('status', 'If that email address exists in our system, we will send a password reset link.')
+                ->with('toast_type', 'success');
+        }
+
+        // Check if email is verified
+        if (!$user->hasVerifiedEmail()) {
+            return back()->with('status', 'Please verify your email address before resetting your password. Check your email for the verification link.')
+                ->with('toast_type', 'warning')
+                ->withInput();
+        }
+
+        // Generate password reset token
+        $token = Str::random(64);
+        
+        // Store token in password_reset_tokens table
+        DB::table('password_reset_tokens')->updateOrInsert(
+            ['email' => $user->email],
+            [
+                'token' => Hash::make($token),
+                'created_at' => now(),
+            ]
+        );
+
+        // Send custom reset password notification
+        try {
+            $user->notify(new CustomResetPassword($token));
+            
+            return back()->with('status', 'Password reset link has been sent to your email address.')
+                ->with('toast_type', 'success');
+        } catch (\Exception $e) {
+            Log::error('Failed to send password reset email: ' . $e->getMessage(), [
+                'email' => $request->email,
+            ]);
+
+            return back()->with('status', 'Failed to send password reset email. Please try again later.')
+                ->with('toast_type', 'error')
+                ->withInput();
+        }
+    }
+
+    /**
+     * Show the password reset form.
+     */
+    public function showResetPasswordForm(Request $request, $token = null)
+    {
+        return view('auth.reset-password', [
+            'token' => $token,
+            'email' => $request->email,
+        ]);
+    }
+
+    /**
+     * Handle password reset.
+     */
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'token' => 'required',
+            'email' => 'required|email',
+            'password' => 'required|string|min:8|confirmed',
+        ], [
+            'token.required' => 'Reset token is required.',
+            'email.required' => 'Email is required.',
+            'email.email' => 'Please enter a valid email address.',
+            'password.required' => 'Password is required.',
+            'password.min' => 'Password must be at least 8 characters.',
+            'password.confirmed' => 'Password confirmation does not match.',
+        ]);
+
+        // Find user
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user) {
+            return back()->with('status', 'Invalid email address.')
+                ->with('toast_type', 'error')
+                ->withInput();
+        }
+
+        // Check if email is verified
+        if (!$user->hasVerifiedEmail()) {
+            return back()->with('status', 'Please verify your email address before resetting your password.')
+                ->with('toast_type', 'warning')
+                ->withInput();
+        }
+
+        // Verify token
+        $passwordReset = DB::table('password_reset_tokens')
+            ->where('email', $request->email)
+            ->first();
+
+        if (!$passwordReset || !Hash::check($request->token, $passwordReset->token)) {
+            return back()->with('status', 'Invalid or expired reset token. Please request a new password reset link.')
+                ->with('toast_type', 'error')
+                ->withInput();
+        }
+
+        // Check if token is expired (60 minutes)
+        if (now()->diffInMinutes($passwordReset->created_at) > 60) {
+            DB::table('password_reset_tokens')->where('email', $request->email)->delete();
+            return back()->with('status', 'This password reset link has expired. Please request a new one.')
+                ->with('toast_type', 'error')
+                ->withInput();
+        }
+
+        // Update password
+        $user->password = Hash::make($request->password);
+        $user->save();
+
+        // Delete used token
+        DB::table('password_reset_tokens')->where('email', $request->email)->delete();
+
+        // Auto-login user
+        Auth::login($user);
+
+        // Redirect based on role
+        if ($user->role === 'admin') {
+            $redirectRoute = 'admin.dashboard';
+        } elseif ($user->role === 'recruiter') {
+            $redirectRoute = 'recruiter.dashboard';
+        } else {
+            $redirectRoute = 'home';
+        }
+
+        return redirect()->route($redirectRoute)
+            ->with('status', 'Password reset successfully! You have been logged in.')
+            ->with('toast_type', 'success');
     }
 }
 

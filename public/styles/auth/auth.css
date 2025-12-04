@@ -3,30 +3,45 @@
    ========================================================================== */
 
 .login-page,
-.register-page {
+.register-page,
+.forgot-password-page,
+.reset-password-page,
+.verify-email-page {
     padding-top: 0 !important;
 }
 
 body.login-page,
-body.register-page {
+body.register-page,
+body.forgot-password-page,
+body.reset-password-page,
+body.verify-email-page {
     padding-top: 0 !important;
     padding-right: 0 !important;
     overflow: hidden;
 }
 
 .login-page main,
-.register-page main {
+.register-page main,
+.forgot-password-page main,
+.reset-password-page main,
+.verify-email-page main {
     padding: 0 !important;
     margin: 0 !important;
 }
 
 .login-page .site-header,
-.register-page .site-header {
+.register-page .site-header,
+.forgot-password-page .site-header,
+.reset-password-page .site-header,
+.verify-email-page .site-header {
     display: none;
 }
 
 .login-page footer,
-.register-page footer {
+.register-page footer,
+.forgot-password-page footer,
+.reset-password-page footer,
+.verify-email-page footer {
     display: none;
 }
 
@@ -1860,5 +1875,49 @@ body.register-recruiter-page main {
     .radio-inner {
         width: 18px;
         height: 18px;
+    }
+}
+
+/* ==========================================================================
+   Toast Notification Positioning for Auth Pages
+   ========================================================================== */
+
+/* Override toast positioning for auth pages (no header) */
+body.login-page .toast-stack,
+body.register-page .toast-stack,
+body.forgot-password-page .toast-stack,
+body.reset-password-page .toast-stack,
+body.verify-email-page .toast-stack {
+    top: 1rem !important;
+    z-index: 1000 !important;
+}
+
+@media (max-width: 768px) {
+    body.login-page .toast-stack,
+    body.register-page .toast-stack,
+    body.forgot-password-page .toast-stack,
+    body.reset-password-page .toast-stack,
+    body.verify-email-page .toast-stack {
+        top: 0.75rem !important;
+    }
+}
+
+@media (max-width: 640px) {
+    body.login-page .toast-stack,
+    body.register-page .toast-stack,
+    body.forgot-password-page .toast-stack,
+    body.reset-password-page .toast-stack,
+    body.verify-email-page .toast-stack {
+        top: 0.5rem !important;
+    }
+}
+
+@media (max-width: 480px) {
+    body.login-page .toast-stack,
+    body.register-page .toast-stack,
+    body.forgot-password-page .toast-stack,
+    body.reset-password-page .toast-stack,
+    body.verify-email-page .toast-stack {
+        top: 0.5rem !important;
     }
 }

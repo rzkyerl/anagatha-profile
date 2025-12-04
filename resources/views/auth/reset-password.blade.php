@@ -1,7 +1,7 @@
 @extends('layouts.auth')
 
-@section('title', 'Forgot Password - Anagata Executive')
-@section('body_class', 'page forgot-password-page')
+@section('title', 'Reset Password - Anagata Executive')
+@section('body_class', 'page reset-password-page')
 
 @section('content')
     {{-- Toast Notifications --}}
@@ -62,50 +62,88 @@
         {{-- Left Section: Gradient Background with Text --}}
         <div class="register-left-section">
             <div class="register-header-row">
-                <h2 class="register-signup-label">Forgot Password</h2>
+                <h2 class="register-signup-label">Reset Password</h2>
                 <div class="register-logo">
                     <img src="/assets/hero-sec.png" alt="Anagata Executive Logo" />
                 </div>
             </div>
             <div class="register-text-content">
-                <p class="register-text-small">Don't worry</p>
-                <h2 class="register-text-large">We'll send you a password reset link to your verified email address.</h2>
+                <p class="register-text-small">Create New Password</p>
+                <h2 class="register-text-large">Enter your new password below. Make sure it's strong and secure.</h2>
             </div>
         </div>
 
-        {{-- Right Section: Forgot Password Form --}}
+        {{-- Right Section: Reset Password Form --}}
         <div class="register-right-section">
             <div class="register-form-wrapper">
-                <h1 class="register-title">Forgot Password?</h1>
-                <p class="register-subtitle">Enter your verified email address and we'll send you a reset link</p>
+                <h1 class="register-title">Reset Password</h1>
+                <p class="register-subtitle">Enter your new password</p>
 
-                <form method="POST" action="{{ route('password.email') }}" class="register-form">
+                <form method="POST" action="{{ route('password.update') }}" class="register-form">
                     @csrf
+                    <input type="hidden" name="token" value="{{ $token }}">
+                    <input type="hidden" name="email" value="{{ $email }}">
 
-                    {{-- Email Field --}}
+                    {{-- Email Field (readonly) --}}
                     <div class="form-group">
                         <div class="form-input-wrapper">
                             <i class="form-input-icon fa-solid fa-envelope"></i>
                             <input 
                                 type="email" 
                                 id="email" 
-                                name="email" 
-                                class="form-input @error('email') is-invalid @enderror" 
-                                placeholder="Email"
-                                value="{{ old('email') }}"
+                                name="email_display" 
+                                class="form-input" 
+                                value="{{ $email }}"
+                                readonly
+                                style="background-color: #f5f5f5; cursor: not-allowed;"
+                            />
+                        </div>
+                    </div>
+
+                    {{-- Password Field --}}
+                    <div class="form-group">
+                        <div class="form-input-wrapper">
+                            <i class="form-input-icon fa-solid fa-lock"></i>
+                            <input 
+                                type="password" 
+                                id="password" 
+                                name="password" 
+                                class="form-input @error('password') is-invalid @enderror" 
+                                placeholder="New Password"
                                 required
                                 autofocus
                             />
+                            <button type="button" class="password-toggle" aria-label="Toggle password visibility">
+                                <i class="fa-solid fa-eye" aria-hidden="true"></i>
+                            </button>
                         </div>
-                        @error('email')
+                        @error('password')
                             <span class="form-error">{{ $message }}</span>
                         @enderror
                     </div>
 
+                    {{-- Confirm Password Field --}}
+                    <div class="form-group">
+                        <div class="form-input-wrapper">
+                            <i class="form-input-icon fa-solid fa-lock"></i>
+                            <input 
+                                type="password" 
+                                id="password_confirmation" 
+                                name="password_confirmation" 
+                                class="form-input" 
+                                placeholder="Confirm New Password"
+                                required
+                            />
+                            <button type="button" class="password-toggle" aria-label="Toggle password visibility">
+                                <i class="fa-solid fa-eye" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                    </div>
+
                     {{-- Submit Button --}}
                     <button type="submit" class="register-submit-btn">
-                        <i class="fa-solid fa-paper-plane" style="margin-right: 8px;"></i>
-                        SEND RESET LINK
+                        <i class="fa-solid fa-key" style="margin-right: 8px;"></i>
+                        RESET PASSWORD
                     </button>
                 </form>
 
@@ -183,6 +221,80 @@
     window.addEventListener('pageshow', function() {
         initToast();
     });
+
+    // Password toggle functionality with auto-hide
+    (function() {
+        'use strict';
+        
+        function initPasswordToggle() {
+            const passwordToggles = document.querySelectorAll('.password-toggle');
+            const AUTO_HIDE_DURATION = 3000; // 3 seconds
+            
+            if (passwordToggles.length === 0) {
+                return;
+            }
+            
+            passwordToggles.forEach(function(toggle) {
+                let hideTimer = null;
+                
+                toggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    const inputWrapper = this.closest('.form-input-wrapper');
+                    if (!inputWrapper) {
+                        return;
+                    }
+                    
+                    const input = inputWrapper.querySelector('input[type="password"], input[type="text"]');
+                    
+                    if (!input || input.tagName.toLowerCase() !== 'input') {
+                        return;
+                    }
+                    
+                    if (hideTimer) {
+                        clearTimeout(hideTimer);
+                        hideTimer = null;
+                    }
+                    
+                    const isPassword = input.type === 'password';
+                    const icon = this.querySelector('i');
+                    
+                    if (isPassword) {
+                        input.type = 'text';
+                        if (icon) {
+                            icon.classList.remove('fa-eye');
+                            icon.classList.add('fa-eye-slash');
+                        }
+                        
+                        const self = this;
+                        const inputRef = input;
+                        hideTimer = setTimeout(function() {
+                            inputRef.type = 'password';
+                            const currentIcon = self.querySelector('i');
+                            if (currentIcon) {
+                                currentIcon.classList.remove('fa-eye-slash');
+                                currentIcon.classList.add('fa-eye');
+                            }
+                            hideTimer = null;
+                        }, AUTO_HIDE_DURATION);
+                    } else {
+                        input.type = 'password';
+                        if (icon) {
+                            icon.classList.remove('fa-eye-slash');
+                            icon.classList.add('fa-eye');
+                        }
+                    }
+                });
+            });
+        }
+        
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initPasswordToggle);
+        } else {
+            initPasswordToggle();
+        }
+    })();
 </script>
 @endpush
 @endsection

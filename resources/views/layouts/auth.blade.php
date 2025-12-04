@@ -25,9 +25,13 @@
     {{-- Load base variables first (required for CSS custom properties) --}}
     @php
         $variablesVersion = file_exists(public_path('styles/base/variables.css')) ? filemtime(public_path('styles/base/variables.css')) : time();
+        $toastVersion = file_exists(public_path('styles/components/toast.css')) ? filemtime(public_path('styles/components/toast.css')) : time();
         $authVersion = file_exists(public_path('styles/auth/auth.css')) ? filemtime(public_path('styles/auth/auth.css')) : time();
     @endphp
     <link rel="stylesheet" href="/styles/base/variables.css?v={{ $variablesVersion }}" media="all">
+    
+    {{-- Load toast CSS - required for toast notifications --}}
+    <link rel="stylesheet" href="/styles/components/toast.css?v={{ $toastVersion }}" media="all">
     
     {{-- Load auth CSS - optimized for auth pages only --}}
     <link rel="stylesheet" href="/styles/auth/auth.css?v={{ $authVersion }}" media="all">

@@ -36,6 +36,27 @@
         </div>
     @endif
 
+    @if ($errors->any() && !session('status'))
+        <div class="toast-stack" data-toast>
+            <div class="toast toast--error" role="alert" aria-live="assertive">
+                <div class="toast__icon">
+                    <i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i>
+                </div>
+                <div class="toast__body">
+                    <p class="toast__title">Validation Error</p>
+                    <p class="toast__message">
+                        @foreach ($errors->all() as $error)
+                            {{ $error }}
+                        @endforeach
+                    </p>
+                </div>
+                <button type="button" class="toast__close" aria-label="Close toast">
+                    <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+                </button>
+            </div>
+        </div>
+    @endif
+
 <div class="register-container">
     <div class="register-card">
         {{-- Left Section: Gradient Background with Text --}}
@@ -55,15 +76,15 @@
         {{-- Right Section: Verification Content --}}
         <div class="register-right-section">
             <div class="register-form-wrapper">
-                <div class="verify-email-content" style="text-align: center;">
-                    <div class="verify-email-icon" style="font-size: 4rem; color: #4CAF50; margin-bottom: 1.5rem;">
+                <div class="verify-email-content">
+                    <div class="verify-email-icon">
                         <i class="fa-solid fa-envelope-circle-check"></i>
                     </div>
                     <h1 class="register-title">Verify Your Email Address</h1>
-                    <p class="register-subtitle" style="margin-top: 1rem;">
+                    <p class="register-subtitle">
                         We've sent a verification link to <strong>{{ Auth::user()->email }}</strong>
                     </p>
-                    <p class="verify-email-message" style="margin-top: 1.5rem; margin-bottom: 2rem; color: #666; line-height: 1.6;">
+                    <p class="verify-email-message">
                         Before proceeding, please check your email for a verification link. If you didn't receive the email, we can send you another one.
                     </p>
 
@@ -133,6 +154,7 @@
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', function() {
             initToast();
+            // Also check after a short delay for redirects
             setTimeout(function() {
                 const toastStack = document.querySelector('[data-toast]');
                 if (toastStack && !toastStack.querySelector('.toast--visible')) {
@@ -141,6 +163,7 @@
             }, 100);
         });
     } else {
+        // DOM is already ready
         initToast();
         setTimeout(function() {
             const toastStack = document.querySelector('[data-toast]');

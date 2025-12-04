@@ -61,14 +61,17 @@ class VerificationController extends Controller
         // Redirect based on user role
         if ($user->role === 'admin') {
             $redirectRoute = 'admin.dashboard';
+            $message = 'Email verified successfully! Welcome to your dashboard.';
         } elseif ($user->role === 'recruiter') {
             $redirectRoute = 'recruiter.dashboard';
+            $message = 'Email verified successfully! Welcome to your dashboard.';
         } else {
             $redirectRoute = 'home';
+            $message = 'Email verified successfully! Welcome back, ' . ($user->first_name ?? '') . ($user->last_name ?? '' ? ' ' . $user->last_name : '') . '!';
         }
 
         return redirect()->route($redirectRoute)
-            ->with('status', 'Email verified successfully! Welcome to your dashboard.')
+            ->with('status', $message)
             ->with('toast_type', 'success');
     }
 

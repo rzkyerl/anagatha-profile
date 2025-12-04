@@ -47,7 +47,9 @@ class CustomVerifyEmail extends Notification
             ->action('Verify Email Address', $verificationUrl)
             ->line('This verification link will expire in ' . Config::get('auth.verification.expire', 60) . ' minutes.')
             ->line('If you did not create an account, no further action is required.')
-            ->salutation('Best Regards,<br>The Anagata Executive Team');
+            ->line('')
+            ->line('Best Regards,')
+            ->line('The Anagata Executive Team');
     }
 
     /**
