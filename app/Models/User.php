@@ -2,15 +2,17 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Notifications\CustomVerifyEmail;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
     use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
 
@@ -24,9 +26,12 @@ class User extends Authenticatable
         'last_name',
         'email',
         'password',
+        'google_id',
+        'github_id',
         'role',
         'phone',
         'company_name',
+        'company_logo',
         'job_title',
         'job_title_other',
         'industry',
@@ -80,5 +85,24 @@ class User extends Authenticatable
     public function jobListings(): HasMany
     {
         return $this->hasMany(JobListing::class, 'recruiter_id');
+    }
+
+    /**
+     * Get the company associated with this user (for recruiters).
+     */
+    public function company(): HasOne
+    {
+        return $this->hasOne(Company::class);
+    }
+
+    /**
+     * Send the email verification notification.
+     * Override default to use custom notification.
+     *
+     * @return void
+     */
+    public function sendEmailVerificationNotification()
+    {
+        $this->notify(new CustomVerifyEmail);
     }
 }

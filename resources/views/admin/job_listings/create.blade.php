@@ -57,54 +57,69 @@
                                 </div>
                             </div>
 
+                        <!-- Recruiter Selection & Company Information -->
+                        <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label for="company" class="form-label">Company Name <span class="text-danger">*</span></label>
-                                    <input type="text" 
-                                           class="form-control @error('company') is-invalid @enderror" 
-                                           id="company" 
-                                           name="company" 
-                                           value="{{ old('company') }}" 
-                                           placeholder="Enter company name" 
-                                           required 
-                                           maxlength="255">
-                                    @error('company')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
+                                    @if(auth()->user()->role === 'recruiter')
+                                        <input type="hidden" name="recruiter_id" value="{{ auth()->user()->id }}">
+                                        <label class="form-label">Recruiter</label>
+                                        <input type="text" class="form-control" value="{{ auth()->user()->first_name }} {{ auth()->user()->last_name }} ({{ auth()->user()->email }})" disabled>
+                                    @else
+                                        <label for="recruiter_id" class="form-label">Recruiter <span class="text-danger">*</span></label>
+                                        <select class="form-select @error('recruiter_id') is-invalid @enderror" 
+                                                id="recruiter_id" 
+                                                name="recruiter_id" 
+                                                required
+                                                onchange="updateCompanyPreview(this.value)">
+                                            <option value="">Select recruiter</option>
+                                            @foreach($recruiters ?? [] as $recruiter)
+                                                <option value="{{ $recruiter->id }}" 
+                                                        data-company-name="{{ $recruiter->company?->name ?? $recruiter->company_name ?? 'N/A' }}"
+                                                        data-company-location="{{ $recruiter->company?->location ?? 'Not specified' }}"
+                                                        data-company-industry="{{ $recruiter->company?->industry ?? $recruiter->industry ?? 'Not specified' }}"
+                                                        data-company-logo="{{ $recruiter->company?->logo ?? $recruiter->company_logo ?? '' }}"
+                                                        {{ old('recruiter_id') == $recruiter->id ? 'selected' : '' }}>
+                                                    {{ $recruiter->first_name }} {{ $recruiter->last_name }} ({{ $recruiter->email }})
+                                                    @if($recruiter->company?->name ?? $recruiter->company_name)
+                                                        - {{ $recruiter->company?->name ?? $recruiter->company_name }}
+                                                    @endif
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        @error('recruiter_id')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                        <div class="form-text">
+                                            <i class="ri-information-line me-1"></i>
+                                            Company information will be automatically assigned from the selected recruiter's company profile.
+                                        </div>
+                                    @endif
                                 </div>
                             </div>
                         </div>
 
+                        <!-- Company Information Preview -->
                         <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-md-12">
                                 <div class="mb-3">
-                                    <label for="company_logo" class="form-label">Company Logo</label>
-                                    <input type="file" 
-                                           class="form-control @error('company_logo') is-invalid @enderror" 
-                                           id="company_logo" 
-                                           name="company_logo" 
-                                           accept="image/jpeg,image/png,image/jpg,image/gif,image/webp">
-                                    @error('company_logo')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                    <div class="form-text">Upload company logo image (JPEG, PNG, JPG, GIF, WebP, max 2MB)</div>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="location" class="form-label">Location <span class="text-danger">*</span></label>
-                                    <input type="text" 
-                                           class="form-control @error('location') is-invalid @enderror" 
-                                           id="location" 
-                                           name="location" 
-                                           value="{{ old('location') }}" 
-                                           placeholder="e.g., Jakarta, Indonesia" 
-                                           required 
-                                           maxlength="255">
-                                    @error('location')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
+                                    <label class="form-label">Company Information</label>
+                                    <div class="alert alert-info mb-2" style="font-size: 0.875rem;">
+                                        <i class="ri-information-line me-1"></i>
+                                        Company name, logo, location, and industry will be automatically taken from the selected recruiter's company profile.
+                                    </div>
+                                    <div id="companyPreview" class="mt-2" style="display: none;">
+                                        <div class="card border-info">
+                                            <div class="card-body">
+                                                <h6 class="card-title mb-3">
+                                                    <i class="ri-building-line me-1"></i> Company Preview
+                                                </h6>
+                                                <div id="companyPreviewContent">
+                                                    <p class="text-muted mb-0">Select a recruiter to see company information</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -374,41 +389,7 @@
                         </div>
 
                         <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="industry" class="form-label">Industry</label>
-                                    <select class="form-select @error('industry') is-invalid @enderror" 
-                                            id="industry" 
-                                            name="industry">
-                                        <option value="">Select industry</option>
-                                        <option value="Technology" {{ old('industry') == 'Technology' ? 'selected' : '' }}>Technology</option>
-                                        <option value="Finance" {{ old('industry') == 'Finance' ? 'selected' : '' }}>Finance</option>
-                                        <option value="Healthcare" {{ old('industry') == 'Healthcare' ? 'selected' : '' }}>Healthcare</option>
-                                        <option value="Education" {{ old('industry') == 'Education' ? 'selected' : '' }}>Education</option>
-                                        <option value="E-commerce" {{ old('industry') == 'E-commerce' ? 'selected' : '' }}>E-commerce</option>
-                                        <option value="Manufacturing" {{ old('industry') == 'Manufacturing' ? 'selected' : '' }}>Manufacturing</option>
-                                        <option value="Consulting" {{ old('industry') == 'Consulting' ? 'selected' : '' }}>Consulting</option>
-                                        <option value="Media" {{ old('industry') == 'Media' ? 'selected' : '' }}>Media</option>
-                                        <option value="Other" {{ old('industry') == 'Other' ? 'selected' : '' }}>Other</option>
-                                    </select>
-                                    @error('industry')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                    <div id="industry_other_wrapper" class="mt-2" style="display: none;">
-                                        <input type="text" 
-                                               class="form-control @error('industry_other') is-invalid @enderror" 
-                                               id="industry_other" 
-                                               name="industry_other" 
-                                               value="{{ old('industry_other') }}" 
-                                               placeholder="Please specify industry">
-                                        @error('industry_other')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6">
+                            <div class="col-md-12">
                                 <div class="mb-3">
                                     <label for="minimum_degree" class="form-label">Minimum Degree</label>
                                     <select class="form-select @error('minimum_degree') is-invalid @enderror" 
@@ -446,32 +427,6 @@
                         <!-- Additional Information -->
                         <h5 class="mb-3 text-decoration-underline">Additional Information</h5>
                         <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    @if(auth()->user()->role === 'recruiter')
-                                        <input type="hidden" name="recruiter_id" value="{{ auth()->user()->id }}">
-                                        <label class="form-label">Recruiter</label>
-                                        <input type="text" class="form-control" value="{{ auth()->user()->first_name }} {{ auth()->user()->last_name }} ({{ auth()->user()->email }})" disabled>
-                                    @else
-                                        <label for="recruiter_id" class="form-label">Recruiter <span class="text-danger">*</span></label>
-                                        <select class="form-select @error('recruiter_id') is-invalid @enderror" 
-                                                id="recruiter_id" 
-                                                name="recruiter_id" 
-                                                required>
-                                            <option value="">Select recruiter</option>
-                                            @foreach($recruiters ?? [] as $recruiter)
-                                                <option value="{{ $recruiter->id }}" {{ old('recruiter_id') == $recruiter->id ? 'selected' : '' }}>
-                                                    {{ $recruiter->first_name }} {{ $recruiter->last_name }} ({{ $recruiter->email }})
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        @error('recruiter_id')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
-                                    @endif
-                                </div>
-                            </div>
-
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="status" class="form-label">Status <span class="text-danger">*</span></label>
@@ -735,6 +690,72 @@
         document.addEventListener('click', function(e) {
             if (e.target.closest('.removeBenefit')) {
                 removeDynamicField(e.target.closest('.removeBenefit'), 'benefitsContainer', 'removeBenefit');
+            }
+        });
+
+        // Company Preview on Recruiter Selection
+        function updateCompanyPreview(recruiterId) {
+            const recruiterSelect = document.getElementById('recruiter_id');
+            const companyPreview = document.getElementById('companyPreview');
+            const companyPreviewContent = document.getElementById('companyPreviewContent');
+            
+            if (!recruiterSelect || !companyPreview || !companyPreviewContent) return;
+            
+            if (!recruiterId || recruiterId === '') {
+                companyPreview.style.display = 'none';
+                return;
+            }
+            
+            const selectedOption = recruiterSelect.options[recruiterSelect.selectedIndex];
+            if (!selectedOption) {
+                companyPreview.style.display = 'none';
+                return;
+            }
+            
+            const companyName = selectedOption.getAttribute('data-company-name') || 'Not specified';
+            const companyLocation = selectedOption.getAttribute('data-company-location') || 'Not specified';
+            const companyIndustry = selectedOption.getAttribute('data-company-industry') || 'Not specified';
+            const companyLogo = selectedOption.getAttribute('data-company-logo') || '';
+            
+            let logoHtml = '';
+            if (companyLogo) {
+                logoHtml = `
+                    <div class="mb-2">
+                        <img src="{{ route('company.logo', '') }}/${companyLogo}" 
+                             alt="Company Logo" 
+                             style="max-width: 100px; max-height: 100px; object-fit: contain; border: 1px solid #ddd; border-radius: 4px; padding: 5px;">
+                    </div>
+                `;
+            }
+            
+            companyPreviewContent.innerHTML = `
+                ${logoHtml}
+                <div class="row">
+                    <div class="col-md-6">
+                        <strong>Company Name:</strong><br>
+                        <span class="text-muted">${companyName}</span>
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Location:</strong><br>
+                        <span class="text-muted">${companyLocation}</span>
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-md-12">
+                        <strong>Industry:</strong><br>
+                        <span class="text-muted">${companyIndustry}</span>
+                    </div>
+                </div>
+            `;
+            
+            companyPreview.style.display = 'block';
+        }
+        
+        // Initialize preview if recruiter is already selected (from old input)
+        document.addEventListener('DOMContentLoaded', function() {
+            const recruiterSelect = document.getElementById('recruiter_id');
+            if (recruiterSelect && recruiterSelect.value) {
+                updateCompanyPreview(recruiterSelect.value);
             }
         });
 

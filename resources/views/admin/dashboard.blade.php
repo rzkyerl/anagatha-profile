@@ -7,11 +7,12 @@
 @endphp
 
 @section('content')
-    <!-- Statistics Cards -->
+    <!-- Statistics Cards - 3x3 Layout -->
     <div class="row">
         @if(!$isRecruiter)
+        {{-- Row 1 --}}
         {{-- Admin: Total Users Card --}}
-        <div class="col-xl-3 col-md-6">
+        <div class="col-xl-4 col-md-6 mb-3">
             <div class="card">
                 <div class="card-body">
                     <div class="d-flex">
@@ -34,9 +35,136 @@
                 </div>
             </div>
         </div>
+
+        {{-- Admin: Job Listings Card --}}
+        <div class="col-xl-4 col-md-6 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex">
+                        <div class="flex-grow-1">
+                            <p class="text-truncate font-size-14 mb-2">Job Listings</p>
+                            <h4 class="mb-2">{{ number_format($totalJobListings ?? 0) }}</h4>
+                            <p class="text-muted mb-0">
+                                <span class="text-info fw-bold font-size-12 me-2">
+                                    <i class="ri-file-list-line me-1 align-middle"></i>
+                                    {{ number_format($activeJobListings ?? 0) }} active
+                                </span>
+                            </p>
+                        </div>
+                        <div class="avatar-sm">
+                            <span class="avatar-title bg-light text-info rounded-3">
+                                <i class="ri-briefcase-line font-size-24"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Admin: Job Applications Card --}}
+        <div class="col-xl-4 col-md-6 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex">
+                        <div class="flex-grow-1">
+                            <p class="text-truncate font-size-14 mb-2">Job Applications</p>
+                            <h4 class="mb-2">{{ number_format($totalJobApplications ?? 0) }}</h4>
+                            <p class="text-muted mb-0">
+                                <span class="text-warning fw-bold font-size-12 me-2">
+                                    <i class="ri-file-paper-line me-1 align-middle"></i>
+                                    Pending review
+                                </span>
+                            </p>
+                        </div>
+                        <div class="avatar-sm">
+                            <span class="avatar-title bg-light text-warning rounded-3">
+                                <i class="ri-file-add-line font-size-24"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Row 2 --}}
+        {{-- Admin: Recruiters Card --}}
+        <div class="col-xl-4 col-md-6 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex">
+                        <div class="flex-grow-1">
+                            <p class="text-truncate font-size-14 mb-2">Recruiters</p>
+                            <h4 class="mb-2">{{ number_format($totalRecruiters ?? 0) }}</h4>
+                            <p class="text-muted mb-0">
+                                <span class="text-success fw-bold font-size-12 me-2">
+                                    <i class="ri-user-star-line me-1 align-middle"></i>
+                                    Active recruiters
+                                </span>
+                            </p>
+                        </div>
+                        <div class="avatar-sm">
+                            <span class="avatar-title bg-light text-success rounded-3">
+                                <i class="ri-user-settings-line font-size-24"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Admin: Companies Card --}}
+        <div class="col-xl-4 col-md-6 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex">
+                        <div class="flex-grow-1">
+                            <p class="text-truncate font-size-14 mb-2">Companies</p>
+                            <h4 class="mb-2">{{ number_format($totalCompanies ?? 0) }}</h4>
+                            <p class="text-muted mb-0">
+                                <span class="text-info fw-bold font-size-12 me-2">
+                                    <i class="ri-arrow-right-up-line me-1 align-middle"></i>
+                                    {{ $newCompaniesToday ?? 0 }} today
+                                </span>
+                            </p>
+                        </div>
+                        <div class="avatar-sm">
+                            <span class="avatar-title bg-light text-info rounded-3">
+                                <i class="ri-building-line font-size-24"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Row 3 --}}
+        {{-- Admin: Job Seekers Card --}}
+        <div class="col-xl-4 col-md-6 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex">
+                        <div class="flex-grow-1">
+                            <p class="text-truncate font-size-14 mb-2">Job Seekers</p>
+                            <h4 class="mb-2">{{ number_format($totalJobSeekers ?? 0) }}</h4>
+                            <p class="text-muted mb-0">
+                                <span class="text-primary fw-bold font-size-12 me-2">
+                                    <i class="ri-arrow-right-up-line me-1 align-middle"></i>
+                                    {{ $newJobSeekersToday ?? 0 }} today
+                                </span>
+                            </p>
+                        </div>
+                        <div class="avatar-sm">
+                            <span class="avatar-title bg-light text-primary rounded-3">
+                                <i class="ri-user-search-line font-size-24"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
         @else
         {{-- Recruiter: Total Applicants Card --}}
-        <div class="col-xl-3 col-md-6">
+        <div class="col-xl-4 col-md-6 mb-3">
             <div class="card">
                 <div class="card-body">
                     <div class="d-flex">
@@ -59,16 +187,14 @@
                 </div>
             </div>
         </div>
-        @endif
 
-        <div class="col-xl-3 col-md-6">
+        {{-- Recruiter: My Job Listings Card --}}
+        <div class="col-xl-4 col-md-6 mb-3">
             <div class="card">
                 <div class="card-body">
                     <div class="d-flex">
                         <div class="flex-grow-1">
-                            <p class="text-truncate font-size-14 mb-2">
-                                @if($isRecruiter) My Job Listings @else Job Listings @endif
-                            </p>
+                            <p class="text-truncate font-size-14 mb-2">My Job Listings</p>
                             <h4 class="mb-2">{{ number_format($totalJobListings ?? 0) }}</h4>
                             <p class="text-muted mb-0">
                                 <span class="text-info fw-bold font-size-12 me-2">
@@ -87,51 +213,24 @@
             </div>
         </div>
 
-        <div class="col-xl-3 col-md-6">
+        {{-- Recruiter: My Job Applications Card --}}
+        <div class="col-xl-4 col-md-6 mb-3">
             <div class="card">
                 <div class="card-body">
                     <div class="d-flex">
                         <div class="flex-grow-1">
-                            <p class="text-truncate font-size-14 mb-2">
-                                @if($isRecruiter) My Job Applications @else Job Applications @endif
-                            </p>
+                            <p class="text-truncate font-size-14 mb-2">My Job Applications</p>
                             <h4 class="mb-2">{{ number_format($totalJobApplications ?? 0) }}</h4>
                             <p class="text-muted mb-0">
                                 <span class="text-warning fw-bold font-size-12 me-2">
                                     <i class="ri-file-paper-line me-1 align-middle"></i>
-                                    @if($isRecruiter) Pending review @else Pending review @endif
+                                    Pending review
                                 </span>
                             </p>
                         </div>
                         <div class="avatar-sm">
                             <span class="avatar-title bg-light text-warning rounded-3">
                                 <i class="ri-file-add-line font-size-24"></i>
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        @if(!$isRecruiter)
-        {{-- Admin: Recruiters Card --}}
-        <div class="col-xl-3 col-md-6">
-            <div class="card">
-                <div class="card-body">
-                    <div class="d-flex">
-                        <div class="flex-grow-1">
-                            <p class="text-truncate font-size-14 mb-2">Recruiters</p>
-                            <h4 class="mb-2">{{ number_format($totalRecruiters ?? 0) }}</h4>
-                            <p class="text-muted mb-0">
-                                <span class="text-success fw-bold font-size-12 me-2">
-                                    <i class="ri-user-star-line me-1 align-middle"></i>
-                                    Active recruiters
-                                </span>
-                            </p>
-                        </div>
-                        <div class="avatar-sm">
-                            <span class="avatar-title bg-light text-success rounded-3">
-                                <i class="ri-user-settings-line font-size-24"></i>
                             </span>
                         </div>
                     </div>
@@ -371,6 +470,101 @@
 
     </div>
     <!-- end row -->
+
+    @if(!$isRecruiter)
+    <!-- Recent Companies -->
+    <div class="row">
+        <div class="col-xl-12">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Recent Companies</h6>
+                    <a href="{{ route('admin.companies.index') }}" class="btn btn-sm btn-primary">
+                        <i class="ri-building-line me-1"></i> View All Companies
+                    </a>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-centered mb-0 align-middle table-hover table-nowrap">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Company Name</th>
+                                    <th>Location</th>
+                                    <th>Industry</th>
+                                    <th>Recruiters</th>
+                                    <th>Registered</th>
+                                    <th style="width: 120px;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($recentCompanies ?? [] as $company)
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                @if($company->logo)
+                                                    <img src="{{ route('company.logo', $company->logo) }}" 
+                                                         alt="{{ $company->name }} Logo" 
+                                                         class="rounded me-2" 
+                                                         style="width: 32px; height: 32px; object-fit: contain; border: 1px solid #ddd;">
+                                                @else
+                                                    <div class="bg-light rounded d-flex align-items-center justify-content-center me-2" 
+                                                         style="width: 32px; height: 32px;">
+                                                        <i class="ri-building-line text-muted"></i>
+                                                    </div>
+                                                @endif
+                                                <h6 class="mb-0">{{ $company->name }}</h6>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            @if($company->location)
+                                                <i class="ri-map-pin-line me-1 text-muted"></i>{{ $company->location }}
+                                            @else
+                                                <span class="text-muted">Not specified</span>
+                                            @endif
+                                        </td>
+                                        <td>
+                                            @if($company->industry)
+                                                <span class="badge bg-info">{{ $company->industry }}</span>
+                                            @else
+                                                <span class="text-muted">Not specified</span>
+                                            @endif
+                                        </td>
+                                        <td>
+                                            @php
+                                                $recruiterCount = \App\Models\User::where('role', 'recruiter')
+                                                    ->where(function ($query) use ($company) {
+                                                        $query->whereHas('company', function ($q) use ($company) {
+                                                            $q->where('name', $company->name);
+                                                        })
+                                                        ->orWhere('company_name', $company->name);
+                                                    })
+                                                    ->count();
+                                            @endphp
+                                            <span class="badge bg-primary">{{ $recruiterCount }}</span>
+                                        </td>
+                                        <td>{{ $company->created_at->setTimezone('Asia/Jakarta')->format('d M, Y') }}</td>
+                                        <td>
+                                            <a href="{{ route('admin.companies.show', urlencode($company->name)) }}"
+                                                class="btn btn-sm btn-primary">
+                                                <i class="ri-eye-line"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="6" class="text-center">
+                                            No companies found
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- end row -->
+    @endif
 @endsection
 
 @push('scripts')

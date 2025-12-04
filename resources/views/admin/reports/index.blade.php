@@ -118,6 +118,30 @@
                 </div>
             </div>
         </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card shadow mb-4">
+                <div class="card-body">
+                    <div class="d-flex">
+                        <div class="flex-grow-1">
+                            <p class="text-truncate font-size-14 mb-2">Companies</p>
+                            <h4 class="mb-2">{{ number_format($totalCompanies ?? 0) }}</h4>
+                            <p class="text-muted mb-0">
+                                <span class="text-info fw-bold font-size-12 me-2">
+                                    <i class="ri-building-line me-1 align-middle"></i>
+                                    Registered
+                                </span>
+                            </p>
+                        </div>
+                        <div class="avatar-sm">
+                            <span class="avatar-title bg-light text-info rounded-3">
+                                <i class="ri-building-line font-size-24"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- This Month Statistics -->
@@ -281,12 +305,12 @@
                                 <div class="card-body">
                                     <div class="d-flex align-items-center">
                                         <div class="flex-grow-1">
-                                            <h6 class="font-weight-bold text-info mb-1">Export Data</h6>
-                                            <p class="text-muted small mb-0">Export reports to CSV or Excel format</p>
+                                            <h6 class="font-weight-bold text-info mb-1">Company Reports</h6>
+                                            <p class="text-muted small mb-0">View company analytics and statistics</p>
                                         </div>
-                                        <button class="btn btn-sm btn-info" disabled>
-                                            <i class="ri-download-line"></i>
-                                        </button>
+                                        <a href="{{ route('admin.companies.index') }}" class="btn btn-sm btn-info">
+                                            <i class="ri-arrow-right-line"></i>
+                                        </a>
                                     </div>
                                 </div>
                             </div>

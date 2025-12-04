@@ -14,8 +14,6 @@ class JobListing extends Model
 
     protected $fillable = [
         'title',
-        'company',
-        'company_logo',
         'description',
         'responsibilities',
         'requirements',
@@ -29,9 +27,6 @@ class JobListing extends Model
         'contract_type_other',
         'experience_level',
         'experience_level_other',
-        'location',
-        'industry',
-        'industry_other',
         'minimum_degree',
         'minimum_degree_other',
         'recruiter_id',
@@ -57,6 +52,51 @@ class JobListing extends Model
     public function recruiter(): BelongsTo
     {
         return $this->belongsTo(User::class, 'recruiter_id');
+    }
+
+    /**
+     * Get company name from recruiter's company relationship.
+     * This accessor provides backward compatibility for views that use $jobListing->company
+     */
+    public function getCompanyAttribute()
+    {
+        return $this->recruiter?->company?->name ?? $this->recruiter?->company_name ?? 'Unknown Company';
+    }
+
+    /**
+     * Get company logo from recruiter's company relationship.
+     * This accessor provides backward compatibility for views that use $jobListing->company_logo
+     */
+    public function getCompanyLogoAttribute()
+    {
+        return $this->recruiter?->company?->logo ?? $this->recruiter?->company_logo;
+    }
+
+    /**
+     * Get location from recruiter's company relationship.
+     * This accessor provides backward compatibility for views that use $jobListing->location
+     */
+    public function getLocationAttribute()
+    {
+        return $this->recruiter?->company?->location ?? 'Location not specified';
+    }
+
+    /**
+     * Get industry from recruiter's company relationship.
+     * This accessor provides backward compatibility for views that use $jobListing->industry
+     */
+    public function getIndustryAttribute()
+    {
+        return $this->recruiter?->company?->industry ?? $this->recruiter?->industry;
+    }
+
+    /**
+     * Get industry_other from recruiter's company relationship.
+     * This accessor provides backward compatibility for views that use $jobListing->industry_other
+     */
+    public function getIndustryOtherAttribute()
+    {
+        return $this->recruiter?->company?->industry_other ?? $this->recruiter?->industry_other;
     }
 
     /**

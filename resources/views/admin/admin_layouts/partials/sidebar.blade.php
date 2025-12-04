@@ -109,6 +109,12 @@
                     </li>
                 @elseif ($role === 'recruiter')
                 <li>
+                    <a href="{{ route('recruiter.company.show') }}" class="waves-effect">
+                        <i class="ri-building-line"></i>
+                        <span>My Company</span>
+                    </a>
+                </li>
+                <li>
                     <a href="javascript: void(0);" class="has-arrow waves-effect">
                         <i class="ri-layout-3-line"></i>
                             <span>My Jobs</span>

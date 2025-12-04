@@ -40,4 +40,6 @@ yarn.lock
 database/seeders/UserSeeder.php
 database/seeders/JobListingSeeder.php
 database/seeders/JobApplySeeder.php
+database/seeders/CompanySeeder.php
+database/seeders/CompanyLogoSeeder.php
 # Keep DatabaseSeeder.php as it's the main seeder file (structure only, no sensitive data)

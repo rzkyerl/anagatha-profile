@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Company;
 use App\Models\User;
 use App\Models\JobListing;
 use App\Models\JobApply;
@@ -24,6 +25,11 @@ class ReportController extends Controller
         $totalJobListings = JobListing::count();
         $activeJobListings = JobListing::where('status', 'active')->count();
         $totalJobApplications = JobApply::count();
+        
+        // Companies statistics
+        $totalCompanies = Company::select('name')
+            ->distinct()
+            ->count('name');
         
         // Today's statistics
         $newUsersToday = User::whereDate('created_at', today())->count();
@@ -61,6 +67,7 @@ class ReportController extends Controller
             'totalJobListings' => $totalJobListings,
             'activeJobListings' => $activeJobListings,
             'totalJobApplications' => $totalJobApplications,
+            'totalCompanies' => $totalCompanies,
             'newUsersToday' => $newUsersToday,
             'newJobListingsToday' => $newJobListingsToday,
             'newApplicationsToday' => $newApplicationsToday,
@@ -142,20 +149,39 @@ class ReportController extends Controller
             ->limit(10)
             ->get();
         
-        // Jobs by location
-        $jobsByLocation = JobListing::select('location', DB::raw('count(*) as count'))
-            ->groupBy('location')
-            ->orderBy('count', 'desc')
-            ->limit(10)
-            ->get();
+        // Jobs by location (from companies table via recruiter relationship)
+        $allJobs = JobListing::with(['recruiter.company'])->get();
+        $jobsByLocation = $allJobs
+            ->groupBy(function ($job) {
+                return $job->location ?? 'Not specified';
+            })
+            ->map(function ($group, $location) {
+                return (object) [
+                    'location' => $location,
+                    'count' => $group->count()
+                ];
+            })
+            ->sortByDesc('count')
+            ->take(10)
+            ->values();
         
-        // Jobs by industry
-        $jobsByIndustry = JobListing::whereNotNull('industry')
-            ->select('industry', DB::raw('count(*) as count'))
-            ->groupBy('industry')
-            ->orderBy('count', 'desc')
-            ->limit(10)
-            ->get();
+        // Jobs by industry (from companies table via recruiter relationship)
+        $jobsByIndustry = $allJobs
+            ->filter(function ($job) {
+                return !empty($job->industry);
+            })
+            ->groupBy(function ($job) {
+                return $job->industry ?? 'Not specified';
+            })
+            ->map(function ($group, $industry) {
+                return (object) [
+                    'industry' => $industry,
+                    'count' => $group->count()
+                ];
+            })
+            ->sortByDesc('count')
+            ->take(10)
+            ->values();
         
         return view('admin.reports.jobs', [
             'title' => 'Job Reports',
@@ -334,9 +360,14 @@ class ReportController extends Controller
                 $now = now()->format('Y-m-d H:i:s');
                 
                 // Overall stats
+                $totalCompanies = Company::select('name')
+                    ->distinct()
+                    ->count('name');
+                
                 fputcsv($file, ['Overall', 'Total Users', $totalUsers, $now]);
                 fputcsv($file, ['Overall', 'Total Recruiters', $totalRecruiters, $now]);
                 fputcsv($file, ['Overall', 'Total Employees', $totalEmployees, $now]);
+                fputcsv($file, ['Overall', 'Total Companies', $totalCompanies, $now]);
                 fputcsv($file, ['Overall', 'Total Job Listings', $totalJobListings, $now]);
                 fputcsv($file, ['Overall', 'Active Job Listings', $activeJobListings, $now]);
                 fputcsv($file, ['Overall', 'Total Job Applications', $totalJobApplications, $now]);
@@ -545,7 +576,7 @@ class ReportController extends Controller
                     fputcsv($file, [
                         $job->id,
                         $job->title,
-                        $job->company_name ?? 'N/A',
+                        $job->company ?? 'N/A',
                         $job->location ?? 'N/A',
                         ucfirst($job->status),
                         $job->job_applies_count,
@@ -559,11 +590,21 @@ class ReportController extends Controller
                 fputcsv($file, ['JOBS BY LOCATION']);
                 fputcsv($file, ['Location', 'Count']);
                 
-                $jobsByLocation = JobListing::select('location', DB::raw('count(*) as count'))
-                    ->groupBy('location')
-                    ->orderBy('count', 'desc')
-                    ->limit(10)
-                    ->get();
+                // Jobs by location (from companies via recruiter)
+                $allJobsForExport = JobListing::with(['recruiter.company'])->get();
+                $jobsByLocation = $allJobsForExport
+                    ->groupBy(function ($job) {
+                        return $job->location ?? 'Not specified';
+                    })
+                    ->map(function ($group, $location) {
+                        return (object) [
+                            'location' => $location,
+                            'count' => $group->count()
+                        ];
+                    })
+                    ->sortByDesc('count')
+                    ->take(10)
+                    ->values();
                 
                 foreach ($jobsByLocation as $location) {
                     fputcsv($file, [
@@ -578,12 +619,22 @@ class ReportController extends Controller
                 fputcsv($file, ['JOBS BY INDUSTRY']);
                 fputcsv($file, ['Industry', 'Count']);
                 
-                $jobsByIndustry = JobListing::whereNotNull('industry')
-                    ->select('industry', DB::raw('count(*) as count'))
-                    ->groupBy('industry')
-                    ->orderBy('count', 'desc')
-                    ->limit(10)
-                    ->get();
+                $jobsByIndustry = $allJobsForExport
+                    ->filter(function ($job) {
+                        return !empty($job->industry);
+                    })
+                    ->groupBy(function ($job) {
+                        return $job->industry ?? 'Not specified';
+                    })
+                    ->map(function ($group, $industry) {
+                        return (object) [
+                            'industry' => $industry,
+                            'count' => $group->count()
+                        ];
+                    })
+                    ->sortByDesc('count')
+                    ->take(10)
+                    ->values();
                 
                 foreach ($jobsByIndustry as $industry) {
                     fputcsv($file, [

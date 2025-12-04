@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Company;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -42,6 +43,17 @@ class AuthController extends Controller
             $request->session()->regenerate();
 
             $user = Auth::user();
+
+            // Check if email is verified
+            if (!$user->hasVerifiedEmail()) {
+                Auth::logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+                
+                return redirect()->route('verification.notice')
+                    ->with('status', 'Please verify your email address before logging in. A verification link has been sent to your email.')
+                    ->with('toast_type', 'warning');
+            }
 
             // Redirect based on user role
             if ($user->role === 'admin') {
@@ -153,7 +165,16 @@ class AuthController extends Controller
                     'industry' => $validated['industry'],
                     'industry_other' => $validated['industry_other'],
                     'role' => 'recruiter',
-                    'email_verified_at' => now(),
+                ]);
+
+                // Create company record in companies table
+                Company::create([
+                    'user_id' => $user->id,
+                    'name' => $validated['company_name'],
+                    'logo' => null, // Logo can be uploaded later
+                    'industry' => $validated['industry'],
+                    'industry_other' => $validated['industry_other'],
+                    'location' => null, // Location can be set later in company profile
                 ]);
             } else {
                 // Employee registration validation
@@ -178,27 +199,38 @@ class AuthController extends Controller
                     'email' => $validated['email'],
                     'password' => bcrypt($validated['password']),
                     'role' => 'user',
-                    'email_verified_at' => now(),
                 ]);
             }
 
             // Clear the role from session
             $request->session()->forget('register_role');
 
-            // Auto-login user after registration
+            // Login user so they can access verification page
             Auth::login($user);
 
-            // Redirect based on user role
-            if ($role === 'recruiter') {
-                return redirect()->route('recruiter.dashboard')
-                    ->with('status', 'Registration successful! Welcome to your dashboard.')
-                    ->with('toast_type', 'success');
+            // Send email verification notification
+            try {
+                $user->sendEmailVerificationNotification();
+                $emailSent = true;
+            } catch (\Exception $emailException) {
+                // Log email error but don't fail registration
+                Log::warning('Email verification failed to send: ' . $emailException->getMessage(), [
+                    'email' => $user->email,
+                    'user_id' => $user->id,
+                ]);
+                $emailSent = false;
             }
 
-            // For employee registration, redirect to login page
-            return redirect()->route('login')
-                ->with('status', 'Registration successful! Please login to continue.')
-                ->with('toast_type', 'success');
+            // Redirect to email verification notice page
+            if ($emailSent) {
+                return redirect()->route('verification.notice')
+                    ->with('status', 'Registration successful! Please verify your email address to continue.')
+                    ->with('toast_type', 'success');
+            } else {
+                return redirect()->route('verification.notice')
+                    ->with('status', 'Registration successful! However, we encountered an issue sending the verification email. Please use the "Resend Verification Email" button below.')
+                    ->with('toast_type', 'warning');
+            }
         } catch (\Illuminate\Validation\ValidationException $e) {
             // Validation errors will be shown via toast in the view
             return redirect()->back()

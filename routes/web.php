@@ -1,6 +1,9 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\GoogleAuthController;
+use App\Http\Controllers\GitHubAuthController;
+use App\Http\Controllers\VerificationController;
 use App\Http\Controllers\Admin\CompanyController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\JobApplyController;
@@ -12,6 +15,7 @@ use App\Http\Controllers\ContactController;
 use App\Http\Controllers\JobApplicationController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Recruiter\RecruiterCompanyController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -85,7 +89,7 @@ Route::get('/lang/{locale}', function ($locale) {
 // Public Pages
 Route::controller(PageController::class)->group(function () {
     Route::get('/', 'landing')->name('landing');
-    Route::get('/home', 'home')->middleware(['auth', 'role.user'])->name('home');
+    Route::get('/home', 'home')->middleware(['auth', 'verified', 'role.user'])->name('home');
     Route::get('/about', 'about')->name('about');
     Route::get('/services', 'services')->name('services');
     Route::get('/why-us', 'whyUs')->name('why-us');
@@ -98,7 +102,7 @@ Route::controller(PageController::class)->group(function () {
 Route::get('/company/{filename}', [JobListingController::class, 'companyLogo'])->name('company.logo');
 
 // Authenticated User Routes
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
     // Job Application Routes
     Route::get('/jobs/{id}/apply', [PageController::class, 'jobApplication'])->name('job.apply');
     Route::post('/job-application', [JobApplicationController::class, 'store'])
@@ -132,6 +136,32 @@ Route::controller(AuthController::class)->group(function () {
     Route::get('/forgot-password', 'showForgotPasswordForm')->name('password.request');
 });
 
+// Email Verification Routes
+// Notice page requires auth (user must be logged in to see it)
+Route::middleware('auth')->group(function () {
+    Route::get('/email/verify', [VerificationController::class, 'show'])->name('verification.notice');
+    Route::post('/email/verification-notification', [VerificationController::class, 'resend'])
+        ->middleware('throttle:6,1')
+        ->name('verification.send');
+});
+
+// Verification link can be accessed without auth (user clicks from email)
+Route::get('/email/verify/{id}/{hash}', [VerificationController::class, 'verify'])
+    ->middleware('signed')
+    ->name('verification.verify');
+
+// Google OAuth Routes (Public - for user role only)
+Route::controller(GoogleAuthController::class)->group(function () {
+    Route::get('/auth/google', 'redirect')->name('google.redirect');
+    Route::get('/auth/google/callback', 'callback')->name('google.callback');
+});
+
+// GitHub OAuth Routes (Public - for user role only)
+Route::controller(GitHubAuthController::class)->group(function () {
+    Route::get('/auth/github', 'redirect')->name('github.redirect');
+    Route::get('/auth/github/callback', 'callback')->name('github.callback');
+});
+
 // Admin Auth Routes (Public)
 Route::prefix('admin')->name('admin.')->group(function () {
     // Admin root redirect to dashboard or login
@@ -148,7 +178,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 });
 
 // Admin Routes (Protected - Admin only section)
-Route::prefix('admin')->name('admin.')->middleware(['auth', 'role.recruiter.admin'])->group(function () {
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'verified', 'role.recruiter.admin'])->group(function () {
     // Logout
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
     
@@ -176,7 +206,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role.recruiter.admi
 });
     
 // Admin Only Routes (Protected - Admin exclusive access)
-Route::prefix('admin')->name('admin.')->middleware(['auth', 'role.admin'])->group(function () {
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'verified', 'role.admin'])->group(function () {
     // Users Resource Routes - Admin only (recruiters cannot manage users)
     Route::get('/users/export', [UserController::class, 'export'])->name('users.export');
     Route::get('/users/trashed/list', [UserController::class, 'trashed'])->name('users.trashed');
@@ -186,6 +216,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role.admin'])->grou
     
     // Companies - Admin only (index must be before show to avoid route conflict)
     Route::get('/companies', [CompanyController::class, 'index'])->name('companies.index');
+    Route::get('/companies/export', [CompanyController::class, 'export'])->name('companies.export');
     Route::get('/companies/{companyName}', [CompanyController::class, 'show'])->name('companies.show');
     
     // Reports - Admin only
@@ -207,7 +238,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role.recruiter.admi
 });
 
 // Recruiter Routes (Protected - recruiter-facing URLs, accessible by recruiter and admin)
-Route::prefix('recruiter')->name('recruiter.')->middleware(['auth', 'role.recruiter.admin'])->group(function () {
+Route::prefix('recruiter')->name('recruiter.')->middleware(['auth', 'verified', 'role.recruiter.admin'])->group(function () {
     // Logout (same controller, different route name/prefix)
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
@@ -235,4 +266,10 @@ Route::prefix('recruiter')->name('recruiter.')->middleware(['auth', 'role.recrui
     // Job Apply File Downloads
     Route::get('/job-apply/{id}/download/cv', [JobApplyController::class, 'downloadCv'])->name('job-apply.download.cv');
     Route::get('/job-apply/{id}/download/portfolio', [JobApplyController::class, 'downloadPortfolio'])->name('job-apply.download.portfolio');
+
+    // My Company Routes (Edit only, since data exists from registration)
+    Route::get('/company', [RecruiterCompanyController::class, 'show'])->name('company.show');
+    Route::get('/company/edit', [RecruiterCompanyController::class, 'edit'])->name('company.edit');
+    Route::put('/company', [RecruiterCompanyController::class, 'update'])->name('company.update');
+    Route::get('/company/logo/{filename}', [RecruiterCompanyController::class, 'companyLogo'])->name('company.logo');
 });

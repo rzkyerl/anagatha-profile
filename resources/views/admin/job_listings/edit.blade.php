@@ -66,62 +66,32 @@
                                 </div>
                             </div>
 
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="company" class="form-label">Company Name <span class="text-danger">*</span></label>
-                                    <input type="text" 
-                                           class="form-control @error('company') is-invalid @enderror" 
-                                           id="company" 
-                                           name="company" 
-                                           value="{{ old('company', $jobListing->company) }}" 
-                                           placeholder="Enter company name" 
-                                           required 
-                                           maxlength="255">
-                                    @error('company')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                            </div>
-                        </div>
-
                         <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-md-12">
                                 <div class="mb-3">
-                                    <label for="company_logo" class="form-label">Company Logo</label>
+                                    <label class="form-label">Company Information</label>
+                                    <div class="alert alert-info mb-2" style="font-size: 0.875rem;">
+                                        <i class="ri-information-line me-1"></i>
+                                        Company name, logo, location, and industry are taken from the recruiter's company profile. 
+                                        @if($jobListing->recruiter)
+                                            <a href="{{ route('admin.users.show', $jobListing->recruiter->id) }}" target="_blank" class="alert-link">View recruiter profile</a> to update company information.
+                                        @endif
+                                    </div>
                                     @if($jobListing->company_logo)
                                         <div class="mb-2">
-                                            <img src="{{ route('company.logo', $jobListing->company_logo) }}" 
-                                                 alt="{{ $jobListing->company }} Logo" 
-                                                 style="max-width: 150px; max-height: 150px; object-fit: contain; border: 1px solid #ddd; border-radius: 4px; padding: 5px;">
+                                            <strong>Current Company Logo:</strong>
+                                            <div class="mt-2">
+                                                <img src="{{ route('company.logo', $jobListing->company_logo) }}" 
+                                                     alt="{{ $jobListing->company }} Logo" 
+                                                     style="max-width: 150px; max-height: 150px; object-fit: contain; border: 1px solid #ddd; border-radius: 4px; padding: 5px;">
+                                            </div>
                                         </div>
-                                        <div class="form-text mb-2">Current logo</div>
                                     @endif
-                                    <input type="file" 
-                                           class="form-control @error('company_logo') is-invalid @enderror" 
-                                           id="company_logo" 
-                                           name="company_logo" 
-                                           accept="image/jpeg,image/png,image/jpg,image/gif,image/webp">
-                                    @error('company_logo')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                    <div class="form-text">Upload new company logo image (JPEG, PNG, JPG, GIF, WebP, max 2MB). Leave empty to keep current logo.</div>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="location" class="form-label">Location <span class="text-danger">*</span></label>
-                                    <input type="text" 
-                                           class="form-control @error('location') is-invalid @enderror" 
-                                           id="location" 
-                                           name="location" 
-                                           value="{{ old('location', $jobListing->location) }}" 
-                                           placeholder="e.g., Jakarta, Indonesia" 
-                                           required 
-                                           maxlength="255">
-                                    @error('location')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
+                                    <div class="text-muted small">
+                                        <strong>Company:</strong> {{ $jobListing->company }}<br>
+                                        <strong>Location:</strong> {{ $jobListing->location }}<br>
+                                        <strong>Industry:</strong> {{ $jobListing->industry ?? 'Not specified' }}
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -411,41 +381,8 @@
                         </div>
 
                         <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="industry" class="form-label">Industry</label>
-                                    <select class="form-select @error('industry') is-invalid @enderror" 
-                                           id="industry" 
-                                            name="industry">
-                                        <option value="">Select industry</option>
-                                        <option value="Technology" {{ old('industry', $jobListing->industry) == 'Technology' ? 'selected' : '' }}>Technology</option>
-                                        <option value="Finance" {{ old('industry', $jobListing->industry) == 'Finance' ? 'selected' : '' }}>Finance</option>
-                                        <option value="Healthcare" {{ old('industry', $jobListing->industry) == 'Healthcare' ? 'selected' : '' }}>Healthcare</option>
-                                        <option value="Education" {{ old('industry', $jobListing->industry) == 'Education' ? 'selected' : '' }}>Education</option>
-                                        <option value="E-commerce" {{ old('industry', $jobListing->industry) == 'E-commerce' ? 'selected' : '' }}>E-commerce</option>
-                                        <option value="Manufacturing" {{ old('industry', $jobListing->industry) == 'Manufacturing' ? 'selected' : '' }}>Manufacturing</option>
-                                        <option value="Consulting" {{ old('industry', $jobListing->industry) == 'Consulting' ? 'selected' : '' }}>Consulting</option>
-                                        <option value="Media" {{ old('industry', $jobListing->industry) == 'Media' ? 'selected' : '' }}>Media</option>
-                                        <option value="Other" {{ old('industry', $jobListing->industry) == 'Other' ? 'selected' : '' }}>Other</option>
-                                    </select>
-                                    @error('industry')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                    <div id="industry_other_wrapper" class="mt-2" style="display: {{ old('industry', $jobListing->industry) == 'Other' ? 'block' : 'none' }};">
-                                        <input type="text" 
-                                               class="form-control @error('industry_other') is-invalid @enderror" 
-                                               id="industry_other" 
-                                               name="industry_other" 
-                                               value="{{ old('industry_other', $jobListing->industry_other) }}" 
-                                               placeholder="Please specify industry">
-                                        @error('industry_other')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6">
+                        <div class="row">
+                            <div class="col-md-12">
                                 <div class="mb-3">
                                     <label for="minimum_degree" class="form-label">Minimum Degree</label>
                                     <select class="form-select @error('minimum_degree') is-invalid @enderror" 

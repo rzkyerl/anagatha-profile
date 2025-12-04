@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Company;
 use App\Models\User;
 use App\Models\JobListing;
 use App\Models\JobApply;
@@ -95,6 +96,38 @@ class DashboardController extends Controller
             $totalJobApplications = JobApply::count();
         $totalRecruiters = User::where('role', 'recruiter')->count();
         
+        // Job Seekers (Users with role 'user') statistics
+        $totalJobSeekers = User::where('role', 'user')->count();
+        $newJobSeekersToday = User::where('role', 'user')
+            ->whereDate('created_at', today())
+            ->count();
+        $verifiedJobSeekers = User::where('role', 'user')
+            ->whereNotNull('email_verified_at')
+            ->count();
+        $unverifiedJobSeekers = $totalJobSeekers - $verifiedJobSeekers;
+        
+        // Companies statistics - get unique companies by name
+        $totalCompanies = Company::select('name')
+            ->distinct()
+            ->count('name');
+        
+        $newCompaniesToday = Company::whereDate('created_at', today())
+            ->select('name')
+            ->distinct()
+            ->count('name');
+        
+        // Get recent companies (last 5 unique companies)
+        // Group by name and get the first (earliest) record for each company
+        $recentCompanies = Company::select('companies.*')
+            ->whereIn('id', function($query) {
+                $query->select(DB::raw('MIN(id)'))
+                    ->from('companies')
+                    ->groupBy('name');
+            })
+            ->orderBy('created_at', 'desc')
+            ->limit(5)
+            ->get();
+        
         // Get recent users (last 5)
         $recentUsers = User::orderBy('created_at', 'desc')->limit(5)->get();
         
@@ -117,6 +150,11 @@ class DashboardController extends Controller
         $jobListingsGrowthData = $this->getJobListingsGrowthData(6);
         $jobListingsGrowthCategories = $jobListingsGrowthData['categories'];
         $jobListingsGrowthSeries = $jobListingsGrowthData['series'];
+        
+        // Companies growth data for last 6 months
+        $companiesGrowthData = $this->getCompaniesGrowthData(6);
+        $companiesGrowthCategories = $companiesGrowthData['categories'];
+        $companiesGrowthSeries = $companiesGrowthData['series'];
         }
         
         // For recruiter we show only recruiter-related totalRecruiters,
@@ -131,6 +169,13 @@ class DashboardController extends Controller
             'activeJobListings' => $activeJobListings,
             'totalJobApplications' => $totalJobApplications,
             'totalRecruiters' => $totalRecruiters,
+            'totalJobSeekers' => $totalJobSeekers ?? 0,
+            'newJobSeekersToday' => $newJobSeekersToday ?? 0,
+            'verifiedJobSeekers' => $verifiedJobSeekers ?? 0,
+            'unverifiedJobSeekers' => $unverifiedJobSeekers ?? 0,
+            'totalCompanies' => $totalCompanies ?? 0,
+            'newCompaniesToday' => $newCompaniesToday ?? 0,
+            'recentCompanies' => $recentCompanies ?? collect(),
             'recentUsers' => $recentUsers,
             'newUsersToday' => $newUsersToday,
             'verifiedUsers' => $verifiedUsers,
@@ -142,6 +187,8 @@ class DashboardController extends Controller
             'userGrowthSeries' => $userGrowthSeries,
             'jobListingsGrowthCategories' => $jobListingsGrowthCategories,
             'jobListingsGrowthSeries' => $jobListingsGrowthSeries,
+            'companiesGrowthCategories' => $companiesGrowthCategories ?? [],
+            'companiesGrowthSeries' => $companiesGrowthSeries ?? [],
         ]);
     }
     
@@ -197,6 +244,36 @@ class DashboardController extends Controller
             }
             $count = $query->count();
             $series[] = $count;
+        }
+        
+        return [
+            'categories' => $categories,
+            'series' => $series
+        ];
+    }
+    
+    /**
+     * Get companies growth data for the specified number of months
+     */
+    private function getCompaniesGrowthData($months = 6)
+    {
+        $categories = [];
+        $series = [];
+        
+        for ($i = $months - 1; $i >= 0; $i--) {
+            $date = Carbon::now()->subMonths($i);
+            $startOfMonth = $date->copy()->startOfMonth();
+            $endOfMonth = $date->copy()->endOfMonth();
+            
+            $categories[] = $date->format('M Y');
+            
+            // Count unique companies created in this month
+            $companiesInMonth = Company::whereBetween('created_at', [$startOfMonth, $endOfMonth])
+                ->select('name')
+                ->distinct()
+                ->count('name');
+            
+            $series[] = $companiesInMonth;
         }
         
         return [

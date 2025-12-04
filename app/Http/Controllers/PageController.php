@@ -126,8 +126,8 @@ class PageController extends Controller
 
     public function jobListing(Request $request)
     {
-        // Get active job listings with recruiter info
-        $query = JobListing::with('recruiter')
+        // Get active job listings with recruiter and company info
+        $query = JobListing::with(['recruiter.company'])
             ->where('status', 'active')
             ->orderBy('posted_at', 'desc')
             ->orderBy('created_at', 'desc');
@@ -137,12 +137,23 @@ class PageController extends Controller
             $search = $request->search;
             $query->where(function($q) use ($search) {
                 $q->where('title', 'like', "%{$search}%")
-                  ->orWhere('company', 'like', "%{$search}%");
+                  ->orWhereHas('recruiter.company', function($subQ) use ($search) {
+                      $subQ->where('name', 'like', "%{$search}%");
+                  })
+                  ->orWhereHas('recruiter', function($subQ) use ($search) {
+                      // Fallback: check company_name in users table (old data)
+                      $subQ->where('company_name', 'like', "%{$search}%");
+                  });
             });
         }
 
         if ($request->filled('location')) {
-            $query->where('location', 'like', "%{$request->location}%");
+            // Location is now in companies table via recruiter relationship
+            $query->where(function($q) use ($request) {
+                $q->whereHas('recruiter.company', function($subQ) use ($request) {
+                    $subQ->where('location', 'like', "%{$request->location}%");
+                });
+            });
         }
 
         if ($request->filled('work_preference')) {
@@ -154,7 +165,16 @@ class PageController extends Controller
         }
 
         if ($request->filled('industry')) {
-            $query->where('industry', $request->industry);
+            // Industry is now in companies table via recruiter relationship
+            $query->where(function($q) use ($request) {
+                $q->whereHas('recruiter.company', function($subQ) use ($request) {
+                    $subQ->where('industry', $request->industry);
+                })
+                ->orWhereHas('recruiter', function($subQ) use ($request) {
+                    // Fallback: check if industry might be in users table (old data)
+                    $subQ->where('industry', $request->industry);
+                });
+            });
         }
 
         if ($request->filled('salary_range')) {
@@ -185,10 +205,20 @@ class PageController extends Controller
             ->findOrFail($id);
         
         // Get other jobs from the same company (excluding current job)
-        $otherJobs = JobListing::with('recruiter')
+        // Company is now determined by recruiter's company
+        $companyName = $jobListing->company; // This uses the accessor
+        $otherJobs = JobListing::with('recruiter.company')
             ->where('status', 'active')
-            ->where('company', $jobListing->company)
             ->where('id', '!=', $id)
+            ->where(function($q) use ($companyName) {
+                $q->whereHas('recruiter.company', function($subQ) use ($companyName) {
+                    $subQ->where('name', $companyName);
+                })
+                ->orWhereHas('recruiter', function($subQ) use ($companyName) {
+                    // Fallback: check company_name in users table (old data)
+                    $subQ->where('company_name', $companyName);
+                });
+            })
             ->orderBy('posted_at', 'desc')
             ->limit(5)
             ->get();

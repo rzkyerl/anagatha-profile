@@ -80,14 +80,24 @@ class UserController extends Controller
         }
 
         try {
-            User::create([
+            // Only admin users are auto-verified when created by admin
+            // Other users (user, recruiter) must verify their email manually
+            $userData = [
                 'first_name' => $request->first_name,
                 'last_name' => $request->last_name ?? null,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
                 'role' => $request->role,
-                'email_verified_at' => now(),
-            ]);
+            ];
+
+            // Auto-verify only if role is admin
+            if ($request->role === 'admin') {
+                $userData['email_verified_at'] = now();
+            } else {
+                $userData['email_verified_at'] = null;
+            }
+
+            User::create($userData);
 
             return redirect()->route('admin.users.index')
                 ->with('success', 'User created successfully!');

@@ -18,6 +18,9 @@ class UserFactory extends Factory
 
     /**
      * Define the model's default state.
+     * 
+     * By default, users are unverified (must verify email manually).
+     * Only admin users should be auto-verified.
      *
      * @return array<string, mixed>
      */
@@ -26,7 +29,7 @@ class UserFactory extends Factory
         return [
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
-            'email_verified_at' => now(),
+            'email_verified_at' => null, // Default: unverified (must verify manually)
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
         ];
@@ -39,6 +42,28 @@ class UserFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'email_verified_at' => null,
+        ]);
+    }
+
+    /**
+     * Indicate that the model's email address should be verified.
+     * Use this for admin users or testing purposes.
+     */
+    public function verified(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'email_verified_at' => now(),
+        ]);
+    }
+
+    /**
+     * Create an admin user with verified email.
+     */
+    public function admin(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => 'admin',
+            'email_verified_at' => now(), // Admin is auto-verified
         ]);
     }
 }

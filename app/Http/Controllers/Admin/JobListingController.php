@@ -79,10 +79,10 @@ class JobListingController extends Controller
 
             if ($user && $user->role === 'recruiter') {
                 // Recruiter can only create jobs for themselves
-                $recruiters = User::where('id', $user->id)->get();
+                $recruiters = User::where('id', $user->id)->with('company')->get();
             } else {
                 // Admin can assign any recruiter
-                $recruiters = User::where('role', 'recruiter')->get();
+                $recruiters = User::where('role', 'recruiter')->with('company')->get();
             }
             
             return view('admin.job_listings.create', [
@@ -138,7 +138,6 @@ class JobListingController extends Controller
 
             $validator = Validator::make($request->all(), [
             'title' => 'required|string|max:255',
-            'company' => 'required|string|max:255',
             'company_logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'description' => 'nullable|string',
             'responsibilities' => 'nullable|array',
@@ -157,9 +156,6 @@ class JobListingController extends Controller
             'contract_type_other' => 'required_if:contract_type,Other|nullable|string|max:255',
             'experience_level' => 'nullable|in:Entry,1-3 Years,3-5 Years,5+ Years,Senior,Mid Level,Other',
             'experience_level_other' => 'required_if:experience_level,Other|nullable|string|max:255',
-            'location' => 'required|string|max:255',
-            'industry' => 'nullable|in:Technology,Finance,Healthcare,Education,E-commerce,Manufacturing,Consulting,Media,Other',
-            'industry_other' => 'required_if:industry,Other|nullable|string|max:255',
             'minimum_degree' => 'nullable|in:Senior High School,Diploma,Bachelor,Master,MBA,Ph.D,Other',
             'minimum_degree_other' => 'required_if:minimum_degree,Other|nullable|string|max:255',
             'recruiter_id' => 'required|exists:users,id',
@@ -168,10 +164,6 @@ class JobListingController extends Controller
             'posted_at' => 'nullable|date',
         ], [
             'title.required' => 'Job title is required.',
-            'company.required' => 'Company name is required.',
-            'company_logo.image' => 'Company logo must be an image file.',
-            'company_logo.mimes' => 'Company logo must be a file of type: jpeg, png, jpg, gif, webp.',
-            'company_logo.max' => 'Company logo size must not exceed 2MB.',
             'salary_display.required' => 'Salary display is required.',
             'work_preference.required' => 'Work preference is required.',
             'work_preference.in' => 'Invalid work preference selected.',
@@ -179,9 +171,7 @@ class JobListingController extends Controller
             'contract_type.in' => 'Invalid contract type selected.',
             'contract_type_other.required_if' => 'Please specify the contract type.',
             'experience_level_other.required_if' => 'Please specify the experience level.',
-            'industry_other.required_if' => 'Please specify the industry.',
             'minimum_degree_other.required_if' => 'Please specify the minimum degree.',
-            'location.required' => 'Location is required.',
             'recruiter_id.required' => 'Recruiter is required.',
             'recruiter_id.exists' => 'Selected recruiter does not exist.',
             'status.required' => 'Status is required.',
@@ -265,11 +255,8 @@ class JobListingController extends Controller
             if (!$postedAt && $request->status === 'active') {
                 $postedAt = now();
             }
-
             $jobListing = JobListing::create([
                 'title' => $request->title,
-                'company' => $request->company,
-                'company_logo' => $companyLogo,
                 'description' => $request->filled('description') ? $request->description : null,
                 'responsibilities' => $this->filterArray($request->input('responsibilities')),
                 'requirements' => $this->filterArray($request->input('requirements')),
@@ -283,12 +270,10 @@ class JobListingController extends Controller
                 'contract_type_other' => ($request->contract_type === 'Other' && $request->filled('contract_type_other')) ? $request->contract_type_other : null,
                 'experience_level' => $request->filled('experience_level') ? $request->experience_level : null,
                 'experience_level_other' => ($request->experience_level === 'Other' && $request->filled('experience_level_other')) ? $request->experience_level_other : null,
-                'location' => $request->location,
-                'industry' => $request->filled('industry') ? $request->industry : null,
-                'industry_other' => ($request->industry === 'Other' && $request->filled('industry_other')) ? $request->industry_other : null,
                 'minimum_degree' => $request->filled('minimum_degree') ? $request->minimum_degree : null,
                 'minimum_degree_other' => ($request->minimum_degree === 'Other' && $request->filled('minimum_degree_other')) ? $request->minimum_degree_other : null,
                 'recruiter_id' => $request->recruiter_id,
+                'company_logo' => $companyLogo,
                 'verified' => $request->has('verified') ? true : false,
                 'status' => $request->status,
                 'posted_at' => $postedAt,
@@ -435,8 +420,6 @@ class JobListingController extends Controller
 
         $validator = Validator::make($request->all(), [
             'title' => 'required|string|max:255',
-            'company' => 'required|string|max:255',
-            'company_logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'description' => 'nullable|string',
             'responsibilities' => 'nullable|array',
             'responsibilities.*' => 'nullable|string|max:500',
@@ -454,9 +437,6 @@ class JobListingController extends Controller
             'contract_type_other' => 'required_if:contract_type,Other|nullable|string|max:255',
             'experience_level' => 'nullable|in:Entry,1-3 Years,3-5 Years,5+ Years,Senior,Mid Level,Other',
             'experience_level_other' => 'required_if:experience_level,Other|nullable|string|max:255',
-            'location' => 'required|string|max:255',
-            'industry' => 'nullable|in:Technology,Finance,Healthcare,Education,E-commerce,Manufacturing,Consulting,Media,Other',
-            'industry_other' => 'required_if:industry,Other|nullable|string|max:255',
             'minimum_degree' => 'nullable|in:Senior High School,Diploma,Bachelor,Master,MBA,Ph.D,Other',
             'minimum_degree_other' => 'required_if:minimum_degree,Other|nullable|string|max:255',
             'recruiter_id' => 'required|exists:users,id',
@@ -465,10 +445,6 @@ class JobListingController extends Controller
             'posted_at' => 'nullable|date',
         ], [
             'title.required' => 'Job title is required.',
-            'company.required' => 'Company name is required.',
-            'company_logo.image' => 'Company logo must be an image file.',
-            'company_logo.mimes' => 'Company logo must be a file of type: jpeg, png, jpg, gif, webp.',
-            'company_logo.max' => 'Company logo size must not exceed 2MB.',
             'salary_display.required' => 'Salary display is required.',
             'work_preference.required' => 'Work preference is required.',
             'work_preference.in' => 'Invalid work preference selected.',
@@ -476,9 +452,7 @@ class JobListingController extends Controller
             'contract_type.in' => 'Invalid contract type selected.',
             'contract_type_other.required_if' => 'Please specify the contract type.',
             'experience_level_other.required_if' => 'Please specify the experience level.',
-            'industry_other.required_if' => 'Please specify the industry.',
             'minimum_degree_other.required_if' => 'Please specify the minimum degree.',
-            'location.required' => 'Location is required.',
             'recruiter_id.required' => 'Recruiter is required.',
             'recruiter_id.exists' => 'Selected recruiter does not exist.',
             'status.required' => 'Status is required.',
@@ -554,8 +528,6 @@ class JobListingController extends Controller
 
             $updateData = [
                 'title' => $request->title,
-                'company' => $request->company,
-                'company_logo' => $companyLogo,
                 'description' => $request->description,
                 'responsibilities' => $this->filterArray($request->input('responsibilities')),
                 'requirements' => $this->filterArray($request->input('requirements')),
@@ -569,12 +541,10 @@ class JobListingController extends Controller
                 'contract_type_other' => $request->contract_type === 'Other' ? $request->contract_type_other : null,
                 'experience_level' => $request->experience_level,
                 'experience_level_other' => $request->experience_level === 'Other' ? $request->experience_level_other : null,
-                'location' => $request->location,
-                'industry' => $request->industry,
-                'industry_other' => $request->industry === 'Other' ? $request->industry_other : null,
                 'minimum_degree' => $request->minimum_degree,
                 'minimum_degree_other' => $request->minimum_degree === 'Other' ? $request->minimum_degree_other : null,
                 'recruiter_id' => $request->recruiter_id,
+                'company_logo' => $companyLogo,
                 'verified' => $request->has('verified') ? true : false,
                 'status' => $request->status,
             ];
@@ -688,9 +658,7 @@ class JobListingController extends Controller
             $this->ensureJobListingAccessible($jobListing);
             
             // Delete company logo file
-            if ($jobListing->company_logo && Storage::disk('local')->exists('company/' . $jobListing->company_logo)) {
-                Storage::disk('local')->delete('company/' . $jobListing->company_logo);
-            }
+            // Company logo is now stored in users table, no need to delete from job_listings
             
             $jobListing->forceDelete();
 
@@ -716,11 +684,11 @@ class JobListingController extends Controller
             
             if ($showTrashed) {
                 $query = JobListing::onlyTrashed()
-                    ->with('recruiter')
+                    ->with(['recruiter.company'])
                     ->orderBy('deleted_at', 'desc');
                 $filename = 'deleted_job_listings_' . date('Y-m-d_His') . '.csv';
             } else {
-                $query = JobListing::with('recruiter')
+                $query = JobListing::with(['recruiter.company'])
                     ->orderBy('created_at', 'desc');
                 $filename = 'job_listings_' . date('Y-m-d_His') . '.csv';
             }

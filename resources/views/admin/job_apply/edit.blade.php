@@ -190,9 +190,9 @@
                         <div class="card" id="recruiter-status-notes-section" style="display: block !important; visibility: visible !important;">
                             <div class="card-body">
                                 <div class="row">
-                                    <div class="col-md-6 col-lg-5">
+                                    <div class="col-md-6">
                                         <div class="mb-4">
-                                            <label for="status" class="form-label fw-semibold">
+                                            <label for="status" class="form-label fw-semibold mb-2">
                                                 Application Status <span class="text-danger">*</span>
                                             </label>
                                             <select class="form-select @error('status') is-invalid @enderror" 
@@ -200,17 +200,17 @@
                                                     name="status" 
                                                     required 
                                                     style="cursor: pointer; display: block !important; visibility: visible !important; opacity: 1 !important;">
-                                                <option value="">-- Pilih Status --</option>
+                                                <option value="">Select Status</option>
                                                 <option value="pending" {{ old('status', $jobApply->status) == 'pending' ? 'selected' : '' }}>Pending</option>
-                                                <option value="hired" {{ old('status', $jobApply->status) == 'hired' ? 'selected' : '' }}>Diterima</option>
-                                                <option value="rejected" {{ old('status', $jobApply->status) == 'rejected' ? 'selected' : '' }}>Ditolak</option>
+                                                <option value="hired" {{ old('status', $jobApply->status) == 'hired' ? 'selected' : '' }}>Accepted</option>
+                                                <option value="rejected" {{ old('status', $jobApply->status) == 'rejected' ? 'selected' : '' }}>Rejected</option>
                                             </select>
                                             @error('status')
                                                 <div class="invalid-feedback">{{ $message }}</div>
                                             @enderror
                                             <small class="form-text text-muted d-block mt-2">
-                                                <i class="ri-information-line me-1"></i> 
-                                                Anda hanya dapat mengubah status menjadi: <strong>Pending</strong>, <strong>Diterima (Accepted)</strong>, atau <strong>Ditolak (Rejected)</strong>
+                                                <i class="ri-information-line me-1"></i>
+                                                You can only change the status to: <strong>Pending</strong>, <strong>Accepted</strong>, or <strong>Rejected</strong>
                                             </small>
                                         </div>
                                     </div>
@@ -219,18 +219,14 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="mb-0">
-                                            <label for="notes" class="form-label fw-semibold">Notes untuk Pelamar</label>
-                                            <textarea class="form-control @error('notes') is-invalid @enderror" 
-                                                      id="notes" 
-                                                      name="notes" 
-                                                      rows="5"
-                                                      placeholder="Tambahkan catatan untuk pelamar... (catatan ini akan terlihat oleh pelamar di halaman history mereka)">{{ old('notes', $jobApply->notes) }}</textarea>
+                                            <label for="notes" class="form-label fw-semibold mb-2">Notes for Applicant</label>
+                                            <textarea class="form-control @error('notes') is-invalid @enderror" id="notes" name="notes" rows="5" placeholder="Add notes for the applicant... (these notes will be visible to the applicant on their history page)">{{ old('notes', $jobApply->notes) }}</textarea>
                                             @error('notes')
                                                 <div class="invalid-feedback">{{ $message }}</div>
                                             @enderror
                                             <small class="form-text text-muted d-block mt-2">
                                                 <i class="ri-information-line me-1"></i> 
-                                                Notes ini akan ditampilkan kepada pelamar di halaman history mereka
+                                                These notes will be displayed to the applicant on their history page
                                             </small>
                                         </div>
                                     </div>

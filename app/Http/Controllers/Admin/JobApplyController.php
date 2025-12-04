@@ -28,7 +28,7 @@ class JobApplyController extends Controller
                 ->with(['user', 'jobListing'])
                 ->orderBy('deleted_at', 'desc');
         } else {
-            $query = JobApply::with(['user', 'jobListing'])
+            $query = JobApply::with(['user', 'jobListing.recruiter.company'])
                 ->orderBy('created_at', 'desc');
         }
 
@@ -479,11 +479,11 @@ class JobApplyController extends Controller
             
             if ($showTrashed) {
                 $query = JobApply::onlyTrashed()
-                    ->with(['user', 'jobListing'])
+                    ->with(['user', 'jobListing.recruiter.company'])
                     ->orderBy('deleted_at', 'desc');
                 $filename = 'deleted_job_applications_' . date('Y-m-d_His') . '.csv';
             } else {
-                $query = JobApply::with(['user', 'jobListing'])
+                $query = JobApply::with(['user', 'jobListing.recruiter.company'])
                     ->orderBy('created_at', 'desc');
                 $filename = 'job_applications_' . date('Y-m-d_His') . '.csv';
             }

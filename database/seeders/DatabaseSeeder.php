@@ -26,7 +26,6 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->command->info('Base DatabaseSeeder is loaded. No default seeders executed.');
         // ============================================
         // USER SEEDERS
         // ============================================
@@ -37,9 +36,18 @@ class DatabaseSeeder extends Seeder
         // ]);
 
         // ============================================
-        // JOB LISTING SEEDERS
+        // COMPANY SEEDERS
         // ============================================
         // Requires: Users (recruiters)
+        // $this->command->info('Seeding companies...');
+        // $this->call([
+        //     CompanySeeder::class,
+        // ]);
+
+        // ============================================
+        // JOB LISTING SEEDERS
+        // ============================================
+        // Requires: Users (recruiters) and Companies
         // $this->command->info('Seeding job listings...');
         // $this->call([
         //     JobListingSeeder::class,
@@ -63,6 +71,6 @@ class DatabaseSeeder extends Seeder
         //     NotificationSeeder::class,
         // ]);
         
-        // $this->command->info('Database seeding completed!');
+        $this->command->info('Database seeding completed!');
     }
 }
