@@ -134,6 +134,9 @@ Route::controller(AuthController::class)->group(function () {
     Route::get('/register', 'showRegisterForm')->name('register');
     Route::post('/register', 'register');
     Route::get('/forgot-password', 'showForgotPasswordForm')->name('password.request');
+    Route::post('/forgot-password', 'sendPasswordResetLink')->name('password.email');
+    Route::get('/reset-password/{token}', 'showResetPasswordForm')->name('password.reset');
+    Route::post('/reset-password', 'resetPassword')->name('password.update');
 });
 
 // Email Verification Routes
