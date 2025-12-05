@@ -21,6 +21,9 @@ class UserFactory extends Factory
      * 
      * By default, users are unverified (must verify email manually).
      * Only admin users should be auto-verified.
+     * 
+     * SECURITY NOTE: Default password is only for development/testing.
+     * In production, always use strong, unique passwords.
      *
      * @return array<string, mixed>
      */
@@ -30,7 +33,7 @@ class UserFactory extends Factory
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => null, // Default: unverified (must verify manually)
-            'password' => static::$password ??= Hash::make('password'),
+            'password' => static::$password ??= Hash::make(Str::random(16)), // Random password for security
             'remember_token' => Str::random(10),
         ];
     }

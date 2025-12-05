@@ -8,8 +8,8 @@
     <div class="history-card">
         {{-- Header Section --}}
         <div class="history-header">
-            <h1 class="history-title">HISTORY</h1>
-            <p class="history-subtitle">Track your job applications</p>
+            <h1 class="history-title">{{ __('app.history.title') }}</h1>
+            <p class="history-subtitle">{{ __('app.history.subtitle') }}</p>
         </div>
 
         {{-- Success Message Alert --}}
@@ -19,8 +19,8 @@
                 <i class="fa-solid fa-circle-check"></i>
             </div>
             <div class="history-alert__content">
-                <h3 class="history-alert__title">Application Submitted Successfully!</h3>
-                <p class="history-alert__message">{{ session('status', 'Your job application has been submitted successfully!') }}</p>
+                <h3 class="history-alert__title">{{ __('app.history.application_submitted') }}</h3>
+                <p class="history-alert__message">{{ session('status', __('app.history.application_submitted')) }}</p>
             </div>
             <button type="button" class="history-alert__close" aria-label="Close alert" onclick="document.getElementById('historySuccessAlert').style.display='none'">
                 <i class="fa-solid fa-xmark"></i>
@@ -45,7 +45,7 @@
                 <div class="history-section-header">
                     <h2 class="history-section-title">
                         <i class="fa-solid fa-file-lines history-section-icon"></i>
-                        My Applications
+                        {{ __('app.history.my_applications') }}
                     </h2>
                     <span class="history-section-count" id="applicationsCount">{{ count($applications ?? []) }}</span>
                 </div>
@@ -72,7 +72,7 @@
                             <div class="history-item__meta">
                                 <div class="history-item__meta-item">
                                     <i class="fa-solid fa-calendar"></i>
-                                    <span>Applied on: {{ $application['appliedDate'] }}</span>
+                                    <span>{{ __('app.history.applied_on') }} {{ $application['appliedDate'] }}</span>
                                 </div>
                                 <div class="history-item__meta-item">
                                     <i class="fa-solid fa-location-dot"></i>
@@ -82,7 +82,7 @@
                         </div>
                         <div class="history-item__footer">
                             <button type="button" class="history-item__link" data-application-modal-open data-application-id="{{ $application['id'] }}">
-                                View Details
+                                {{ __('app.history.view_details') }}
                                 <i class="fa-solid fa-arrow-right"></i>
                             </button>
                         </div>
@@ -97,10 +97,10 @@
                     <div class="history-empty__icon">
                         <i class="fa-solid fa-file-lines"></i>
                     </div>
-                    <h3 class="history-empty__title">No Applications Yet</h3>
-                    <p class="history-empty__message">You haven't applied to any jobs yet. Start exploring available positions!</p>
+                    <h3 class="history-empty__title">{{ __('app.history.no_applications') }}</h3>
+                    <p class="history-empty__message">{{ __('app.history.no_applications_message') }}</p>
                     <a href="{{ route('jobs') }}" class="history-empty__action cta-primary cta-primary--brand">
-                        Browse Jobs
+                        {{ __('app.history.browse_jobs') }}
                     </a>
                 </div>
                 @else
@@ -108,10 +108,10 @@
                     <div class="history-empty__icon">
                         <i class="fa-solid fa-file-lines"></i>
                     </div>
-                    <h3 class="history-empty__title">No Applications Yet</h3>
-                    <p class="history-empty__message">You haven't applied to any jobs yet. Start exploring available positions!</p>
+                    <h3 class="history-empty__title">{{ __('app.history.no_applications') }}</h3>
+                    <p class="history-empty__message">{{ __('app.history.no_applications_message') }}</p>
                     <a href="{{ route('jobs') }}" class="history-empty__action cta-primary cta-primary--brand">
-                        Browse Jobs
+                        {{ __('app.history.browse_jobs') }}
                     </a>
                 </div>
                 @endif
@@ -126,8 +126,8 @@
     <div class="application-detail-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="application-modal-title" tabindex="-1">
         <div class="application-detail-modal__content">
             <div class="application-detail-modal__header">
-                <h2 class="application-detail-modal__title" id="application-modal-title">Application Details</h2>
-                <button type="button" class="application-detail-modal__close" data-application-modal-close aria-label="Close modal">
+                <h2 class="application-detail-modal__title" id="application-modal-title">{{ __('app.history.application_details') }}</h2>
+                <button type="button" class="application-detail-modal__close" data-application-modal-close aria-label="{{ __('app.history.close') }}">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
@@ -156,34 +156,34 @@
                 <div class="application-detail__section">
                     <h4 class="application-detail__section-title">
                         <i class="fa-solid fa-info-circle"></i>
-                        Application Information
+                        {{ __('app.history.application_information') }}
                     </h4>
                     <div class="application-detail__info-grid">
                         <div class="application-detail__info-item">
                             <div class="application-detail__info-label">
                                 <i class="fa-solid fa-calendar"></i>
-                                <span>Applied Date</span>
+                                <span>{{ __('app.history.applied_date') }}</span>
                             </div>
                             <div class="application-detail__info-value" id="modal-applied-date">January 15, 2024</div>
                         </div>
                         <div class="application-detail__info-item">
                             <div class="application-detail__info-label">
                                 <i class="fa-solid fa-location-dot"></i>
-                                <span>Location</span>
+                                <span>{{ __('app.history.location') }}</span>
                             </div>
                             <div class="application-detail__info-value" id="modal-location">Jakarta, Indonesia</div>
                         </div>
                         <div class="application-detail__info-item">
                             <div class="application-detail__info-label">
                                 <i class="fa-solid fa-briefcase"></i>
-                                <span>Position</span>
+                                <span>{{ __('app.history.position') }}</span>
                             </div>
                             <div class="application-detail__info-value" id="modal-position">Senior Data Analyst</div>
                         </div>
                         <div class="application-detail__info-item">
                             <div class="application-detail__info-label">
                                 <i class="fa-solid fa-building"></i>
-                                <span>Company</span>
+                                <span>{{ __('app.history.company') }}</span>
                             </div>
                             <div class="application-detail__info-value" id="modal-company-name">Anagata Executive</div>
                         </div>
@@ -193,20 +193,21 @@
                 <div class="application-detail__section">
                     <h4 class="application-detail__section-title">
                         <i class="fa-solid fa-file-lines"></i>
-                        Application Status
+                        {{ __('app.history.application_status') }}
                     </h4>
                     <div class="application-detail__status-info">
                         <p class="application-detail__status-message" id="modal-status-message">
-                            Your application is currently being reviewed by the hiring team. We will notify you once there's an update.
+                            {{ __('app.history.status_message') }}
                         </p>
                     </div>
                 </div>
 
                 {{-- Recruiter Notes Section --}}
+                {{-- Note: This section is NOT bilingual because it's data from recruiters --}}
                 <div class="application-detail__section" id="modal-notes-section" style="display: none;">
                     <h4 class="application-detail__section-title">
                         <i class="fa-solid fa-comment-dots"></i>
-                        Notes dari Recruiter
+                        {{ __('app.history.notes_from_recruiter') }}
                     </h4>
                     <div class="application-detail__notes-info">
                         <div class="p-3 bg-light rounded" id="modal-notes-content">
@@ -219,10 +220,10 @@
             <div class="application-detail-modal__footer">
                 <a href="#" class="application-detail-modal__btn application-detail-modal__btn--primary" id="modal-view-job-link" target="_blank">
                     <i class="fa-solid fa-external-link"></i>
-                    View Job Posting
+                    {{ __('app.history.view_job_posting') }}
                 </a>
                 <button type="button" class="application-detail-modal__btn application-detail-modal__btn--secondary" data-application-modal-close>
-                    Close
+                    {{ __('app.history.close') }}
                 </button>
             </div>
         </div>

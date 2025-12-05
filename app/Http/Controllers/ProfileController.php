@@ -82,8 +82,16 @@ class ProfileController extends Controller
                     Storage::disk('local')->delete('avatar/' . basename($user->avatar));
                 }
                 
-            $avatar = $request->file('avatar');
+                $avatar = $request->file('avatar');
                 $avatarName = time() . '_' . uniqid() . '.jpg';
+                
+                // Ensure avatar directory exists
+                $avatarDir = storage_path('app/avatar');
+                if (!file_exists($avatarDir)) {
+                    if (!mkdir($avatarDir, 0755, true)) {
+                        throw new \Exception('Failed to create avatar directory: ' . $avatarDir);
+                    }
+                }
                 
                 // Compress and resize image
                 $compressedImage = $this->compressImage($avatar);
@@ -94,23 +102,33 @@ class ProfileController extends Controller
                 // Store just the filename (not full path)
                 $validated['avatar'] = $avatarName;
             } catch (\Exception $e) {
-                Log::error('Avatar upload/compression error: ' . $e->getMessage());
+                Log::error('Avatar upload/compression error: ' . $e->getMessage(), [
+                    'exception' => $e,
+                    'trace' => $e->getTraceAsString(),
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine(),
+                ]);
                 return redirect()->back()
                     ->with('status', 'Failed to upload avatar. Please try again.')
                     ->with('toast_type', 'error')
                     ->withInput();
-        }
+            }
         }
 
         try {
-        // Update user profile
-        $user->update($validated);
+            // Update user profile
+            $user->update($validated);
 
             return redirect()->route('profile')
                 ->with('status', 'Profile updated successfully.')
                 ->with('toast_type', 'success');
         } catch (\Exception $e) {
-            Log::error('Profile update error: ' . $e->getMessage());
+            Log::error('Profile update error: ' . $e->getMessage(), [
+                'exception' => $e,
+                'trace' => $e->getTraceAsString(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
             return redirect()->back()
                 ->with('status', 'Failed to update profile. Please try again.')
                 ->with('toast_type', 'error')
@@ -123,6 +141,25 @@ class ProfileController extends Controller
      */
     private function compressImage($image, $maxWidth = 400, $maxHeight = 400, $quality = 85)
     {
+        // Check if GD extension is available
+        if (!extension_loaded('gd')) {
+            throw new \Exception('GD extension is not available. Please install php-gd extension.');
+        }
+        
+        // Verify required GD functions are available
+        $requiredFunctions = ['imagejpeg', 'imagecreatefromjpeg', 'imagecreatetruecolor', 'imagecopyresampled'];
+        $missingFunctions = [];
+        foreach ($requiredFunctions as $func) {
+            if (!function_exists($func)) {
+                $missingFunctions[] = $func;
+            }
+        }
+        
+        if (!empty($missingFunctions)) {
+            $missingList = implode(', ', $missingFunctions);
+            throw new \Exception("Required GD functions ({$missingList}) are not available. Please ensure GD extension is compiled with JPEG support.");
+        }
+        
         $imagePath = $image->getRealPath();
         $imageInfo = getimagesize($imagePath);
         

@@ -4,8 +4,18 @@
         <!-- User details -->
         <div class="user-profile text-center mt-3">
             <div class="">
-                <img src="{{ asset('dashboard/images/users/profile-default.jpg') }}" alt=""
-                    class="avatar-md rounded-circle" />
+                @php
+                    $user = auth()->user();
+                    $role = $user->role ?? 'user';
+                    $avatarRoute = ($role === 'recruiter') ? 'admin.recruiter.profile.avatar' : 'admin.profile.avatar';
+                @endphp
+                @if($user && $user->avatar)
+                    <img src="{{ route($avatarRoute, $user->avatar) }}" alt="Avatar"
+                        class="avatar-md rounded-circle" />
+                @else
+                    <img src="{{ asset('dashboard/images/users/profile-default.jpg') }}" alt="Avatar"
+                        class="avatar-md rounded-circle" />
+                @endif
             </div>
             <div class="mt-3">
                 <h4 class="font-size-16 mb-1">{{ auth()->user() ? auth()->user()->first_name . ' ' . auth()->user()->last_name : 'Admin' }}</h4>
@@ -33,7 +43,7 @@
 
                 <li>
                     @if ($role === 'recruiter')
-                        <a href="{{ route('recruiter.dashboard') }}" class="waves-effect">
+                        <a href="{{ route('admin.recruiter.dashboard') }}" class="waves-effect">
                             <i class="ri-dashboard-line"></i>
                             <span>Recruiter Dashboard</span>
                         </a>
@@ -109,7 +119,7 @@
                     </li>
                 @elseif ($role === 'recruiter')
                 <li>
-                    <a href="{{ route('recruiter.company.show') }}" class="waves-effect">
+                    <a href="{{ route('admin.recruiter.company.show') }}" class="waves-effect">
                         <i class="ri-building-line"></i>
                         <span>My Company</span>
                     </a>
@@ -121,8 +131,8 @@
                     </a>
                     <ul class="sub-menu" aria-expanded="true">
                         <li>
-                                <a href="{{ route('recruiter.job-listings.index') }}">My Job Listings</a>
-                                <a href="{{ route('recruiter.job-apply.index') }}">Job Applications</a>
+                                <a href="{{ route('admin.recruiter.job-listings.index') }}">My Job Listings</a>
+                                <a href="{{ route('admin.recruiter.job-apply.index') }}">Job Applications</a>
                         </li>
                     </ul>
                 </li>

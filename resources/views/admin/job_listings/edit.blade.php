@@ -387,7 +387,8 @@
                                     <label for="minimum_degree" class="form-label">Minimum Degree</label>
                                     <select class="form-select @error('minimum_degree') is-invalid @enderror" 
                                             id="minimum_degree" 
-                                            name="minimum_degree">
+                                            name="minimum_degree"
+                                            onchange="toggleOtherField('minimum_degree', 'minimum_degree_other_wrapper')">
                                         <option value="">Select minimum degree</option>
                                         <option value="Senior High School" {{ old('minimum_degree', $jobListing->minimum_degree) == 'Senior High School' ? 'selected' : '' }}>Senior High School</option>
                                         <option value="Diploma" {{ old('minimum_degree', $jobListing->minimum_degree) == 'Diploma' ? 'selected' : '' }}>Diploma</option>
@@ -401,12 +402,14 @@
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                     <div id="minimum_degree_other_wrapper" class="mt-2" style="display: {{ old('minimum_degree', $jobListing->minimum_degree) == 'Other' ? 'block' : 'none' }};">
+                                        <label for="minimum_degree_other" class="form-label">Custom Minimum Degree <span class="text-danger">*</span></label>
                                         <input type="text" 
                                                class="form-control @error('minimum_degree_other') is-invalid @enderror" 
                                                id="minimum_degree_other" 
                                                name="minimum_degree_other" 
                                                value="{{ old('minimum_degree_other', $jobListing->minimum_degree_other) }}" 
-                                               placeholder="Please specify minimum degree">
+                                               placeholder="Please specify minimum degree"
+                                               {{ old('minimum_degree', $jobListing->minimum_degree) == 'Other' ? 'required' : '' }}>
                                         @error('minimum_degree_other')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
@@ -576,10 +579,16 @@
             }
         });
 
-        // Handle "Other" option for enum fields
-        function toggleOtherField(selectId, wrapperId) {
+        // Handle "Other" option for enum fields (global function for inline handlers)
+        window.toggleOtherField = function(selectId, wrapperId) {
             const select = document.getElementById(selectId);
             const wrapper = document.getElementById(wrapperId);
+            
+            if (!select || !wrapper) {
+                console.error('Element not found:', selectId, wrapperId);
+                return;
+            }
+            
             const input = wrapper.querySelector('input');
             
             if (select.value === 'Other') {
@@ -603,21 +612,33 @@
         });
 
         // Add event listeners
-        document.getElementById('contract_type').addEventListener('change', function() {
-            toggleOtherField('contract_type', 'contract_type_other_wrapper');
-        });
+        const contractTypeSelect = document.getElementById('contract_type');
+        if (contractTypeSelect) {
+            contractTypeSelect.addEventListener('change', function() {
+                toggleOtherField('contract_type', 'contract_type_other_wrapper');
+            });
+        }
 
-        document.getElementById('experience_level').addEventListener('change', function() {
-            toggleOtherField('experience_level', 'experience_level_other_wrapper');
-        });
+        const experienceLevelSelect = document.getElementById('experience_level');
+        if (experienceLevelSelect) {
+            experienceLevelSelect.addEventListener('change', function() {
+                toggleOtherField('experience_level', 'experience_level_other_wrapper');
+            });
+        }
 
-        document.getElementById('industry').addEventListener('change', function() {
-            toggleOtherField('industry', 'industry_other_wrapper');
-        });
+        const industrySelect = document.getElementById('industry');
+        if (industrySelect) {
+            industrySelect.addEventListener('change', function() {
+                toggleOtherField('industry', 'industry_other_wrapper');
+            });
+        }
 
-        document.getElementById('minimum_degree').addEventListener('change', function() {
-            toggleOtherField('minimum_degree', 'minimum_degree_other_wrapper');
-        });
+        const minimumDegreeSelect = document.getElementById('minimum_degree');
+        if (minimumDegreeSelect) {
+            minimumDegreeSelect.addEventListener('change', function() {
+                toggleOtherField('minimum_degree', 'minimum_degree_other_wrapper');
+            });
+        }
 
         // Dynamic input fields for Responsibilities, Requirements, Key Skills, and Benefits
         function addDynamicField(containerId, inputName, placeholder, removeButtonClass) {

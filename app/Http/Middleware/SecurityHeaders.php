@@ -30,8 +30,8 @@ class SecurityHeaders
         // Forces browsers to use HTTPS for future connections
         $response->headers->set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
 
-        // Check if this is an admin route - use more permissive CSP for admin dashboard
-        $isAdminRoute = $request->is('admin/*');
+        // Check if this is an admin or recruiter route - use more permissive CSP for admin dashboard
+        $isAdminRoute = $request->is('admin/*') || $request->is('recruiter/*');
         
         // Content-Security-Policy (CSP) with nonce for inline scripts
         // Prevents XSS attacks by controlling which resources can be loaded

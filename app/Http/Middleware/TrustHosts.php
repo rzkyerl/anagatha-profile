@@ -14,6 +14,10 @@ class TrustHosts extends Middleware
     public function hosts(): array
     {
         return [
+            'anagataexecutive.co.id',
+            'www.anagataexecutive.co.id',
+            'anagataexecutive.com',
+            'www.anagataexecutive.com',
             $this->allSubdomainsOfApplicationUrl(),
             'healthcheck.railway.app', // Allow Railway health checks
         ];

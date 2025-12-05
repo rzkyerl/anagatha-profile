@@ -6,6 +6,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Dashboard') | Anagata Executive Dashboard</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
@@ -159,6 +160,36 @@
 
 <!-- App js -->
 <script src="{{ $baseUrl }}/dashboard/js/app.js"></script>
+
+<!-- Setup CSRF Token for AJAX requests -->
+<script>
+    // Setup CSRF token for all AJAX requests
+    (function() {
+        var token = document.querySelector('meta[name="csrf-token"]');
+        if (token) {
+            // Setup for jQuery AJAX
+            if (typeof jQuery !== 'undefined') {
+                jQuery.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': token.getAttribute('content')
+                    }
+                });
+            }
+            // Setup for fetch API
+            if (typeof fetch !== 'undefined') {
+                var originalFetch = window.fetch;
+                window.fetch = function(url, options) {
+                    options = options || {};
+                    options.headers = options.headers || {};
+                    if (!options.headers['X-CSRF-TOKEN']) {
+                        options.headers['X-CSRF-TOKEN'] = token.getAttribute('content');
+                    }
+                    return originalFetch(url, options);
+                };
+            }
+        }
+    })();
+</script>
 
 <!-- Include reusable DataTables script -->
 @include('admin.admin_layouts.partials.datatables-script')

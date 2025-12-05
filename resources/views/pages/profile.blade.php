@@ -39,7 +39,7 @@
     <div class="profile-card">
         {{-- Header Section --}}
         <div class="profile-header">
-            <h1 class="profile-title">PROFILE</h1>
+            <h1 class="profile-title">{{ __('app.profile.title') }}</h1>
         </div>
 
         <form method="POST" action="{{ route('profile.update') }}" class="profile-form" id="profileForm" enctype="multipart/form-data">
@@ -51,7 +51,7 @@
                 <div class="profile-left">
                     {{-- Avatar Picture Section --}}
                     <div class="profile-avatar-section">
-                        <h2 class="profile-section-title">Avatar picture</h2>
+                        <h2 class="profile-section-title">{{ __('app.profile.avatar_picture') }}</h2>
                         <div class="avatar-upload-wrapper">
                             <input 
                                 type="file" 
@@ -64,7 +64,7 @@
                                 <div class="avatar-placeholder" id="avatarPlaceholder" @if(auth()->user()?->avatar) style="display: none;" @endif>
                                     <i class="fa-solid fa-user"></i>
                                 </div>
-                                <span class="avatar-upload-text">{{ auth()->user()?->avatar ? 'Change Picture' : 'Upload Picture' }}</span>
+                                <span class="avatar-upload-text">{{ auth()->user()?->avatar ? __('app.profile.change_picture') : __('app.profile.upload_picture') }}</span>
                             </label>
                             <div class="avatar-preview-image" id="avatarPreview" @if(auth()->user()?->avatar) style="display: block;" @endif>
                                 @if(auth()->user()?->avatar)
@@ -76,7 +76,7 @@
 
                     {{-- Social Media Section --}}
                     <div class="profile-social-section">
-                        <h2 class="profile-section-title">Social Media</h2>
+                        <h2 class="profile-section-title">{{ __('app.profile.social_media') }}</h2>
                         <div class="social-media-list">
                             <div class="social-media-item">
                                 <div class="social-media-icon social-media-icon--github">
@@ -88,7 +88,7 @@
                                         id="github" 
                                         name="github" 
                                         class="social-media-input @error('github') is-invalid @enderror" 
-                                        placeholder="Add Github"
+                                        placeholder="{{ __('app.profile.add_github') }}"
                                         value="{{ old('github', auth()->user()?->github ?? '') }}"
                                     />
                                 </div>
@@ -104,7 +104,7 @@
                                         id="linkedin" 
                                         name="linkedin" 
                                         class="social-media-input @error('linkedin') is-invalid @enderror" 
-                                        placeholder="Add Linkedin"
+                                        placeholder="{{ __('app.profile.add_linkedin') }}"
                                         value="{{ old('linkedin', auth()->user()?->linkedin ?? '') }}"
                                     />
                                 </div>
@@ -120,7 +120,7 @@
                                         id="x" 
                                         name="x" 
                                         class="social-media-input @error('x') is-invalid @enderror" 
-                                        placeholder="Add X"
+                                        placeholder="{{ __('app.profile.add_x') }}"
                                         value="{{ old('x', auth()->user()?->x ?? '') }}"
                                     />
                                 </div>
@@ -136,7 +136,7 @@
                                         id="instagram" 
                                         name="instagram" 
                                         class="social-media-input @error('instagram') is-invalid @enderror" 
-                                        placeholder="Add Instagram"
+                                        placeholder="{{ __('app.profile.add_instagram') }}"
                                         value="{{ old('instagram', auth()->user()?->instagram ?? '') }}"
                                     />
                                 </div>
@@ -150,7 +150,7 @@
                     <div class="profile-form-fields">
                         <div class="profile-form-group">
                             <label for="first_name" class="profile-form-label">
-                                First Name:
+                                {{ __('app.profile.first_name') }}
                             </label>
                             <div class="profile-form-input-wrapper">
                                 <input 
@@ -158,7 +158,7 @@
                                     id="first_name" 
                                     name="first_name" 
                                     class="profile-form-input @error('first_name') is-invalid @enderror" 
-                                    placeholder="Enter your first name"
+                                    placeholder="{{ __('app.profile.first_name_placeholder') }}"
                                     value="{{ old('first_name', auth()->user()?->first_name ?? '') }}"
                                     required
                                 />
@@ -171,7 +171,7 @@
 
                         <div class="profile-form-group">
                             <label for="last_name" class="profile-form-label">
-                                Last Name:
+                                {{ __('app.profile.last_name') }}
                             </label>
                             <div class="profile-form-input-wrapper">
                                 <input 
@@ -179,7 +179,7 @@
                                     id="last_name" 
                                     name="last_name" 
                                     class="profile-form-input @error('last_name') is-invalid @enderror" 
-                                    placeholder="Enter your last name"
+                                    placeholder="{{ __('app.profile.last_name_placeholder') }}"
                                     value="{{ old('last_name', auth()->user()?->last_name ?? '') }}"
                                     required
                                 />
@@ -192,7 +192,7 @@
 
                         <div class="profile-form-group">
                             <label for="email" class="profile-form-label">
-                                E-mail:
+                                {{ __('app.profile.email') }}
                             </label>
                             <div class="profile-form-input-wrapper">
                                 <input 
@@ -200,7 +200,7 @@
                                     id="email" 
                                     name="email" 
                                     class="profile-form-input @error('email') is-invalid @enderror" 
-                                    placeholder="your.email@example.com"
+                                    placeholder="{{ __('app.profile.email_placeholder') }}"
                                     value="{{ old('email', auth()->user()?->email ?? '') }}"
                                     required
                                 />
@@ -213,7 +213,7 @@
 
                         <div class="profile-form-group">
                             <label for="phone" class="profile-form-label">
-                                Number Phone:
+                                {{ __('app.profile.phone') }}
                             </label>
                             <div class="profile-form-input-wrapper">
                                 <input 
@@ -221,7 +221,7 @@
                                     id="phone" 
                                     name="phone" 
                                     class="profile-form-input @error('phone') is-invalid @enderror" 
-                                    placeholder="+62 812-3456-7890"
+                                    placeholder="{{ __('app.profile.phone_placeholder') }}"
                                     value="{{ old('phone', auth()->user()?->phone ?? '') }}"
                                 />
                                 <i class="fa-solid fa-circle-info profile-form-info-icon"></i>
@@ -233,7 +233,7 @@
 
                         <div class="profile-form-group">
                             <label for="password" class="profile-form-label">
-                                Password:
+                                {{ __('app.profile.password') }}
                             </label>
                             <div class="profile-form-input-wrapper">
                                 <input 
@@ -241,7 +241,7 @@
                                     id="password" 
                                     name="password" 
                                     class="profile-form-input @error('password') is-invalid @enderror" 
-                                    placeholder="Enter new password"
+                                    placeholder="{{ __('app.profile.password_placeholder') }}"
                                 />
                                 <i class="fa-solid fa-circle-info profile-form-info-icon"></i>
                             </div>
@@ -252,7 +252,7 @@
 
                         <div class="profile-form-group">
                             <label for="password_confirmation" class="profile-form-label">
-                                Repeat Password:
+                                {{ __('app.profile.repeat_password') }}
                             </label>
                             <div class="profile-form-input-wrapper">
                                 <input 
@@ -260,7 +260,7 @@
                                     id="password_confirmation" 
                                     name="password_confirmation" 
                                     class="profile-form-input @error('password_confirmation') is-invalid @enderror" 
-                                    placeholder="Repeat new password"
+                                    placeholder="{{ __('app.profile.repeat_password_placeholder') }}"
                                 />
                                 <i class="fa-solid fa-circle-info profile-form-info-icon"></i>
                             </div>
@@ -275,7 +275,7 @@
             {{-- Submit Button --}}
             <div class="profile-actions">
                 <button type="submit" class="profile-update-btn" id="updateBtn">
-                    Update Information
+                    {{ __('app.profile.update_information') }}
                 </button>
             </div>
         </form>
@@ -306,7 +306,7 @@
                         avatarPlaceholder.style.display = 'none';
                         }
                         if (avatarUploadText) {
-                        avatarUploadText.textContent = 'Change Picture';
+                        avatarUploadText.textContent = '{{ __('app.profile.change_picture') }}';
                         }
                     };
                     reader.readAsDataURL(file);

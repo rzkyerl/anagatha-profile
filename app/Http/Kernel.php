@@ -14,7 +14,7 @@ class Kernel extends HttpKernel
      * @var array<int, class-string|string>
      */
     protected $middleware = [
-        // \App\Http\Middleware\TrustHosts::class,
+        \App\Http\Middleware\TrustHosts::class,
         \App\Http\Middleware\TrustProxies::class,
         \Illuminate\Http\Middleware\HandleCors::class,
         \App\Http\Middleware\PreventRequestsDuringMaintenance::class,
@@ -69,5 +69,7 @@ class Kernel extends HttpKernel
         'role.user' => \App\Http\Middleware\EnsureUserRole::class,
         'role.recruiter.admin' => \App\Http\Middleware\EnsureRecruiterOrAdmin::class,
         'role.admin' => \App\Http\Middleware\EnsureAdmin::class,
+        'domain.admin' => \App\Http\Middleware\EnsureAdminDomain::class,
+        'domain.public' => \App\Http\Middleware\EnsurePublicDomain::class,
     ];
 }

@@ -12,16 +12,16 @@
             <div class="job-application-logo">
                 <img src="/assets/hero-sec.png" alt="Anagata Executive Logo" />
             </div>
-            <h1 class="job-application-title">Job Application Form</h1>
+            <h1 class="job-application-title">{{ __('app.job_application.title') }}</h1>
             @if(isset($job) && isset($job['title']))
                 <div class="job-application-job-info">
-                    <p class="job-application-job-title">Applying for: <strong>{{ $job['title'] }}</strong></p>
+                    <p class="job-application-job-title">{{ __('app.job_application.applying_for') }} <strong>{{ $job['title'] }}</strong></p>
                     @if(isset($job['company']))
-                        <p class="job-application-job-company">at {{ $job['company'] }}</p>
+                        <p class="job-application-job-company">{{ __('app.job_application.at') }} {{ $job['company'] }}</p>
                     @endif
                 </div>
             @endif
-            <p class="job-application-subtitle">Please fill out all required fields to complete your application</p>
+            <p class="job-application-subtitle">{{ __('app.job_application.subtitle') }}</p>
         </div>
 
         {{-- Already Applied Warning --}}
@@ -30,26 +30,26 @@
                 <div style="font-size: 48px; color: #f59e0b; margin-bottom: 10px;">
                     <i class="fa-solid fa-circle-check"></i>
                 </div>
-                <h2 style="color: #92400e; margin-bottom: 10px; font-size: 24px;">You Have Already Applied!</h2>
+                <h2 style="color: #92400e; margin-bottom: 10px; font-size: 24px;">{{ __('app.job_application.already_applied') }}</h2>
                 <p style="color: #78350f; margin-bottom: 15px; font-size: 16px;">
-                    You have already submitted an application for this job position. Please check your application history to view the status.
+                    {{ __('app.job_application.already_applied_message') }}
                 </p>
                 @if(isset($existingApplication))
                     <p style="color: #78350f; margin-bottom: 15px; font-size: 14px;">
-                        <strong>Application Status:</strong> 
+                        <strong>{{ __('app.job_application.application_status_label') }}</strong> 
                         <span style="text-transform: capitalize;">{{ $existingApplication->status }}</span>
                     </p>
                     <p style="color: #78350f; margin-bottom: 20px; font-size: 14px;">
-                        <strong>Applied Date:</strong> 
+                        <strong>{{ __('app.job_application.applied_date_label') }}</strong> 
                         {{ $existingApplication->applied_at ? \Carbon\Carbon::parse($existingApplication->applied_at)->format('F d, Y') : 'N/A' }}
                     </p>
                 @endif
                 <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
                     <a href="{{ route('history') }}" style="display: inline-block; padding: 12px 24px; background-color: #f59e0b; color: white; text-decoration: none; border-radius: 6px; font-weight: 600; transition: background-color 0.3s;">
-                        <i class="fa-solid fa-history"></i> View Application History
+                        <i class="fa-solid fa-history"></i> {{ __('app.job_application.view_application_history') }}
                     </a>
                     <a href="{{ route('jobs') }}" style="display: inline-block; padding: 12px 24px; background-color: #6b7280; color: white; text-decoration: none; border-radius: 6px; font-weight: 600; transition: background-color 0.3s;">
-                        <i class="fa-solid fa-briefcase"></i> Browse Other Jobs
+                        <i class="fa-solid fa-briefcase"></i> {{ __('app.job_application.browse_other_jobs') }}
                     </a>
                 </div>
             </div>
@@ -72,12 +72,12 @@
             <div class="form-section">
                 <h2 class="form-section-title">
                     <i class="fa-solid fa-user form-section-icon"></i>
-                    Personal Information
+                    {{ __('app.job_application.personal_information') }}
                 </h2>
                 <div class="form-grid">
                     <div class="form-group">
                         <label for="full_name" class="form-label">
-                            Full Name <span class="required">*</span>
+                            {{ __('app.job_application.full_name') }} <span class="required">*</span>
                         </label>
                         <div class="form-input-wrapper">
                             <i class="form-input-icon fa-solid fa-user"></i>
@@ -86,7 +86,7 @@
                                 id="full_name" 
                                 name="full_name" 
                                 class="form-input @error('full_name') is-invalid @enderror" 
-                                placeholder="Enter your full name"
+                                placeholder="{{ __('app.job_application.full_name_placeholder') }}"
                                 value="{{ old('full_name') }}"
                                 required 
                                 autofocus
@@ -99,7 +99,7 @@
 
                     <div class="form-group">
                         <label for="email" class="form-label">
-                            Email Address <span class="required">*</span>
+                            {{ __('app.job_application.email_address') }} <span class="required">*</span>
                         </label>
                         <div class="form-input-wrapper">
                             <i class="form-input-icon fa-solid fa-envelope"></i>
@@ -108,7 +108,7 @@
                                 id="email" 
                                 name="email" 
                                 class="form-input @error('email') is-invalid @enderror" 
-                                placeholder="your.email@example.com"
+                                placeholder="{{ __('app.job_application.email_placeholder') }}"
                                 value="{{ old('email') }}"
                                 required
                             />
@@ -120,7 +120,7 @@
 
                     <div class="form-group">
                         <label for="phone" class="form-label">
-                            Phone Number <span class="required">*</span>
+                            {{ __('app.job_application.phone_number') }} <span class="required">*</span>
                         </label>
                         <div class="form-input-wrapper">
                             <i class="form-input-icon fa-solid fa-phone"></i>
@@ -129,7 +129,7 @@
                                 id="phone" 
                                 name="phone" 
                                 class="form-input @error('phone') is-invalid @enderror" 
-                                placeholder="+62 812-3456-7890"
+                                placeholder="{{ __('app.job_application.phone_placeholder') }}"
                                 value="{{ old('phone') }}"
                                 required
                             />
@@ -141,7 +141,7 @@
 
                     <div class="form-group">
                         <label for="address" class="form-label">
-                            Address / Location <span class="required">*</span>
+                            {{ __('app.job_application.address_location') }} <span class="required">*</span>
                         </label>
                         <div class="form-input-wrapper">
                             <i class="form-input-icon fa-solid fa-location-dot"></i>
@@ -150,7 +150,7 @@
                                 id="address" 
                                 name="address" 
                                 class="form-input @error('address') is-invalid @enderror" 
-                                placeholder="City, Province, Country"
+                                placeholder="{{ __('app.job_application.address_placeholder') }}"
                                 value="{{ old('address') }}"
                                 required
                             />
@@ -166,12 +166,12 @@
             <div class="form-section">
                 <h2 class="form-section-title">
                     <i class="fa-solid fa-briefcase form-section-icon"></i>
-                    Professional Information
+                    {{ __('app.job_application.professional_information') }}
                 </h2>
                 <div class="form-grid">
                     <div class="form-group">
                         <label for="current_salary" class="form-label">
-                            Current Salary
+                            {{ __('app.job_application.current_salary') }}
                         </label>
                         <div class="form-input-wrapper">
                             <i class="form-input-icon fa-solid fa-dollar-sign"></i>
@@ -180,7 +180,7 @@
                                 id="current_salary" 
                                 name="current_salary" 
                                 class="form-input @error('current_salary') is-invalid @enderror" 
-                                placeholder="e.g., 5,000,000 IDR"
+                                placeholder="{{ __('app.job_application.current_salary_placeholder') }}"
                                 value="{{ old('current_salary') }}"
                             />
                         </div>
@@ -191,7 +191,7 @@
 
                     <div class="form-group">
                         <label for="expected_salary" class="form-label">
-                            Expected Salary <span class="required">*</span>
+                            {{ __('app.job_application.expected_salary') }} <span class="required">*</span>
                         </label>
                         <div class="form-input-wrapper">
                             <i class="form-input-icon fa-solid fa-dollar-sign"></i>
@@ -200,7 +200,7 @@
                                 id="expected_salary" 
                                 name="expected_salary" 
                                 class="form-input @error('expected_salary') is-invalid @enderror" 
-                                placeholder="e.g., 7,000,000 IDR"
+                                placeholder="{{ __('app.job_application.expected_salary_placeholder') }}"
                                 value="{{ old('expected_salary') }}"
                                 required
                             />
@@ -212,7 +212,7 @@
 
                     <div class="form-group">
                         <label for="availability" class="form-label">
-                            Availability <span class="required">*</span>
+                            {{ __('app.job_application.availability') }} <span class="required">*</span>
                         </label>
                         <div class="form-input-wrapper">
                             <i class="form-input-icon fa-solid fa-calendar-check"></i>
@@ -222,12 +222,12 @@
                                 class="form-input @error('availability') is-invalid @enderror" 
                                 required
                             >
-                                <option value="">Select availability</option>
-                                <option value="immediate" {{ old('availability') == 'immediate' ? 'selected' : '' }}>Immediate</option>
-                                <option value="2-weeks" {{ old('availability') == '2-weeks' ? 'selected' : '' }}>Within 2 weeks</option>
-                                <option value="1-month" {{ old('availability') == '1-month' ? 'selected' : '' }}>Within 1 month</option>
-                                <option value="2-months" {{ old('availability') == '2-months' ? 'selected' : '' }}>Within 2 months</option>
-                                <option value="negotiable" {{ old('availability') == 'negotiable' ? 'selected' : '' }}>Negotiable</option>
+                                <option value="">{{ __('app.job_application.select_availability') }}</option>
+                                <option value="immediate" {{ old('availability') == 'immediate' ? 'selected' : '' }}>{{ __('app.job_application.immediate') }}</option>
+                                <option value="2-weeks" {{ old('availability') == '2-weeks' ? 'selected' : '' }}>{{ __('app.job_application.within_2_weeks') }}</option>
+                                <option value="1-month" {{ old('availability') == '1-month' ? 'selected' : '' }}>{{ __('app.job_application.within_1_month') }}</option>
+                                <option value="2-months" {{ old('availability') == '2-months' ? 'selected' : '' }}>{{ __('app.job_application.within_2_months') }}</option>
+                                <option value="negotiable" {{ old('availability') == 'negotiable' ? 'selected' : '' }}>{{ __('app.job_application.negotiable') }}</option>
                             </select>
                         </div>
                         @error('availability')
@@ -237,7 +237,7 @@
 
                     <div class="form-group">
                         <label for="relocation" class="form-label">
-                            Relocation Readiness <span class="required">*</span>
+                            {{ __('app.job_application.relocation_readiness') }} <span class="required">*</span>
                         </label>
                         <div class="form-input-wrapper">
                             <i class="form-input-icon fa-solid fa-route"></i>
@@ -247,10 +247,10 @@
                                 class="form-input @error('relocation') is-invalid @enderror" 
                                 required
                             >
-                                <option value="">Select option</option>
-                                <option value="Yes" {{ old('relocation') == 'Yes' ? 'selected' : '' }}>Yes</option>
-                                <option value="No" {{ old('relocation') == 'No' ? 'selected' : '' }}>No</option>
-                                <option value="Other" {{ old('relocation') == 'Other' ? 'selected' : '' }}>Other</option>
+                                <option value="">{{ __('app.job_application.select_option') }}</option>
+                                <option value="Yes" {{ old('relocation') == 'Yes' ? 'selected' : '' }}>{{ __('app.job_application.yes') }}</option>
+                                <option value="No" {{ old('relocation') == 'No' ? 'selected' : '' }}>{{ __('app.job_application.no') }}</option>
+                                <option value="Other" {{ old('relocation') == 'Other' ? 'selected' : '' }}>{{ __('app.job_application.other') }}</option>
                             </select>
                         </div>
                         @error('relocation')
@@ -261,7 +261,7 @@
                     {{-- Other Relocation Field (shown when "Other" is selected) --}}
                     <div class="form-group relocation-other-group" id="relocation_other_container" style="display: {{ old('relocation') == 'Other' ? 'block' : 'none' }};">
                         <label for="relocation_other" class="form-label">
-                            Other Relocation Option <span class="required">*</span>
+                            {{ __('app.job_application.other_relocation_option') }} <span class="required">*</span>
                         </label>
                         <div class="form-input-wrapper">
                             <i class="form-input-icon fa-solid fa-route"></i>
@@ -270,7 +270,7 @@
                                 id="relocation_other" 
                                 name="relocation_other" 
                                 class="form-input @error('relocation_other') is-invalid @enderror" 
-                                placeholder="Enter custom relocation option"
+                                placeholder="{{ __('app.job_application.other_relocation_placeholder') }}"
                                 value="{{ old('relocation_other') }}"
                             />
                         </div>
@@ -285,12 +285,12 @@
             <div class="form-section">
                 <h2 class="form-section-title">
                     <i class="fa-solid fa-link form-section-icon"></i>
-                    Professional Profiles
+                    {{ __('app.job_application.professional_profiles') }}
                 </h2>
                 <div class="form-grid">
                     <div class="form-group">
                         <label for="linkedin" class="form-label">
-                            LinkedIn Profile
+                            {{ __('app.job_application.linkedin_profile') }}
                         </label>
                         <div class="form-input-wrapper">
                             <i class="form-input-icon fa-brands fa-linkedin"></i>
@@ -299,7 +299,7 @@
                                 id="linkedin" 
                                 name="linkedin" 
                                 class="form-input @error('linkedin') is-invalid @enderror" 
-                                placeholder="https://linkedin.com/in/yourprofile"
+                                placeholder="{{ __('app.job_application.linkedin_placeholder') }}"
                                 value="{{ old('linkedin') }}"
                             />
                         </div>
@@ -310,7 +310,7 @@
 
                     <div class="form-group">
                         <label for="github" class="form-label">
-                            GitHub Profile
+                            {{ __('app.job_application.github_profile') }}
                         </label>
                         <div class="form-input-wrapper">
                             <i class="form-input-icon fa-brands fa-github"></i>
@@ -319,7 +319,7 @@
                                 id="github" 
                                 name="github" 
                                 class="form-input @error('github') is-invalid @enderror" 
-                                placeholder="https://github.com/yourusername"
+                                placeholder="{{ __('app.job_application.github_placeholder') }}"
                                 value="{{ old('github') }}"
                             />
                         </div>
@@ -330,7 +330,7 @@
 
                     <div class="form-group">
                         <label for="social_media" class="form-label">
-                            Social Media 
+                            {{ __('app.job_application.social_media') }}
                         </label>
                         <div class="form-input-wrapper">
                             <i class="form-input-icon fa-solid fa-share-nodes"></i>
@@ -339,7 +339,7 @@
                                 id="social_media" 
                                 name="social_media" 
                                 class="form-input @error('social_media') is-invalid @enderror" 
-                                placeholder="https://your-social-media-profile.com"
+                                placeholder="{{ __('app.job_application.social_media_placeholder') }}"
                                 value="{{ old('social_media') }}"
                             />
                         </div>
@@ -354,12 +354,12 @@
             <div class="form-section">
                 <h2 class="form-section-title">
                     <i class="fa-solid fa-file-upload form-section-icon"></i>
-                    Documents
+                    {{ __('app.job_application.documents') }}
                 </h2>
                 <div class="form-grid">
                     <div class="form-group">
                         <label for="cv" class="form-label">
-                            CV / Resume <span class="required">*</span>
+                            {{ __('app.job_application.cv_resume') }} <span class="required">*</span>
                         </label>
                         <div class="file-upload-wrapper">
                             <input 
@@ -372,8 +372,8 @@
                             />
                             <label for="cv" class="file-upload-label">
                                 <i class="fa-solid fa-cloud-arrow-up file-upload-icon"></i>
-                                <span class="file-upload-text">Choose file or drag it here</span>
-                                <span class="file-upload-hint">PDF, DOC, DOCX (Max 5MB)</span>
+                                <span class="file-upload-text">{{ __('app.job_application.choose_file') }}</span>
+                                <span class="file-upload-hint">{{ __('app.job_application.file_hint_cv') }}</span>
                             </label>
                             <div class="file-upload-preview"></div>
                         </div>
@@ -384,7 +384,7 @@
 
                     <div class="form-group">
                         <label for="portfolio_file" class="form-label">
-                            Portfolio File
+                            {{ __('app.job_application.portfolio_file') }}
                         </label>
                         <div class="file-upload-wrapper">
                             <input 
@@ -396,8 +396,8 @@
                             />
                             <label for="portfolio_file" class="file-upload-label">
                                 <i class="fa-solid fa-cloud-arrow-up file-upload-icon"></i>
-                                <span class="file-upload-text">Choose file or drag it here</span>
-                                <span class="file-upload-hint">PDF, ZIP, RAR (Max 10MB)</span>
+                                <span class="file-upload-text">{{ __('app.job_application.choose_file') }}</span>
+                                <span class="file-upload-hint">{{ __('app.job_application.file_hint_portfolio') }}</span>
                             </label>
                             <div class="file-upload-preview"></div>
                         </div>
@@ -408,7 +408,7 @@
 
                     <div class="form-group form-group--full">
                         <label for="cover_letter" class="form-label">
-                            Cover Letter
+                            {{ __('app.job_application.cover_letter') }}
                         </label>
                         <div class="form-input-wrapper form-input-wrapper--textarea">
                             <i class="form-input-icon fa-solid fa-file-lines"></i>
@@ -416,7 +416,7 @@
                                 id="cover_letter" 
                                 name="cover_letter" 
                                 class="form-input form-input--textarea @error('cover_letter') is-invalid @enderror" 
-                                placeholder="Write your cover letter here..."
+                                placeholder="{{ __('app.job_application.cover_letter_placeholder') }}"
                                 rows="6"
                             >{{ old('cover_letter') }}</textarea>
                         </div>
@@ -431,12 +431,12 @@
             <div class="form-section">
                 <h2 class="form-section-title">
                     <i class="fa-solid fa-comment-dots form-section-icon"></i>
-                    Additional Information
+                    {{ __('app.job_application.additional_information') }}
                 </h2>
                 <div class="form-grid">
                     <div class="form-group form-group--full">
                         <label for="reason_applying" class="form-label">
-                            Reason for Applying <span class="required">*</span>
+                            {{ __('app.job_application.reason_applying') }} <span class="required">*</span>
                         </label>
                         <div class="form-input-wrapper form-input-wrapper--textarea">
                             <i class="form-input-icon fa-solid fa-question-circle"></i>
@@ -444,7 +444,7 @@
                                 id="reason_applying" 
                                 name="reason_applying" 
                                 class="form-input form-input--textarea @error('reason_applying') is-invalid @enderror" 
-                                placeholder="Tell us why you want to join our team..."
+                                placeholder="{{ __('app.job_application.reason_applying_placeholder') }}"
                                 rows="4"
                                 required
                             >{{ old('reason_applying') }}</textarea>
@@ -456,7 +456,7 @@
 
                     <div class="form-group form-group--full">
                         <label for="relevant_experience" class="form-label">
-                            Relevant Experience
+                            {{ __('app.job_application.relevant_experience') }}
                         </label>
                         <div class="form-input-wrapper form-input-wrapper--textarea">
                             <i class="form-input-icon fa-solid fa-briefcase"></i>
@@ -464,7 +464,7 @@
                                 id="relevant_experience" 
                                 name="relevant_experience" 
                                 class="form-input form-input--textarea @error('relevant_experience') is-invalid @enderror" 
-                                placeholder="Describe your relevant work experience and achievements..."
+                                placeholder="{{ __('app.job_application.relevant_experience_placeholder') }}"
                                 rows="5"
                             >{{ old('relevant_experience') }}</textarea>
                         </div>
@@ -480,20 +480,20 @@
                 @if(isset($hasApplied) && $hasApplied)
                     <button type="button" class="job-application-submit-btn" id="submitBtn" disabled style="opacity: 0.5; cursor: not-allowed;">
                         <i class="fa-solid fa-check-circle"></i>
-                        Already Applied
+                        {{ __('app.job_application.already_applied_btn') }}
                     </button>
                     <p class="form-note" style="color: #f59e0b;">
                         <i class="fa-solid fa-info-circle"></i>
-                        You have already submitted an application for this job. Check your application history for status updates.
+                        {{ __('app.job_application.already_applied_message') }}
                     </p>
                 @else
                 <button type="submit" class="job-application-submit-btn" id="submitBtn">
                     <i class="fa-solid fa-paper-plane"></i>
-                    Submit Application
+                    {{ __('app.job_application.submit_application') }}
                 </button>
                 <p class="form-note">
                     <i class="fa-solid fa-info-circle"></i>
-                    By submitting this form, you agree to our terms and conditions. All fields marked with <span class="required">*</span> are required.
+                    {{ __('app.job_application.form_note') }} <span class="required">*</span> {{ __('app.job_application.are_required') }}
                 </p>
                 @endif
             </div>
@@ -510,13 +510,13 @@
                 <div class="job-application-error-modal__icon">
                     <i class="fa-solid fa-circle-exclamation"></i>
                 </div>
-                <h2 class="job-application-error-modal__title" id="error-modal-title">Validation Error</h2>
+                <h2 class="job-application-error-modal__title" id="error-modal-title">{{ __('app.job_application.validation_error') }}</h2>
                 <button type="button" class="job-application-error-modal__close" aria-label="Close modal" data-error-modal-close>
                     <i class="fa-solid fa-xmark" aria-hidden="true"></i>
                 </button>
             </div>
             <div class="job-application-error-modal__body">
-                <p class="job-application-error-modal__message">Please fill in all required fields correctly.</p>
+                <p class="job-application-error-modal__message">{{ __('app.job_application.fill_required_fields') }}</p>
                 <ul class="job-application-error-modal__errors" id="errorModalErrorsList">
                     <!-- Errors will be populated here -->
                     @if($errors->any())
@@ -528,7 +528,7 @@
             </div>
             <div class="job-application-error-modal__actions">
                 <button type="button" class="job-application-error-modal__btn job-application-error-modal__btn--primary" data-error-modal-close>
-                    OK, I'll fix it
+                    {{ __('app.job_application.ok_fix') }}
                 </button>
             </div>
         </div>
@@ -543,22 +543,22 @@
             <div class="job-application-success-modal__icon">
                 <i class="fa-solid fa-circle-check"></i>
             </div>
-            <h2 class="job-application-success-modal__title" id="success-modal-title">Application Submitted Successfully!</h2>
+            <h2 class="job-application-success-modal__title" id="success-modal-title">{{ __('app.job_application.application_submitted_success') }}</h2>
             <p class="job-application-success-modal__message">
-                Your job application has been successfully submitted. We will review your application and get back to you soon.
+                {{ __('app.job_application.application_submitted_message') }}
             </p>
             <p class="job-application-success-modal__info">
                 <i class="fa-solid fa-info-circle"></i>
-                You can track the status and view the continuation of your application in the History
+                {{ __('app.job_application.track_status_info') }}
             </p>
             <div class="job-application-success-modal__actions">
                 <a href="{{ route('history') }}" class="job-application-success-modal__btn job-application-success-modal__btn--primary">
                     <i class="fa-solid fa-history"></i>
-                    View History
+                    {{ __('app.job_application.view_history') }}
                 </a>
                 <button type="button" class="job-application-success-modal__btn job-application-success-modal__btn--secondary" data-success-modal-close>
                     <i class="fa-solid fa-xmark"></i>
-                    Close
+                    {{ __('app.history.close') }}
                 </button>
             </div>
         </div>
@@ -567,6 +567,14 @@
 
 @push('scripts')
 <script nonce="{{ $cspNonce ?? '' }}">
+    // Translation strings for JavaScript
+    const translations = {
+        chooseFile: @json(__('app.job_application.choose_file')),
+        fileHintCv: @json(__('app.job_application.file_hint_cv')),
+        fileHintPortfolio: @json(__('app.job_application.file_hint_portfolio')),
+        fileUploadedSuccess: @json(__('app.job_application.file_uploaded_success')),
+    };
+
     document.addEventListener('DOMContentLoaded', function() {
         // Check if application was successful (from session or URL parameter) - check early
         const urlParams = new URLSearchParams(window.location.search);
@@ -796,7 +804,7 @@
                     // Update label text to show success
                     const uploadText = label.querySelector('.file-upload-text');
                     if (uploadText) {
-                        uploadText.innerHTML = `File uploaded successfully!`;
+                        uploadText.innerHTML = translations.fileUploadedSuccess || 'File uploaded successfully!';
                     }
                     
                     // Update hint to show filename
@@ -847,7 +855,7 @@
                             // Reset label text
                             const uploadText = label.querySelector('.file-upload-text');
                             if (uploadText) {
-                                uploadText.innerHTML = 'Choose file or drag it here';
+                                uploadText.innerHTML = translations.chooseFile || 'Choose file or drag it here';
                             }
                             
                             // Reset hint
@@ -855,9 +863,9 @@
                             if (uploadHint) {
                                 const fieldId = input.id;
                                 if (fieldId === 'cv') {
-                                    uploadHint.innerHTML = 'PDF, DOC, DOCX (Max 5MB)';
+                                    uploadHint.innerHTML = translations.fileHintCv || 'PDF, DOC, DOCX (Max 5MB)';
                                 } else if (fieldId === 'portfolio_file') {
-                                    uploadHint.innerHTML = 'PDF, ZIP, RAR (Max 10MB)';
+                                    uploadHint.innerHTML = translations.fileHintPortfolio || 'PDF, ZIP, RAR (Max 10MB)';
                                 }
                                 uploadHint.style.color = '';
                                 uploadHint.style.fontWeight = '';
@@ -877,7 +885,7 @@
                     // Reset label text
                     const uploadText = label.querySelector('.file-upload-text');
                     if (uploadText) {
-                        uploadText.innerHTML = 'Choose file or drag it here';
+                        uploadText.innerHTML = translations.chooseFile || 'Choose file or drag it here';
                     }
                     
                     // Reset hint
@@ -885,9 +893,9 @@
                     if (uploadHint) {
                         const fieldId = input.id;
                         if (fieldId === 'cv') {
-                            uploadHint.innerHTML = 'PDF, DOC, DOCX (Max 5MB)';
+                            uploadHint.innerHTML = translations.fileHintCv || 'PDF, DOC, DOCX (Max 5MB)';
                         } else if (fieldId === 'portfolio_file') {
-                            uploadHint.innerHTML = 'PDF, ZIP, RAR (Max 10MB)';
+                            uploadHint.innerHTML = translations.fileHintPortfolio || 'PDF, ZIP, RAR (Max 10MB)';
                         }
                         uploadHint.style.color = '';
                         uploadHint.style.fontWeight = '';
@@ -1163,15 +1171,15 @@
                         }
                         const uploadText = label.querySelector('.file-upload-text');
                         if (uploadText) {
-                            uploadText.innerHTML = 'Choose file or drag it here';
+                            uploadText.innerHTML = translations.chooseFile || 'Choose file or drag it here';
                         }
                         const uploadHint = label.querySelector('.file-upload-hint');
                         if (uploadHint) {
                             const fieldId = input.id;
                             if (fieldId === 'cv') {
-                                uploadHint.innerHTML = 'PDF, DOC, DOCX (Max 5MB)';
+                                uploadHint.innerHTML = translations.fileHintCv || 'PDF, DOC, DOCX (Max 5MB)';
                             } else if (fieldId === 'portfolio_file') {
-                                uploadHint.innerHTML = 'PDF, ZIP, RAR (Max 10MB)';
+                                uploadHint.innerHTML = translations.fileHintPortfolio || 'PDF, ZIP, RAR (Max 10MB)';
                             }
                             uploadHint.style.color = '';
                             uploadHint.style.fontWeight = '';

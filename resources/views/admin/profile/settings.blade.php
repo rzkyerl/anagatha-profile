@@ -43,7 +43,7 @@
                         </div>
                     @endif
 
-                    <form method="POST" action="{{ route('admin.profile.update') }}" enctype="multipart/form-data">
+                    <form method="POST" action="{{ route($user->role === 'recruiter' ? 'recruiter.profile.update' : 'admin.profile.update') }}" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
 
@@ -188,6 +188,47 @@
                                     </div>
                                 @endif
 
+                                {{-- Minimum Degree Field (for Recruiter and Admin) --}}
+                                @if($user->role === 'recruiter' || $user->role === 'admin')
+                                    <hr class="my-4">
+                                    <h5 class="mb-3">Education Information</h5>
+                                    
+                                    <div class="row mb-3">
+                                        <div class="col-md-12">
+                                            <label for="minimum_degree" class="form-label">Minimum Degree</label>
+                                            <select class="form-select @error('minimum_degree') is-invalid @enderror" 
+                                                    id="minimum_degree" 
+                                                    name="minimum_degree"
+                                                    onchange="toggleMinimumDegreeOtherField()">
+                                                <option value="">Select minimum degree</option>
+                                                <option value="Senior High School" {{ old('minimum_degree', $user->minimum_degree) == 'Senior High School' ? 'selected' : '' }}>Senior High School</option>
+                                                <option value="Diploma" {{ old('minimum_degree', $user->minimum_degree) == 'Diploma' ? 'selected' : '' }}>Diploma</option>
+                                                <option value="Bachelor" {{ old('minimum_degree', $user->minimum_degree) == 'Bachelor' ? 'selected' : '' }}>Bachelor</option>
+                                                <option value="Master" {{ old('minimum_degree', $user->minimum_degree) == 'Master' ? 'selected' : '' }}>Master</option>
+                                                <option value="MBA" {{ old('minimum_degree', $user->minimum_degree) == 'MBA' ? 'selected' : '' }}>MBA</option>
+                                                <option value="Ph.D" {{ old('minimum_degree', $user->minimum_degree) == 'Ph.D' ? 'selected' : '' }}>Ph.D</option>
+                                                <option value="Other" {{ old('minimum_degree', $user->minimum_degree) == 'Other' ? 'selected' : '' }}>Other</option>
+                                            </select>
+                                            @error('minimum_degree')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                            <div id="minimum_degree_other_wrapper" class="mt-2" style="display: {{ old('minimum_degree', $user->minimum_degree) == 'Other' ? 'block' : 'none' }};">
+                                                <label for="minimum_degree_other" class="form-label">Custom Minimum Degree <span class="text-danger">*</span></label>
+                                                <input type="text" 
+                                                       class="form-control @error('minimum_degree_other') is-invalid @enderror" 
+                                                       id="minimum_degree_other" 
+                                                       name="minimum_degree_other" 
+                                                       value="{{ old('minimum_degree_other', $user->minimum_degree_other) }}" 
+                                                       placeholder="Please specify minimum degree"
+                                                       {{ old('minimum_degree', $user->minimum_degree) == 'Other' ? 'required' : '' }}>
+                                                @error('minimum_degree_other')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
+
                                 <hr class="my-4">
                                 <h5 class="mb-3">Change Password</h5>
                                 <p class="text-muted small">Leave blank if you don't want to change your password.</p>
@@ -228,50 +269,82 @@
         </div>
     </div>
 
-    <script>
-        // Preview avatar before upload
-        document.getElementById('avatar').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const img = document.querySelector('.img-thumbnail');
-                    if (img) {
-                        img.src = e.target.result;
-                    }
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-
-        // Handle "Other" option for job_title (recruiter only)
-        @if($user->role === 'recruiter')
-        function toggleJobTitleOther() {
-            const select = document.getElementById('job_title');
-            const wrapper = document.getElementById('job_title_other_wrapper');
-            const input = document.getElementById('job_title_other');
+    <script nonce="{{ $cspNonce ?? '' }}">
+        // Global function for minimum degree toggle (can be called from inline onchange)
+        @if($user->role === 'recruiter' || $user->role === 'admin')
+        function toggleMinimumDegreeOtherField() {
+            const select = document.getElementById('minimum_degree');
+            const wrapper = document.getElementById('minimum_degree_other_wrapper');
+            const input = document.getElementById('minimum_degree_other');
             
-            if (select && select.value === 'Other') {
-                if (wrapper) wrapper.style.display = 'block';
-                if (input) input.required = true;
+            if (!select || !wrapper || !input) {
+                return;
+            }
+            
+            if (select.value === 'Other') {
+                wrapper.style.display = 'block';
+                input.required = true;
             } else {
-                if (wrapper) wrapper.style.display = 'none';
-                if (input) {
-                    input.required = false;
-                    input.value = '';
-                }
+                wrapper.style.display = 'none';
+                input.required = false;
+                input.value = '';
             }
         }
+        @endif
 
-        // Initialize on page load
+        // Wait for DOM to be fully loaded
         document.addEventListener('DOMContentLoaded', function() {
+            // Preview avatar before upload
+            const avatarInput = document.getElementById('avatar');
+            if (avatarInput) {
+                avatarInput.addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            const img = document.querySelector('.img-thumbnail');
+                            if (img) {
+                                img.src = e.target.result;
+                            }
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
+
+            // Handle "Other" option for job_title (recruiter only)
+            @if($user->role === 'recruiter')
+            function toggleJobTitleOther() {
+                const select = document.getElementById('job_title');
+                const wrapper = document.getElementById('job_title_other_wrapper');
+                const input = document.getElementById('job_title_other');
+                
+                if (select && wrapper && input) {
+                    if (select.value === 'Other') {
+                        wrapper.style.display = 'block';
+                        input.required = true;
+                    } else {
+                        wrapper.style.display = 'none';
+                        input.required = false;
+                        input.value = '';
+                    }
+                }
+            }
+
             const jobTitleSelect = document.getElementById('job_title');
             if (jobTitleSelect) {
                 toggleJobTitleOther();
                 jobTitleSelect.addEventListener('change', toggleJobTitleOther);
             }
+            @endif
+
+            // Initialize minimum degree field on page load
+            @if($user->role === 'recruiter' || $user->role === 'admin')
+            if (typeof toggleMinimumDegreeOtherField === 'function') {
+                toggleMinimumDegreeOtherField();
+            }
+            @endif
         });
-        @endif
     </script>
 @endsection
 

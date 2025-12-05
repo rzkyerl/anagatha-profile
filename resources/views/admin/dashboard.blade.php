@@ -442,7 +442,7 @@
                                         <td>{{ $user->created_at->setTimezone('Asia/Jakarta')->format('d M, Y') }}</td>
                                         <td>
                                             @if($isRecruiter)
-                                                <a href="{{ route('recruiter.job-apply.index', ['user_id' => $user->id]) }}"
+                                                <a href="{{ route('admin.recruiter.job-apply.index', ['user_id' => $user->id]) }}"
                                                     class="btn btn-sm btn-primary" title="View Applications">
                                                     <i class="ri-eye-line"></i>
                                                 </a>

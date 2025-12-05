@@ -36,6 +36,8 @@ class User extends Authenticatable implements MustVerifyEmail
         'job_title_other',
         'industry',
         'industry_other',
+        'minimum_degree',
+        'minimum_degree_other',
         'avatar',
         'github',
         'linkedin',

@@ -15,8 +15,31 @@ class GoogleAuthController extends Controller
     /**
      * Redirect user to Google OAuth provider.
      */
-    public function redirect()
+    public function redirect(Request $request)
     {
+        // Determine intended role from session or parameter
+        // Check session for register_role (from registration page)
+        $intendedRole = session('register_role', 'user');
+        
+        // If register_role is 'employee', it means regular user
+        if ($intendedRole === 'employee') {
+            $intendedRole = 'user';
+        }
+        
+        // If register_role is 'recruiter', use 'recruiter'
+        // Otherwise default to 'user' for login
+        if (!in_array($intendedRole, ['user', 'recruiter'])) {
+            $intendedRole = 'user';
+        }
+        
+        // Store intended role in session for callback
+        session(['google_oauth_intended_role' => $intendedRole]);
+        
+        \Log::info('Google OAuth redirect initiated', [
+            'intended_role' => $intendedRole,
+            'register_role_from_session' => session('register_role'),
+        ]);
+        
         // Validate OAuth configuration before redirecting
         $clientId = config('services.google.client_id');
         $clientSecret = config('services.google.client_secret');
@@ -56,7 +79,7 @@ class GoogleAuthController extends Controller
             $redirectUri .= '/';
         }
 
-        \Log::info('Google OAuth redirect initiated', [
+        \Log::info('Google OAuth redirect configuration', [
             'has_client_id' => !empty($clientId),
             'has_client_secret' => !empty($clientSecret),
             'has_redirect_uri' => !empty($redirectUri),
@@ -147,7 +170,22 @@ class GoogleAuthController extends Controller
         }
 
         try {
-            \Log::info('Attempting to get Google user from Socialite');
+            // Get intended role from session
+            $intendedRole = session('google_oauth_intended_role', 'user');
+            // Clear the session after reading
+            session()->forget('google_oauth_intended_role');
+            
+            // Normalize role
+            if ($intendedRole === 'employee') {
+                $intendedRole = 'user';
+            }
+            if (!in_array($intendedRole, ['user', 'recruiter'])) {
+                $intendedRole = 'user';
+            }
+            
+            \Log::info('Attempting to get Google user from Socialite', [
+                'intended_role' => $intendedRole,
+            ]);
             $googleUser = Socialite::driver('google')->user();
             
             \Log::info('Google user retrieved successfully', [
@@ -155,106 +193,161 @@ class GoogleAuthController extends Controller
                 'email' => $googleUser->getEmail(),
                 'name' => $googleUser->getName(),
                 'has_avatar' => !empty($googleUser->getAvatar()),
+                'intended_role' => $intendedRole,
             ]);
 
             // Check if user exists by google_id
-            $user = User::where('google_id', $googleUser->getId())->first();
+            $existingUserByGoogleId = User::where('google_id', $googleUser->getId())->first();
             \Log::info('User lookup by google_id', [
                 'google_id' => $googleUser->getId(),
-                'user_found' => !is_null($user),
+                'user_found' => !is_null($existingUserByGoogleId),
+                'existing_role' => $existingUserByGoogleId ? $existingUserByGoogleId->role : null,
             ]);
 
-            if (!$user) {
-                // Check if user exists by email (for users who registered with email/password)
-                $user = User::where('email', $googleUser->getEmail())->first();
-                \Log::info('User lookup by email', [
-                    'email' => $googleUser->getEmail(),
-                    'user_found' => !is_null($user),
-                ]);
+            // Check if user exists by email
+            $existingUserByEmail = User::where('email', $googleUser->getEmail())->first();
+            \Log::info('User lookup by email', [
+                'email' => $googleUser->getEmail(),
+                'user_found' => !is_null($existingUserByEmail),
+                'existing_role' => $existingUserByEmail ? $existingUserByEmail->role : null,
+            ]);
 
-                if ($user) {
-                    // If user exists but doesn't have google_id, update it
-                    // Only allow if user role is 'user' (not recruiter or admin)
-                    \Log::info('Existing user found, updating with google_id', [
-                        'user_id' => $user->id,
-                        'current_role' => $user->role,
+            // Validate: Check if Google account is already used by a different role
+            $user = $existingUserByGoogleId ?: $existingUserByEmail;
+            
+            if ($user) {
+                $existingRole = $user->role;
+                
+                // Check if the Google account is already used by a different role
+                if ($existingRole !== $intendedRole) {
+                    $roleNames = [
+                        'user' => 'pengguna biasa',
+                        'recruiter' => 'recruiter',
+                        'admin' => 'admin',
+                    ];
+                    
+                    $existingRoleName = $roleNames[$existingRole] ?? $existingRole;
+                    $intendedRoleName = $roleNames[$intendedRole] ?? $intendedRole;
+                    
+                    \Log::warning('Google OAuth attempted with different role', [
+                        'google_id' => $googleUser->getId(),
+                        'email' => $googleUser->getEmail(),
+                        'existing_role' => $existingRole,
+                        'intended_role' => $intendedRole,
                     ]);
                     
-                    if ($user->role !== 'user') {
-                        \Log::warning('Google OAuth attempted for non-user role', [
-                            'user_id' => $user->id,
-                            'role' => $user->role,
-                        ]);
-                        return redirect()->route('login')
-                            ->with('status', 'Google authentication is only available for regular users.')
-                            ->with('toast_type', 'error');
+                    // Determine redirect route - if trying to register as recruiter but account is user, redirect to login
+                    // If trying to login/register as user but account is recruiter, redirect to login with message
+                    $redirectRoute = 'login';
+                    if ($intendedRole === 'recruiter' && $existingRole === 'user') {
+                        // Trying to register as recruiter but account is already user
+                        $redirectRoute = 'register.role';
                     }
-
-                    $user->google_id = $googleUser->getId();
-                    // Update avatar if not set
-                    if (!$user->avatar && $googleUser->getAvatar()) {
-                        $user->avatar = $googleUser->getAvatar();
+                    
+                    $errorMessage = 'Akun Google ini sudah terdaftar sebagai ' . $existingRoleName . '. ';
+                    if ($existingRole === 'user') {
+                        $errorMessage .= 'Jika Anda ingin login sebagai pengguna biasa, silakan gunakan halaman login.';
+                    } elseif ($existingRole === 'recruiter') {
+                        $errorMessage .= 'Jika Anda ingin login sebagai recruiter, silakan gunakan halaman login recruiter.';
+                    } else {
+                        $errorMessage .= 'Satu akun Google hanya dapat digunakan untuk satu tipe akun.';
                     }
-                    $user->save();
-                    \Log::info('User updated with Google credentials', ['user_id' => $user->id]);
-                } else {
-                    // Create new user with role 'user'
-                    $name = $googleUser->getName();
-                    $nameParts = explode(' ', $name, 2);
-                    $firstName = $nameParts[0];
-                    $lastName = isset($nameParts[1]) ? $nameParts[1] : null;
-
-                    \Log::info('Creating new user from Google OAuth', [
-                        'email' => $googleUser->getEmail(),
-                        'first_name' => $firstName,
-                        'last_name' => $lastName,
-                    ]);
-
-                    $user = User::create([
-                        'first_name' => $firstName,
-                        'last_name' => $lastName,
-                        'email' => $googleUser->getEmail(),
-                        'google_id' => $googleUser->getId(),
-                        'password' => bcrypt(Str::random(32)), // Random password since using Google OAuth
-                        'role' => 'user',
-                        'avatar' => $googleUser->getAvatar(),
-                        'email_verified_at' => now(), // Google emails are verified
-                    ]);
-                    \Log::info('New user created successfully', ['user_id' => $user->id]);
+                    
+                    return redirect()->route($redirectRoute)
+                        ->with('status', $errorMessage)
+                        ->with('toast_type', 'error');
                 }
+                
+                // User exists with the correct role
+                \Log::info('Existing user found with matching role', [
+                    'user_id' => $user->id,
+                    'role' => $user->role,
+                    'has_google_id' => !empty($user->google_id),
+                ]);
+                
+                // If user exists but doesn't have google_id, update it
+                if (!$user->google_id) {
+                    $user->google_id = $googleUser->getId();
+                    \Log::info('Updating user with google_id', ['user_id' => $user->id]);
+                }
+                
+                // Update avatar if not set or if changed
+                if ($googleUser->getAvatar()) {
+                    if (!$user->avatar || $user->avatar !== $googleUser->getAvatar()) {
+                        $user->avatar = $googleUser->getAvatar();
+                        \Log::info('Updating user avatar', ['user_id' => $user->id]);
+                    }
+                }
+                
+                $user->save();
+                \Log::info('User updated with Google credentials', ['user_id' => $user->id]);
             } else {
-                // User exists with google_id, verify role is 'user'
-                \Log::info('User found with existing google_id', [
+                // Create new user with intended role
+                $name = $googleUser->getName();
+                $nameParts = explode(' ', $name, 2);
+                $firstName = $nameParts[0];
+                $lastName = isset($nameParts[1]) ? $nameParts[1] : null;
+
+                \Log::info('Creating new user from Google OAuth', [
+                    'email' => $googleUser->getEmail(),
+                    'first_name' => $firstName,
+                    'last_name' => $lastName,
+                    'role' => $intendedRole,
+                ]);
+
+                $userData = [
+                    'first_name' => $firstName,
+                    'last_name' => $lastName,
+                    'email' => $googleUser->getEmail(),
+                    'google_id' => $googleUser->getId(),
+                    'password' => bcrypt(Str::random(32)), // Random password since using Google OAuth
+                    'role' => $intendedRole,
+                    'avatar' => $googleUser->getAvatar(),
+                    'email_verified_at' => now(), // Google emails are verified
+                ];
+                
+                // If recruiter, we need additional fields - but they can be filled later
+                // For now, just create with basic info
+                $user = User::create($userData);
+                \Log::info('New user created successfully', [
                     'user_id' => $user->id,
                     'role' => $user->role,
                 ]);
                 
-                if ($user->role !== 'user') {
-                    \Log::warning('Google OAuth attempted for non-user role', [
+                // If recruiter, redirect to complete profile or dashboard
+                if ($intendedRole === 'recruiter') {
+                    // Note: Recruiter registration usually requires additional fields
+                    // This is a basic implementation - you may want to redirect to complete profile
+                    \Log::warning('Recruiter created via Google OAuth without required fields', [
                         'user_id' => $user->id,
-                        'role' => $user->role,
                     ]);
-                    return redirect()->route('login')
-                        ->with('status', 'Google authentication is only available for regular users.')
-                        ->with('toast_type', 'error');
-                }
-
-                // Update avatar if changed
-                if ($googleUser->getAvatar() && $user->avatar !== $googleUser->getAvatar()) {
-                    \Log::info('Updating user avatar', ['user_id' => $user->id]);
-                    $user->avatar = $googleUser->getAvatar();
-                    $user->save();
                 }
             }
 
             // Login the user
-            \Log::info('Logging in user', ['user_id' => $user->id, 'email' => $user->email]);
+            \Log::info('Logging in user', ['user_id' => $user->id, 'email' => $user->email, 'role' => $user->role]);
             Auth::login($user, true);
 
-            // Redirect to home page for regular users
-            \Log::info('Google OAuth successful, redirecting to home', ['user_id' => $user->id]);
-            return redirect()->route('home')
-                ->with('status', 'Welcome back, ' . ($user->first_name ?? '') . ($user->last_name ?? '' ? ' ' . $user->last_name : '') . '!')
+            // Redirect based on role
+            if ($user->role === 'recruiter') {
+                $redirectRoute = 'recruiter.dashboard';
+                $welcomeMessage = 'Selamat datang, ' . ($user->first_name ?? '') . ($user->last_name ?? '' ? ' ' . $user->last_name : '') . '!';
+            } elseif ($user->role === 'admin') {
+                $redirectRoute = 'admin.dashboard';
+                $welcomeMessage = 'Selamat datang, ' . ($user->first_name ?? '') . ($user->last_name ?? '' ? ' ' . $user->last_name : '') . '!';
+            } else {
+                $redirectRoute = 'home';
+                $welcomeMessage = 'Selamat datang, ' . ($user->first_name ?? '') . ($user->last_name ?? '' ? ' ' . $user->last_name : '') . '!';
+            }
+            
+            \Log::info('Google OAuth successful, redirecting', [
+                'user_id' => $user->id,
+                'role' => $user->role,
+                'redirect_route' => $redirectRoute,
+            ]);
+            
+            return redirect()->route($redirectRoute)
+                ->with('status', $welcomeMessage)
                 ->with('toast_type', 'success');
 
         } catch (InvalidStateException $e) {

@@ -49,6 +49,12 @@ class ProfileController extends Controller
             'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ];
 
+        // Add recruiter and admin-specific fields
+        if ($user->role === 'recruiter' || $user->role === 'admin') {
+            $rules['minimum_degree'] = 'nullable|in:Senior High School,Diploma,Bachelor,Master,MBA,Ph.D,Other';
+            $rules['minimum_degree_other'] = 'required_if:minimum_degree,Other|nullable|string|max:255';
+        }
+
         // Add recruiter-specific fields
         if ($user->role === 'recruiter') {
             $rules['company_name'] = 'nullable|string|max:255';
@@ -66,6 +72,7 @@ class ProfileController extends Controller
             'password.confirmed' => 'Password confirmation does not match.',
             'avatar.image' => 'Avatar must be an image file.',
             'avatar.max' => 'Avatar size must not exceed 2MB.',
+            'minimum_degree_other.required_if' => 'Please specify the minimum degree.',
             'job_title_other.required_if' => 'Please specify the job title.',
         ]);
 
@@ -87,6 +94,14 @@ class ProfileController extends Controller
                 $avatar = $request->file('avatar');
                 $avatarName = time() . '_' . uniqid() . '.jpg';
                 
+                // Ensure avatar directory exists
+                $avatarDir = storage_path('app/avatar');
+                if (!file_exists($avatarDir)) {
+                    if (!mkdir($avatarDir, 0755, true)) {
+                        throw new \Exception('Failed to create avatar directory: ' . $avatarDir);
+                    }
+                }
+                
                 // Compress and resize image
                 $compressedImage = $this->compressImage($avatar);
                 
@@ -96,7 +111,12 @@ class ProfileController extends Controller
                 // Store just the filename (not full path)
                 $validated['avatar'] = $avatarName;
             } catch (\Exception $e) {
-                Log::error('Avatar upload/compression error: ' . $e->getMessage());
+                Log::error('Avatar upload/compression error: ' . $e->getMessage(), [
+                    'exception' => $e,
+                    'trace' => $e->getTraceAsString(),
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine(),
+                ]);
                 return redirect()->back()
                     ->with('error', 'Failed to upload avatar. Please try again.')
                     ->withInput();
@@ -104,6 +124,15 @@ class ProfileController extends Controller
         }
 
         try {
+            // Handle minimum_degree_other for recruiters and admins
+            if ($user->role === 'recruiter' || $user->role === 'admin') {
+                if ($request->minimum_degree === 'Other') {
+                    $validated['minimum_degree_other'] = $request->minimum_degree_other;
+                } else {
+                    $validated['minimum_degree_other'] = null;
+                }
+            }
+
             // Handle job_title_other for recruiters
             if ($user->role === 'recruiter') {
                 if ($request->job_title === 'Other') {
@@ -116,7 +145,9 @@ class ProfileController extends Controller
             // Update user profile
             $user->update($validated);
 
-            return redirect()->route('admin.profile.settings')
+            // Redirect based on role
+            $redirectRoute = ($user->role === 'recruiter') ? 'recruiter.profile.settings' : 'admin.profile.settings';
+            return redirect()->route($redirectRoute)
                 ->with('success', 'Profile updated successfully!');
         } catch (\Exception $e) {
             Log::error('Profile update error: ' . $e->getMessage());
@@ -131,6 +162,25 @@ class ProfileController extends Controller
      */
     private function compressImage($image, $maxWidth = 400, $maxHeight = 400, $quality = 85)
     {
+        // Check if GD extension is available
+        if (!extension_loaded('gd')) {
+            throw new \Exception('GD extension is not available. Please install php-gd extension.');
+        }
+        
+        // Verify required GD functions are available
+        $requiredFunctions = ['imagejpeg', 'imagecreatefromjpeg', 'imagecreatetruecolor', 'imagecopyresampled'];
+        $missingFunctions = [];
+        foreach ($requiredFunctions as $func) {
+            if (!function_exists($func)) {
+                $missingFunctions[] = $func;
+            }
+        }
+        
+        if (!empty($missingFunctions)) {
+            $missingList = implode(', ', $missingFunctions);
+            throw new \Exception("Required GD functions ({$missingList}) are not available. Please ensure GD extension is compiled with JPEG support.");
+        }
+        
         $imagePath = $image->getRealPath();
         $imageInfo = getimagesize($imagePath);
         
