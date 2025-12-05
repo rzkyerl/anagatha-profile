@@ -79,7 +79,54 @@ Generate the application key:
 php artisan key:generate
 ```
 
-### 4. Configure Google Sheets Integration
+### 4. Configure Google OAuth (for User Authentication)
+
+To enable Google Sign-In functionality, you need to set up OAuth 2.0 credentials in Google Cloud Console:
+
+#### Step 1: Create OAuth 2.0 Credentials
+
+1. Go to [Google Cloud Console](https://console.cloud.google.com/)
+2. Select or create a project
+3. Navigate to **APIs & Services** > **Credentials**
+4. Click **Create Credentials** > **OAuth client ID**
+5. If prompted, configure the OAuth consent screen first:
+   - Choose **External** (unless you have a Google Workspace)
+   - Fill in the required information (App name, User support email, Developer contact)
+   - Add scopes: `email`, `profile`, `openid`
+   - Add test users if your app is in testing mode
+6. Create OAuth client ID:
+   - Application type: **Web application**
+   - Name: Your application name
+   - **Authorized redirect URIs**: Add your callback URL:
+     - For local development: `http://localhost:8000/auth/google/callback`
+     - For production: `https://yourdomain.com/auth/google/callback`
+     - **Important**: The redirect URI must match exactly (including http/https and trailing slashes)
+
+#### Step 2: Configure Environment Variables
+
+Add the following to your `.env` file:
+
+```env
+GOOGLE_CLIENT_ID=your-client-id.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=your-client-secret
+GOOGLE_REDIRECT_URI=http://localhost:8000/auth/google/callback
+```
+
+**Important Notes:**
+- For production, update `GOOGLE_REDIRECT_URI` to your production URL
+- The redirect URI in `.env` must match exactly what you configured in Google Cloud Console
+- If `GOOGLE_REDIRECT_URI` is not set, the application will auto-generate it from the route, but it's recommended to set it explicitly
+
+#### Troubleshooting OAuth Errors
+
+If you encounter "invalid_client" error:
+1. Verify your `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` are correct
+2. Check that the redirect URI in `.env` matches exactly with Google Cloud Console
+3. Ensure your OAuth consent screen is properly configured
+4. For production, make sure your domain is verified in Google Cloud Console
+5. Check that the OAuth client is not deleted or disabled in Google Cloud Console
+
+### 5. Configure Google Sheets Integration
 
 To enable contact form submissions to Google Sheets, configure the following in your `.env` file:
 
@@ -96,13 +143,15 @@ GOOGLE_SHEET_NAME=Sheet1
 
 Place your Google Service Account credentials JSON file in `storage/app/google/credentials.json` or configure one of the environment variables above.
 
-### 5. Database Setup (if applicable)
+**Note**: Google OAuth credentials (for authentication) are different from Google Service Account credentials (for Sheets API). You need both if you want to use both features.
+
+### 6. Database Setup (if applicable)
 
 ```bash
 php artisan migrate
 ```
 
-### 6. Build Assets
+### 7. Build Assets
 
 ```bash
 npm run build
@@ -110,7 +159,7 @@ npm run build
 npm run dev
 ```
 
-### 7. Start the Development Server
+### 8. Start the Development Server
 
 ```bash
 php artisan serve
@@ -184,9 +233,13 @@ Ensure the following are set in your production environment:
 - `APP_ENV=production`
 - `APP_DEBUG=false`
 - `APP_KEY` (generated application key)
-- Google Sheets credentials (as configured above)
-- `GOOGLE_SPREADSHEET_ID`
-- `GOOGLE_SHEET_NAME`
+- Google OAuth credentials:
+  - `GOOGLE_CLIENT_ID`
+  - `GOOGLE_CLIENT_SECRET`
+  - `GOOGLE_REDIRECT_URI` (must match production URL: `https://yourdomain.com/auth/google/callback`)
+- Google Sheets credentials (as configured above):
+  - `GOOGLE_SPREADSHEET_ID`
+  - `GOOGLE_SHEET_NAME`
 
 ## Development
 
