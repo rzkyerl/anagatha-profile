@@ -133,8 +133,8 @@ Route::domain(env('APP_DOMAIN', 'anagataexecutive.co.id'))
             Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
         });
 
-        // Recruiter Routes (Protected - recruiter-facing URLs on main domain)
-        Route::middleware(['auth', 'verified', 'role.recruiter.admin'])->group(function () {
+        // Recruiter Routes (Protected - recruiter-only on main domain)
+        Route::middleware(['auth', 'verified', 'role.recruiter'])->group(function () {
             // Dashboard
             Route::get('/recruiter/dashboard', [DashboardController::class, 'index'])->name('recruiter.dashboard');
             
@@ -252,8 +252,8 @@ Route::domain(env('ADMIN_DOMAIN', 'anagataexecutive.com'))
         Route::get('/login', [LoginController::class, 'showLoginForm'])->middleware('guest')->name('admin.login');
         Route::post('/login', [LoginController::class, 'login'])->middleware(['guest', 'throttle:5,1']);
 
-        // Admin Routes (Protected - Admin and Recruiter)
-        Route::middleware(['auth', 'verified', 'role.recruiter.admin'])->group(function () {
+        // Admin Routes (Protected - Admin only)
+        Route::middleware(['auth', 'verified', 'role.admin'])->group(function () {
             // Logout
             Route::post('/logout', [LoginController::class, 'logout'])->name('admin.logout');
             
@@ -329,64 +329,11 @@ Route::domain(env('ADMIN_DOMAIN', 'anagataexecutive.com'))
             });
         });
 
-        // Profile Settings Routes (Protected - accessible by admin and recruiter)
-        Route::middleware(['auth', 'role.recruiter.admin'])->group(function () {
+        // Profile Settings Routes (Protected - Admin only)
+        Route::middleware(['auth', 'role.admin'])->group(function () {
             Route::get('/profile/settings', [AdminProfileController::class, 'show'])->name('admin.profile.settings');
             Route::put('/profile/settings', [AdminProfileController::class, 'update'])->name('admin.profile.update');
             Route::get('/profile/avatar/{filename}', [AdminProfileController::class, 'avatar'])->name('admin.profile.avatar');
-        });
-
-        // Recruiter Routes (Protected - recruiter-facing URLs, accessible by recruiter and admin)
-        Route::middleware(['auth', 'verified', 'role.recruiter.admin'])->group(function () {
-            // Logout
-            Route::post('/recruiter/logout', [LoginController::class, 'logout'])->name('admin.recruiter.logout');
-
-            // Dashboard
-            Route::get('/recruiter/dashboard', [DashboardController::class, 'index'])->name('admin.recruiter.dashboard');
-            Route::get('/recruiter/profile/settings', [AdminProfileController::class, 'show'])->name('admin.recruiter.profile.settings');
-            Route::put('/recruiter/profile/settings', [AdminProfileController::class, 'update'])->name('admin.recruiter.profile.update');
-            Route::get('/recruiter/profile/avatar/{filename}', [AdminProfileController::class, 'avatar'])->name('admin.recruiter.profile.avatar');
-
-            // Job Listings (recruiter-scoped in controller)
-            Route::get('/recruiter/job-listings/export', [JobListingController::class, 'export'])->name('admin.recruiter.job-listings.export');
-            Route::get('/recruiter/job-listings/trashed/list', [JobListingController::class, 'trashed'])->name('admin.recruiter.job-listings.trashed');
-            Route::post('/recruiter/job-listings/{id}/restore', [JobListingController::class, 'restore'])->name('admin.recruiter.job-listings.restore');
-            Route::delete('/recruiter/job-listings/{id}/force-delete', [JobListingController::class, 'forceDelete'])->name('admin.recruiter.job-listings.force-delete');
-            Route::post('/recruiter/job-listings/{id}/update-status', [JobListingController::class, 'updateStatus'])->name('admin.recruiter.job-listings.update-status');
-            Route::resource('recruiter/job-listings', JobListingController::class)->names([
-                'index' => 'admin.recruiter.job-listings.index',
-                'create' => 'admin.recruiter.job-listings.create',
-                'store' => 'admin.recruiter.job-listings.store',
-                'show' => 'admin.recruiter.job-listings.show',
-                'edit' => 'admin.recruiter.job-listings.edit',
-                'update' => 'admin.recruiter.job-listings.update',
-                'destroy' => 'admin.recruiter.job-listings.destroy',
-            ]);
-
-            // Job Applications (only for this recruiter in controller)
-            Route::get('/recruiter/job-apply/export', [JobApplyController::class, 'export'])->name('admin.recruiter.job-apply.export');
-            Route::get('/recruiter/job-apply/trashed/list', [JobApplyController::class, 'trashed'])->name('admin.recruiter.job-apply.trashed');
-            Route::post('/recruiter/job-apply/{id}/restore', [JobApplyController::class, 'restore'])->name('admin.recruiter.job-apply.restore');
-            Route::delete('/recruiter/job-apply/{id}/force-delete', [JobApplyController::class, 'forceDelete'])->name('admin.recruiter.job-apply.force-delete');
-            Route::resource('recruiter/job-apply', JobApplyController::class)->names([
-                'index' => 'admin.recruiter.job-apply.index',
-                'create' => 'admin.recruiter.job-apply.create',
-                'store' => 'admin.recruiter.job-apply.store',
-                'show' => 'admin.recruiter.job-apply.show',
-                'edit' => 'admin.recruiter.job-apply.edit',
-                'update' => 'admin.recruiter.job-apply.update',
-                'destroy' => 'admin.recruiter.job-apply.destroy',
-            ]);
-
-            // Job Apply File Downloads
-            Route::get('/recruiter/job-apply/{id}/download/cv', [JobApplyController::class, 'downloadCv'])->name('admin.recruiter.job-apply.download.cv');
-            Route::get('/recruiter/job-apply/{id}/download/portfolio', [JobApplyController::class, 'downloadPortfolio'])->name('admin.recruiter.job-apply.download.portfolio');
-
-            // My Company Routes (Edit only, since data exists from registration)
-            Route::get('/recruiter/company', [RecruiterCompanyController::class, 'show'])->name('admin.recruiter.company.show');
-            Route::get('/recruiter/company/edit', [RecruiterCompanyController::class, 'edit'])->name('admin.recruiter.company.edit');
-            Route::put('/recruiter/company', [RecruiterCompanyController::class, 'update'])->name('admin.recruiter.company.update');
-            Route::get('/recruiter/company/logo/{filename}', [RecruiterCompanyController::class, 'companyLogo'])->name('admin.recruiter.company.logo');
         });
     });
 

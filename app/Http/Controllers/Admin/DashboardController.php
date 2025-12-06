@@ -19,20 +19,51 @@ class DashboardController extends Controller
     public function index()
     {
         $user = auth()->user();
-        // Check if user has the correct role (middleware should handle this, but double-check for safety)
-        if (!$user || !in_array($user->role, ['recruiter', 'admin'])) {
-            // If user is regular user, redirect to home
-            if ($user && $user->role === 'user') {
-                return redirect()->route('home')
-                    ->with('status', 'You do not have permission to access the admin panel.')
-                    ->with('toast_type', 'warning');
+        
+        // Determine if this is admin domain or main domain based on current domain
+        $isAdminDomain = request()->getHost() === env('ADMIN_DOMAIN', 'admin.anagataexecutive.co.id') || 
+                        request()->getHost() === 'www.' . env('ADMIN_DOMAIN', 'admin.anagataexecutive.co.id');
+        
+        // Check if user has the correct role based on domain
+        if ($isAdminDomain) {
+            // Admin domain: only admin allowed
+            if (!$user || $user->role !== 'admin') {
+                if ($user && $user->role === 'recruiter') {
+                    // Redirect recruiter to main domain
+                    $mainDomain = env('APP_DOMAIN', 'anagataexecutive.co.id');
+                    $scheme = request()->getScheme();
+                    $url = $scheme . '://' . $mainDomain . '/recruiter/dashboard';
+                    return redirect($url);
+                }
+                if ($user && $user->role === 'user') {
+                    return redirect()->route('home')
+                        ->with('status', 'You do not have permission to access the admin panel.')
+                        ->with('toast_type', 'warning');
+                }
+                return redirect()->route('admin.login')
+                    ->with('error', 'Please login to access the admin panel.');
             }
-            // If not authenticated, redirect to admin login
-            return redirect()->route('admin.login')
-                ->with('error', 'Please login to access the admin panel.');
+            $isRecruiter = false;
+        } else {
+            // Main domain: only recruiter allowed (for recruiter dashboard)
+            if (!$user || $user->role !== 'recruiter') {
+                if ($user && $user->role === 'admin') {
+                    // Redirect admin to admin domain
+                    $adminDomain = env('ADMIN_DOMAIN', 'admin.anagataexecutive.co.id');
+                    $scheme = request()->getScheme();
+                    $url = $scheme . '://' . $adminDomain . '/dashboard';
+                    return redirect($url);
+                }
+                if ($user && $user->role === 'user') {
+                    return redirect()->route('home')
+                        ->with('status', 'You do not have permission to access this page.')
+                        ->with('toast_type', 'warning');
+                }
+                return redirect()->route('login')
+                    ->with('status', 'Please login to access the dashboard.');
+            }
+            $isRecruiter = true;
         }
-
-        $isRecruiter = $user->role === 'recruiter';
 
         if ($isRecruiter) {
             // Recruiter-specific statistics (only data related to their own job listings)
