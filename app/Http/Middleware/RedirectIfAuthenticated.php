@@ -23,10 +23,13 @@ class RedirectIfAuthenticated
             if (Auth::guard($guard)->check()) {
                 $user = Auth::guard($guard)->user();
                 
-                // If accessing admin login, redirect to admin dashboard (for recruiters/admins)
+                // If accessing admin login, redirect based on role
                 if ($request->is('admin/login')) {
-                    if (in_array($user->role, ['recruiter', 'admin'])) {
+                    if ($user->role === 'admin') {
                         return redirect()->route('admin.dashboard');
+                    } elseif ($user->role === 'recruiter') {
+                        // Recruiter should stay on main domain
+                        return redirect()->route('recruiter.dashboard');
                     } else {
                         // Regular users should not access admin login
                         return redirect()->route('home');
@@ -35,16 +38,28 @@ class RedirectIfAuthenticated
                 
                 // For regular login page, redirect based on role
                 if ($request->is('login')) {
-                    if (in_array($user->role, ['recruiter', 'admin'])) {
-                        return redirect()->route('admin.dashboard');
+                    if ($user->role === 'admin') {
+                        $adminDomain = env('ADMIN_DOMAIN', 'admin.anagataexecutive.co.id');
+                        $scheme = $request->getScheme();
+                        $url = $scheme . '://' . $adminDomain . '/dashboard';
+                        return redirect($url);
+                    } elseif ($user->role === 'recruiter') {
+                        // Recruiter should stay on main domain
+                        return redirect()->route('recruiter.dashboard');
                     } else {
                         return redirect()->route('home');
                     }
                 }
                 
                 // Default redirect based on role
-                if (in_array($user->role, ['recruiter', 'admin'])) {
-                    return redirect()->route('admin.dashboard');
+                if ($user->role === 'admin') {
+                    $adminDomain = env('ADMIN_DOMAIN', 'admin.anagataexecutive.co.id');
+                    $scheme = $request->getScheme();
+                    $url = $scheme . '://' . $adminDomain . '/dashboard';
+                    return redirect($url);
+                } elseif ($user->role === 'recruiter') {
+                    // Recruiter should stay on main domain
+                    return redirect()->route('recruiter.dashboard');
                 }
                 
                 return redirect(RouteServiceProvider::HOME);

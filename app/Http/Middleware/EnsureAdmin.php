@@ -27,9 +27,13 @@ class EnsureAdmin
         
         // Only allow users with role 'admin'
         if ($user->role !== 'admin') {
-            // If user is recruiter, redirect to recruiter dashboard
+            // If user is recruiter, redirect to recruiter dashboard on main domain
             if ($user->role === 'recruiter') {
-                return redirect()->route('recruiter.dashboard')
+                // Redirect to recruiter dashboard on main domain
+                $mainDomain = env('APP_DOMAIN', 'anagataexecutive.co.id');
+                $scheme = $request->getScheme();
+                $url = $scheme . '://' . $mainDomain . '/recruiter/dashboard';
+                return redirect($url)
                     ->with('status', 'You do not have permission to access this page. Admin access required.')
                     ->with('toast_type', 'warning');
             }

@@ -288,6 +288,15 @@ class GoogleAuthController extends Controller
                 $firstName = $nameParts[0];
                 $lastName = isset($nameParts[1]) ? $nameParts[1] : null;
 
+                // Ensure role is valid and not admin (admin can only be created manually)
+                if (!in_array($intendedRole, ['user', 'recruiter'])) {
+                    \Log::warning('Invalid role attempted in Google OAuth registration', [
+                        'intended_role' => $intendedRole,
+                        'email' => $googleUser->getEmail(),
+                    ]);
+                    $intendedRole = 'user'; // Default to user for safety
+                }
+
                 \Log::info('Creating new user from Google OAuth', [
                     'email' => $googleUser->getEmail(),
                     'first_name' => $firstName,
@@ -301,7 +310,7 @@ class GoogleAuthController extends Controller
                     'email' => $googleUser->getEmail(),
                     'google_id' => $googleUser->getId(),
                     'password' => bcrypt(Str::random(32)), // Random password since using Google OAuth
-                    'role' => $intendedRole,
+                    'role' => $intendedRole, // Only 'user' or 'recruiter, never 'admin'
                     'avatar' => $googleUser->getAvatar(),
                     'email_verified_at' => now(), // Google emails are verified
                 ];
@@ -329,26 +338,42 @@ class GoogleAuthController extends Controller
             Auth::login($user, true);
 
             // Redirect based on role
+            $welcomeMessage = 'Selamat datang, ' . ($user->first_name ?? '') . ($user->last_name ?? '' ? ' ' . $user->last_name : '') . '!';
+            
             if ($user->role === 'recruiter') {
+                // Recruiter should stay on main domain
                 $redirectRoute = 'recruiter.dashboard';
-                $welcomeMessage = 'Selamat datang, ' . ($user->first_name ?? '') . ($user->last_name ?? '' ? ' ' . $user->last_name : '') . '!';
+                \Log::info('Google OAuth successful, redirecting recruiter', [
+                    'user_id' => $user->id,
+                    'role' => $user->role,
+                    'redirect_route' => $redirectRoute,
+                ]);
+                return redirect()->route($redirectRoute)
+                    ->with('status', $welcomeMessage)
+                    ->with('toast_type', 'success');
             } elseif ($user->role === 'admin') {
-                $redirectRoute = 'admin.dashboard';
-                $welcomeMessage = 'Selamat datang, ' . ($user->first_name ?? '') . ($user->last_name ?? '' ? ' ' . $user->last_name : '') . '!';
+                $adminDomain = env('ADMIN_DOMAIN', 'admin.anagataexecutive.co.id');
+                $scheme = request()->getScheme();
+                $url = $scheme . '://' . $adminDomain . '/dashboard';
+                \Log::info('Google OAuth successful, redirecting admin', [
+                    'user_id' => $user->id,
+                    'role' => $user->role,
+                    'redirect_url' => $url,
+                ]);
+                return redirect($url)
+                    ->with('status', $welcomeMessage)
+                    ->with('toast_type', 'success');
             } else {
                 $redirectRoute = 'home';
-                $welcomeMessage = 'Selamat datang, ' . ($user->first_name ?? '') . ($user->last_name ?? '' ? ' ' . $user->last_name : '') . '!';
+                \Log::info('Google OAuth successful, redirecting user', [
+                    'user_id' => $user->id,
+                    'role' => $user->role,
+                    'redirect_route' => $redirectRoute,
+                ]);
+                return redirect()->route($redirectRoute)
+                    ->with('status', $welcomeMessage)
+                    ->with('toast_type', 'success');
             }
-            
-            \Log::info('Google OAuth successful, redirecting', [
-                'user_id' => $user->id,
-                'role' => $user->role,
-                'redirect_route' => $redirectRoute,
-            ]);
-            
-            return redirect()->route($redirectRoute)
-                ->with('status', $welcomeMessage)
-                ->with('toast_type', 'success');
 
         } catch (InvalidStateException $e) {
             \Log::warning('Google OAuth InvalidStateException: ' . $e->getMessage(), [

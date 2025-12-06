@@ -24,8 +24,12 @@ class AuthController extends Controller
         if (Auth::check()) {
             $user = Auth::user();
             if ($user->role === 'admin') {
-                return redirect()->route('admin.dashboard');
+                $adminDomain = env('ADMIN_DOMAIN', 'admin.anagataexecutive.co.id');
+                $scheme = request()->getScheme();
+                $url = $scheme . '://' . $adminDomain . '/dashboard';
+                return redirect($url);
             } elseif ($user->role === 'recruiter') {
+                // Recruiter should stay on main domain
                 return redirect()->route('recruiter.dashboard');
             }
             return redirect()->route('home');
@@ -62,16 +66,24 @@ class AuthController extends Controller
 
             // Redirect based on user role
             if ($user->role === 'admin') {
-                $redirectRoute = 'admin.dashboard';
+                $adminDomain = env('ADMIN_DOMAIN', 'admin.anagataexecutive.co.id');
+                $scheme = $request->getScheme();
+                $url = $scheme . '://' . $adminDomain . '/dashboard';
+                return redirect()->intended($url)
+                    ->with('status', 'Welcome back, ' . ($user->first_name ?? '') . ($user->last_name ?? '' ? ' ' . $user->last_name : '') . '!')
+                    ->with('toast_type', 'success');
             } elseif ($user->role === 'recruiter') {
+                // Recruiter should stay on main domain
                 $redirectRoute = 'recruiter.dashboard';
+                return redirect()->intended(route($redirectRoute))
+                    ->with('status', 'Welcome back, ' . ($user->first_name ?? '') . ($user->last_name ?? '' ? ' ' . $user->last_name : '') . '!')
+                    ->with('toast_type', 'success');
             } else {
                 $redirectRoute = 'home';
+                return redirect()->intended(route($redirectRoute))
+                    ->with('status', 'Welcome back, ' . ($user->first_name ?? '') . ($user->last_name ?? '' ? ' ' . $user->last_name : '') . '!')
+                    ->with('toast_type', 'success');
             }
-
-            return redirect()->intended(route($redirectRoute))
-                ->with('status', 'Welcome back, ' . ($user->first_name ?? '') . ($user->last_name ?? '' ? ' ' . $user->last_name : '') . '!')
-                ->with('toast_type', 'success');
         }
 
         throw ValidationException::withMessages([
@@ -116,6 +128,13 @@ class AuthController extends Controller
     {
         try {
             $role = session('register_role', 'employee');
+            
+            // Ensure role is valid and not admin (admin can only be created manually)
+            if (!in_array($role, ['employee', 'recruiter'])) {
+                return redirect()->route('register.role')
+                    ->with('status', 'Invalid registration role. Please select a valid role.')
+                    ->with('toast_type', 'error');
+            }
             
             if ($role === 'recruiter') {
                 // Recruiter registration validation
@@ -444,16 +463,24 @@ class AuthController extends Controller
 
         // Redirect based on role
         if ($user->role === 'admin') {
-            $redirectRoute = 'admin.dashboard';
+            $adminDomain = env('ADMIN_DOMAIN', 'admin.anagataexecutive.co.id');
+            $scheme = $request->getScheme();
+            $url = $scheme . '://' . $adminDomain . '/dashboard';
+            return redirect($url)
+                ->with('status', 'Password reset successfully! You have been logged in.')
+                ->with('toast_type', 'success');
         } elseif ($user->role === 'recruiter') {
+            // Recruiter should stay on main domain
             $redirectRoute = 'recruiter.dashboard';
+            return redirect()->route($redirectRoute)
+                ->with('status', 'Password reset successfully! You have been logged in.')
+                ->with('toast_type', 'success');
         } else {
             $redirectRoute = 'home';
+            return redirect()->route($redirectRoute)
+                ->with('status', 'Password reset successfully! You have been logged in.')
+                ->with('toast_type', 'success');
         }
-
-        return redirect()->route($redirectRoute)
-            ->with('status', 'Password reset successfully! You have been logged in.')
-            ->with('toast_type', 'success');
     }
 }
 

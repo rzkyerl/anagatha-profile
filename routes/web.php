@@ -133,6 +133,61 @@ Route::domain(env('APP_DOMAIN', 'anagataexecutive.co.id'))
             Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
         });
 
+        // Recruiter Routes (Protected - recruiter-facing URLs on main domain)
+        Route::middleware(['auth', 'verified', 'role.recruiter.admin'])->group(function () {
+            // Dashboard
+            Route::get('/recruiter/dashboard', [DashboardController::class, 'index'])->name('recruiter.dashboard');
+            
+            // Profile Settings
+            Route::get('/recruiter/profile/settings', [AdminProfileController::class, 'show'])->name('recruiter.profile.settings');
+            Route::put('/recruiter/profile/settings', [AdminProfileController::class, 'update'])->name('recruiter.profile.update');
+            Route::get('/recruiter/profile/avatar/{filename}', [AdminProfileController::class, 'avatar'])->name('recruiter.profile.avatar');
+
+            // Job Listings (recruiter-scoped in controller)
+            Route::get('/recruiter/job-listings/export', [JobListingController::class, 'export'])->name('recruiter.job-listings.export');
+            Route::get('/recruiter/job-listings/trashed/list', [JobListingController::class, 'trashed'])->name('recruiter.job-listings.trashed');
+            Route::post('/recruiter/job-listings/{id}/restore', [JobListingController::class, 'restore'])->name('recruiter.job-listings.restore');
+            Route::delete('/recruiter/job-listings/{id}/force-delete', [JobListingController::class, 'forceDelete'])->name('recruiter.job-listings.force-delete');
+            Route::post('/recruiter/job-listings/{id}/update-status', [JobListingController::class, 'updateStatus'])->name('recruiter.job-listings.update-status');
+            Route::resource('recruiter/job-listings', JobListingController::class)->names([
+                'index' => 'recruiter.job-listings.index',
+                'create' => 'recruiter.job-listings.create',
+                'store' => 'recruiter.job-listings.store',
+                'show' => 'recruiter.job-listings.show',
+                'edit' => 'recruiter.job-listings.edit',
+                'update' => 'recruiter.job-listings.update',
+                'destroy' => 'recruiter.job-listings.destroy',
+            ]);
+
+            // Job Applications (only for this recruiter in controller)
+            Route::get('/recruiter/job-apply/export', [JobApplyController::class, 'export'])->name('recruiter.job-apply.export');
+            Route::get('/recruiter/job-apply/trashed/list', [JobApplyController::class, 'trashed'])->name('recruiter.job-apply.trashed');
+            Route::post('/recruiter/job-apply/{id}/restore', [JobApplyController::class, 'restore'])->name('recruiter.job-apply.restore');
+            Route::delete('/recruiter/job-apply/{id}/force-delete', [JobApplyController::class, 'forceDelete'])->name('recruiter.job-apply.force-delete');
+            Route::resource('recruiter/job-apply', JobApplyController::class)->names([
+                'index' => 'recruiter.job-apply.index',
+                'create' => 'recruiter.job-apply.create',
+                'store' => 'recruiter.job-apply.store',
+                'show' => 'recruiter.job-apply.show',
+                'edit' => 'recruiter.job-apply.edit',
+                'update' => 'recruiter.job-apply.update',
+                'destroy' => 'recruiter.job-apply.destroy',
+            ]);
+
+            // Job Apply File Downloads
+            Route::get('/recruiter/job-apply/{id}/download/cv', [JobApplyController::class, 'downloadCv'])->name('recruiter.job-apply.download.cv');
+            Route::get('/recruiter/job-apply/{id}/download/portfolio', [JobApplyController::class, 'downloadPortfolio'])->name('recruiter.job-apply.download.portfolio');
+
+            // My Company Routes
+            Route::get('/recruiter/company', [RecruiterCompanyController::class, 'show'])->name('recruiter.company.show');
+            Route::get('/recruiter/company/edit', [RecruiterCompanyController::class, 'edit'])->name('recruiter.company.edit');
+            Route::put('/recruiter/company', [RecruiterCompanyController::class, 'update'])->name('recruiter.company.update');
+            Route::get('/recruiter/company/logo/{filename}', [RecruiterCompanyController::class, 'companyLogo'])->name('recruiter.company.logo');
+
+            // Logout
+            Route::post('/recruiter/logout', [AuthController::class, 'logout'])->name('recruiter.logout');
+        });
+
         // Contact Form (Public)
         Route::post('/contact', [ContactController::class, 'store'])
             ->middleware('throttle:5,1')

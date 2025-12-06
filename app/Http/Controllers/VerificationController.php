@@ -60,19 +60,28 @@ class VerificationController extends Controller
     {
         // Redirect based on user role
         if ($user->role === 'admin') {
-            $redirectRoute = 'admin.dashboard';
+            // Admin should be redirected to admin domain
+            $adminDomain = env('ADMIN_DOMAIN', 'admin.anagataexecutive.co.id');
+            $scheme = request()->getScheme();
+            $url = $scheme . '://' . $adminDomain . '/dashboard';
             $message = 'Email verified successfully! Welcome to your dashboard.';
+            return redirect($url)
+                ->with('status', $message)
+                ->with('toast_type', 'success');
         } elseif ($user->role === 'recruiter') {
+            // Recruiter should stay on main domain
             $redirectRoute = 'recruiter.dashboard';
             $message = 'Email verified successfully! Welcome to your dashboard.';
+            return redirect()->route($redirectRoute)
+                ->with('status', $message)
+                ->with('toast_type', 'success');
         } else {
             $redirectRoute = 'home';
             $message = 'Email verified successfully! Welcome back, ' . ($user->first_name ?? '') . ($user->last_name ?? '' ? ' ' . $user->last_name : '') . '!';
+            return redirect()->route($redirectRoute)
+                ->with('status', $message)
+                ->with('toast_type', 'success');
         }
-
-        return redirect()->route($redirectRoute)
-            ->with('status', $message)
-            ->with('toast_type', 'success');
     }
 
     /**
@@ -84,16 +93,24 @@ class VerificationController extends Controller
             // Redirect based on user role
             $user = $request->user();
             if ($user->role === 'admin') {
-                $redirectRoute = 'admin.dashboard';
+                $adminDomain = env('ADMIN_DOMAIN', 'admin.anagataexecutive.co.id');
+                $scheme = $request->getScheme();
+                $url = $scheme . '://' . $adminDomain . '/dashboard';
+                return redirect($url)
+                    ->with('status', 'Your email is already verified.')
+                    ->with('toast_type', 'success');
             } elseif ($user->role === 'recruiter') {
+                // Recruiter should stay on main domain
                 $redirectRoute = 'recruiter.dashboard';
+                return redirect()->route($redirectRoute)
+                    ->with('status', 'Your email is already verified.')
+                    ->with('toast_type', 'success');
             } else {
                 $redirectRoute = 'home';
+                return redirect()->route($redirectRoute)
+                    ->with('status', 'Your email is already verified.')
+                    ->with('toast_type', 'success');
             }
-
-            return redirect()->route($redirectRoute)
-                ->with('status', 'Your email is already verified.')
-                ->with('toast_type', 'success');
         }
 
         try {
