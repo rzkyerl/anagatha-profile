@@ -7,7 +7,7 @@
         <a href="javascript:void(0)">Anagata Executive</a>
     </li>
     <li class="breadcrumb-item">
-        <a href="{{ route('admin.recruiter.company.show') }}">My Company</a>
+        <a href="{{ route('recruiter.company.show') }}">My Company</a>
     </li>
     <li class="breadcrumb-item active">Edit</li>
 @endsection
@@ -47,7 +47,7 @@
                 </a>
             </div>
 
-            <form action="{{ route('admin.recruiter.company.update') }}" method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+            <form action="{{ route('recruiter.company.update') }}" method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
                 @csrf
                 @method('PUT')
 
@@ -59,7 +59,7 @@
                     <div class="logo-upload-area border rounded p-4 text-center" style="background: #f8f9fa; min-height: 200px; display: flex; align-items: center; justify-content: center; border-radius: 12px;">
                         <div id="logoPreview" class="logo-preview">
                             @if($user->company_logo)
-                                <img src="{{ route('admin.recruiter.company.logo', $user->company_logo) }}" 
+                                <img src="{{ route('recruiter.company.logo', $user->company_logo) }}" 
                                      class="img-fluid" 
                                      style="max-height: 180px; border-radius: 10px;"
                                      id="currentLogo">

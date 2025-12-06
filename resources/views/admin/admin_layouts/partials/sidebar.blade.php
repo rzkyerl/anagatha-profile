@@ -7,7 +7,7 @@
                 @php
                     $user = auth()->user();
                     $role = $user->role ?? 'user';
-                    $avatarRoute = ($role === 'recruiter') ? 'admin.recruiter.profile.avatar' : 'admin.profile.avatar';
+                    $avatarRoute = ($role === 'recruiter') ? 'recruiter.profile.avatar' : 'admin.profile.avatar';
                 @endphp
                 @if($user && $user->avatar)
                     <img src="{{ route($avatarRoute, $user->avatar) }}" alt="Avatar"
@@ -43,7 +43,7 @@
 
                 <li>
                     @if ($role === 'recruiter')
-                        <a href="{{ route('admin.recruiter.dashboard') }}" class="waves-effect">
+                        <a href="{{ route('recruiter.dashboard') }}" class="waves-effect">
                             <i class="ri-dashboard-line"></i>
                             <span>Recruiter Dashboard</span>
                         </a>
@@ -119,7 +119,7 @@
                     </li>
                 @elseif ($role === 'recruiter')
                 <li>
-                    <a href="{{ route('admin.recruiter.company.show') }}" class="waves-effect">
+                    <a href="{{ route('recruiter.company.show') }}" class="waves-effect">
                         <i class="ri-building-line"></i>
                         <span>My Company</span>
                     </a>
@@ -131,8 +131,8 @@
                     </a>
                     <ul class="sub-menu" aria-expanded="true">
                         <li>
-                                <a href="{{ route('admin.recruiter.job-listings.index') }}">My Job Listings</a>
-                                <a href="{{ route('admin.recruiter.job-apply.index') }}">Job Applications</a>
+                                <a href="{{ route('recruiter.job-listings.index') }}">My Job Listings</a>
+                                <a href="{{ route('recruiter.job-apply.index') }}">Job Applications</a>
                         </li>
                     </ul>
                 </li>

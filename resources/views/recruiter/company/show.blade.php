@@ -30,7 +30,7 @@
             </div>
 
             <div class="d-flex gap-2">
-                <a href="{{ route('admin.recruiter.company.edit') }}" class="btn btn-primary modern-btn">
+                <a href="{{ route('recruiter.company.edit') }}" class="btn btn-primary modern-btn">
                     <i class="ri-edit-line me-1"></i> Edit Company
                 </a>
             </div>
@@ -50,7 +50,7 @@
                             <div class="company-logo-wrapper border rounded-3 bg-light d-flex align-items-center justify-content-center" 
                                  style="width: 110px; height: 110px;">
                                 @if($user->company_logo)
-                                    <img src="{{ route('admin.recruiter.company.logo', $user->company_logo) }}"
+                                    <img src="{{ route('recruiter.company.logo', $user->company_logo) }}"
                                          alt="{{ $user->company_name ?? 'Company' }}"
                                          class="img-fluid"
                                          style="max-width: 100%; max-height: 100%; object-fit: contain;">
