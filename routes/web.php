@@ -388,40 +388,6 @@ Route::domain(env('ADMIN_DOMAIN', 'anagataexecutive.com'))
             Route::put('/recruiter/company', [RecruiterCompanyController::class, 'update'])->name('admin.recruiter.company.update');
             Route::get('/recruiter/company/logo/{filename}', [RecruiterCompanyController::class, 'companyLogo'])->name('admin.recruiter.company.logo');
         });
-        
-        // Route aliases for backward compatibility (recruiter.* routes)
-        // These will redirect to admin.recruiter.* routes
-        Route::middleware(['auth', 'verified', 'role.recruiter.admin'])->group(function () {
-            Route::get('/recruiter/dashboard', function () {
-                return redirect()->route('admin.recruiter.dashboard');
-            })->name('recruiter.dashboard');
-            
-            Route::get('/recruiter/profile/settings', function () {
-                return redirect()->route('admin.recruiter.profile.settings');
-            })->name('recruiter.profile.settings');
-            
-            Route::get('/recruiter/company', function () {
-                return redirect()->route('admin.recruiter.company.show');
-            })->name('recruiter.company.show');
-            
-            Route::get('/recruiter/company/edit', function () {
-                return redirect()->route('admin.recruiter.company.edit');
-            })->name('recruiter.company.edit');
-            
-            Route::get('/recruiter/company/logo/{filename}', function ($filename) {
-                return redirect()->route('admin.recruiter.company.logo', $filename);
-            })->name('recruiter.company.logo');
-            
-            Route::put('/recruiter/company', [RecruiterCompanyController::class, 'update'])->name('recruiter.company.update');
-            
-            Route::get('/recruiter/job-listings', function () {
-                return redirect()->route('admin.recruiter.job-listings.index');
-            })->name('recruiter.job-listings.index');
-            
-            Route::get('/recruiter/job-apply', function () {
-                return redirect()->route('admin.recruiter.job-apply.index');
-            })->name('recruiter.job-apply.index');
-        });
     });
 
 // ============================================================================
