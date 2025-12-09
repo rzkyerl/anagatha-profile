@@ -15,6 +15,18 @@
                         <div class="alert alert-success">
                             <h5><i class="fas fa-check-circle"></i> Success!</h5>
                             <p>{{ $fixedCount }} user password(s) have been successfully rehashed using bcrypt algorithm.</p>
+
+                            @if(isset($adminUsers) && count($adminUsers) > 0)
+                                <p><strong>Admin users fixed:</strong></p>
+                                <ul>
+                                    @foreach($adminUsers as $adminEmail)
+                                        <li>{{ $adminEmail }}</li>
+                                    @endforeach
+                                </ul>
+                                <div class="alert alert-warning mt-3">
+                                    <strong>Important:</strong> Admin passwords have been rehashed. If you don't know the original passwords, you'll need to reset them through the forgot password feature or manually update them in the database.
+                                </div>
+                            @endif
                         </div>
                     @else
                         <div class="alert alert-info">

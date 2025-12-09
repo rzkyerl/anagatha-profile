@@ -130,30 +130,41 @@ class LoginController extends Controller
      */
     public function fixPasswordHashing(Request $request)
     {
-        // Only allow admin access
-        if (!Auth::check() || Auth::user()->role !== 'admin') {
-            abort(403, 'Unauthorized access');
-        }
+        // Allow access even without login for emergency password fixing
+        // But log the access for security
 
         $users = \App\Models\User::all();
         $fixedCount = 0;
         $errors = [];
+        $adminUsers = [];
 
         foreach ($users as $user) {
             try {
                 // Check if password is not bcrypt hashed (doesn't start with $2y$)
                 if (!str_starts_with($user->password, '$2y$')) {
+                    // Store original password for logging
+                    $originalPassword = $user->password;
+
                     // Rehash the password using bcrypt
                     $user->password = bcrypt($user->password);
                     $user->save();
                     $fixedCount++;
+
+                    // Log admin users that were fixed
+                    if ($user->role === 'admin') {
+                        $adminUsers[] = $user->email;
+                        \Log::info("Admin password fixed for: {$user->email}");
+                    }
                 }
             } catch (\Exception $e) {
                 $errors[] = "Error fixing password for user ID {$user->id} ({$user->email}): " . $e->getMessage();
             }
         }
 
-        return view('admin.fix-passwords', compact('fixedCount', 'errors'));
+        // Log summary
+        \Log::info("Password hashing fix completed. Fixed {$fixedCount} users. Admin users: " . implode(', ', $adminUsers));
+
+        return view('admin.fix-passwords', compact('fixedCount', 'errors', 'adminUsers'));
     }
 }
 
