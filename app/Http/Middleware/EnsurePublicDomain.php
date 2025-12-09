@@ -19,7 +19,7 @@ class EnsurePublicDomain
     {
         $host = $request->getHost();
         $mainDomain = env('APP_DOMAIN', 'anagataexecutive.co.id');
-        $adminDomain = env('ADMIN_DOMAIN', 'anagataexecutive.com');
+        $adminDomain = env('ADMIN_DOMAIN', 'admin.anagataexecutive.co.id');
         
         // Allow both with and without www
         $allowedHosts = [

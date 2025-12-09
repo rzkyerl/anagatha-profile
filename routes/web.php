@@ -237,7 +237,7 @@ Route::domain(env('APP_DOMAIN', 'anagataexecutive.co.id'))
 // ADMIN DOMAIN ROUTES (anagataexecutive.com) - Admin Panel
 // ============================================================================
 
-Route::domain(env('ADMIN_DOMAIN', 'anagataexecutive.com'))
+Route::domain(env('ADMIN_DOMAIN', 'admin.anagataexecutive.co.id'))
     ->middleware(['domain.admin'])
     ->group(function () {
         

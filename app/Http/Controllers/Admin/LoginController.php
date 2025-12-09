@@ -16,9 +16,16 @@ class LoginController extends Controller
     {
         if (Auth::check()) {
             $user = Auth::user();
-            // If user is recruiter or admin, redirect to admin dashboard
-            if (in_array($user->role, ['recruiter', 'admin'])) {
+            // If user is admin, redirect to admin dashboard
+            if ($user->role === 'admin') {
                 return redirect()->route('admin.dashboard');
+            }
+            // If user is recruiter, redirect to main domain recruiter dashboard
+            if ($user->role === 'recruiter') {
+                $mainDomain = env('APP_DOMAIN', 'anagataexecutive.co.id');
+                $scheme = request()->getScheme();
+                $url = $scheme . '://' . $mainDomain . '/recruiter/dashboard';
+                return redirect($url);
             }
             // If user is regular user, redirect to home
             return redirect()->route('home')
@@ -54,16 +61,30 @@ class LoginController extends Controller
         $credentials = $request->only('email', 'password');
         $remember = $request->filled('remember');
 
+        // Check if user exists first
+        $user = \App\Models\User::where('email', $credentials['email'])->first();
+        
+        if (!$user) {
+            return redirect()->back()
+                ->with('error', 'These credentials do not match our records.')
+                ->withInput($request->only('email'));
+        }
+
+        // Check if user is admin (only admin can login via admin login page)
+        if ($user->role !== 'admin') {
+            return redirect()->back()
+                ->with('error', 'You do not have permission to access the admin panel. Only admin users can login here.')
+                ->withInput($request->only('email'));
+        }
+
+        // Attempt login
         if (Auth::attempt($credentials, $remember)) {
             $request->session()->regenerate();
-
-            // Check if user is admin or recruiter
             $user = Auth::user();
-            if (!in_array($user->role, ['admin', 'recruiter'])) {
-                Auth::logout();
-                return redirect()->back()
-                    ->with('error', 'You do not have permission to access the admin panel.')
-                    ->withInput($request->only('email'));
+
+            // Admin doesn't need email verification, but if not verified, mark as verified
+            if (!$user->hasVerifiedEmail()) {
+                $user->markEmailAsVerified();
             }
 
             return redirect()->intended(route('admin.dashboard'))
@@ -71,7 +92,7 @@ class LoginController extends Controller
         }
 
         return redirect()->back()
-            ->with('error', 'These credentials do not match our records.')
+            ->with('error', 'These credentials do not match our records. Please check your email and password.')
             ->withInput($request->only('email'));
     }
 
