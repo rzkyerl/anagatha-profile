@@ -87,9 +87,15 @@ class LoginController extends Controller
                 $user->markEmailAsVerified();
             }
 
+            // Debug: Log successful login
+            \Log::info('Admin login successful for user: ' . $user->email . ' (ID: ' . $user->id . ')');
+
             return redirect()->intended(route('admin.dashboard'))
                 ->with('success', 'Welcome back, ' . $user->first_name . '!');
         }
+
+        // Debug: Log failed login attempt
+        \Log::warning('Admin login failed for email: ' . $credentials['email']);
 
         return redirect()->back()
             ->with('error', 'These credentials do not match our records. Please check your email and password.')

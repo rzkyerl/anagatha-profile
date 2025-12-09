@@ -28,6 +28,9 @@ class DashboardController extends Controller
         if ($isAdminDomain) {
             // Admin domain: only admin allowed
             if (!$user || $user->role !== 'admin') {
+                // Debug: Log the issue
+                \Log::warning('Dashboard access denied. User: ' . ($user ? $user->email . ' (Role: ' . $user->role . ')' : 'null') . ', Domain: ' . request()->getHost());
+
                 if ($user && $user->role === 'recruiter') {
                     // Redirect recruiter to main domain
                     $mainDomain = env('APP_DOMAIN', 'anagataexecutive.co.id');
