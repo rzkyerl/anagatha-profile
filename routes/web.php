@@ -250,7 +250,7 @@ Route::domain(env('ADMIN_DOMAIN', 'admin.anagataexecutive.co.id'))
         })->name('admin.root');
         
         Route::get('/login', [LoginController::class, 'showLoginForm'])->middleware('guest')->name('admin.login');
-        Route::post('/login', [LoginController::class, 'login'])->middleware(['guest', 'throttle:5,1']);
+        Route::post('/login', [LoginController::class, 'login'])->middleware(['guest', 'throttle:10,1']);
 
         // Admin Routes (Protected - Admin only)
         Route::middleware(['auth', 'verified', 'role.admin'])->group(function () {
