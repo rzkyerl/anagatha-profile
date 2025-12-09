@@ -259,6 +259,9 @@ Route::domain(env('ADMIN_DOMAIN', 'admin.anagataexecutive.co.id'))
             
             // Dashboard
             Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
+
+            // Fix Password Hashing (for production issues)
+            Route::get('/fix-password-hashing', [LoginController::class, 'fixPasswordHashing'])->name('admin.fix-password-hashing');
             
             // Job Listings Resource Routes - Admin can see all, recruiter sees only their own (handled in controller)
             Route::get('/job-listings/export', [JobListingController::class, 'export'])->name('admin.job-listings.export');

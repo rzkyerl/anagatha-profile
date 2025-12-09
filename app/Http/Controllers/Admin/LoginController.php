@@ -118,5 +118,36 @@ class LoginController extends Controller
         return redirect()->route('admin.login')
             ->with('success', 'You have been logged out successfully.');
     }
+
+    /**
+     * Fix password hashing for users with non-bcrypt passwords
+     */
+    public function fixPasswordHashing(Request $request)
+    {
+        // Only allow admin access
+        if (!Auth::check() || Auth::user()->role !== 'admin') {
+            abort(403, 'Unauthorized access');
+        }
+
+        $users = \App\Models\User::all();
+        $fixedCount = 0;
+        $errors = [];
+
+        foreach ($users as $user) {
+            try {
+                // Check if password is not bcrypt hashed (doesn't start with $2y$)
+                if (!str_starts_with($user->password, '$2y$')) {
+                    // Rehash the password using bcrypt
+                    $user->password = bcrypt($user->password);
+                    $user->save();
+                    $fixedCount++;
+                }
+            } catch (\Exception $e) {
+                $errors[] = "Error fixing password for user ID {$user->id} ({$user->email}): " . $e->getMessage();
+            }
+        }
+
+        return view('admin.fix-passwords', compact('fixedCount', 'errors'));
+    }
 }
 
