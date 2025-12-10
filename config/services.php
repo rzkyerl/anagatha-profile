@@ -44,4 +44,9 @@ return [
     'client_secret' => env('GITHUB_CLIENT_SECRET'),
     'redirect' => env('GITHUB_REDIRECT_URI'),
     ],
+
+    // google tag manager
+    'gtm' => [
+        'id' => env('GTM_ID'),
+    ],
 ];
